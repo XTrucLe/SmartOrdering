@@ -1,0 +1,45 @@
+node_modules/
+.pnp
+.pnp.js
+.yarn/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build
+dist/
+.next/
+out/
+build/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# Env & Security
+.env
+.env.*
+!.env.example
+*.pem
+
+# System & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.settings/
+.classpath
+.project
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Test
+coverage/
+.nyc_output/
+report.*.json

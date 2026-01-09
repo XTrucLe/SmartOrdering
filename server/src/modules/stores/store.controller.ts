@@ -11,6 +11,7 @@ import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dtos/create-store.dto';
 import { Store } from './entities/store.entity';
 import { UpdateStoreDto } from './dtos/update-store.dto';
+import { isUUID } from 'class-validator';
 
 @Controller('stores')
 export class StoresController {
@@ -19,13 +20,13 @@ export class StoresController {
   async createStore(@Body() dto: CreateStoreDto): Promise<Store> {
     return this.storesService.createStore(dto);
   }
-  @Get('/:slug')
-  async getStoreBySlug(@Param('slug') slug: string): Promise<Store> {
-    return this.storesService.getStoreBySlug(slug);
-  }
-  @Get(':id')
-  async getStoreById(@Param('id') id: string): Promise<Store> {
-    return this.storesService.getStoreById(id);
+  @Get(':param')
+  async getStore(@Param('param') param: string): Promise<Store> {
+    if (isUUID(param)) {
+      return this.storesService.getStoreById(param);
+    } else {
+      return this.storesService.getStoreBySlug(param);
+    }
   }
   @Put(':id')
   async updateStore(

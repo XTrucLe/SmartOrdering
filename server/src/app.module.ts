@@ -4,10 +4,10 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StoresModule } from './modules/stores/store.module';
+import { MenusModule } from './modules/menus/menu.module';
 
 @Module({
   imports: [
-    StoresModule,
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -23,6 +23,8 @@ import { StoresModule } from './modules/stores/store.module';
         synchronize: true,
       }),
     }),
+    StoresModule,
+    MenusModule,
   ],
   controllers: [AppController],
   providers: [AppService],

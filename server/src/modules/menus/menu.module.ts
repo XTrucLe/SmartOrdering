@@ -9,5 +9,6 @@ import { MenuController } from './menu.controller';
   imports: [TypeOrmModule.forFeature([Menu]), StoresModule],
   controllers: [MenuController],
   providers: [MenuService],
+  exports: [MenuService],
 })
 export class MenusModule {}

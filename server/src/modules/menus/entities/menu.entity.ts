@@ -5,9 +5,11 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Store } from '../../stores/entities/store.entity';
 import { MenuStatus } from '../constants/menu.constant';
+import { Item } from 'src/modules/items/entities/item.entity';
 
 @Entity('menus')
 export class Menu {
@@ -29,6 +31,9 @@ export class Menu {
 
   @ManyToOne(() => Store, (store) => store.id, { onDelete: 'CASCADE' })
   store: Store;
+
+  @OneToMany(() => Item, (item) => item.menu)
+  items: Item[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

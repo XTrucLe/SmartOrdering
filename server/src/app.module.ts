@@ -7,6 +7,7 @@ import { StoresModule } from './modules/stores/store.module';
 import { MenusModule } from './modules/menus/menu.module';
 import { ItemsModule } from './modules/items/items.module';
 import { CommonModule } from './common/common.module';
+import { OrdersModule } from './modules/orders/order.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CommonModule } from './common/common.module';
     StoresModule,
     MenusModule,
     ItemsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

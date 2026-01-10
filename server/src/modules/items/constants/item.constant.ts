@@ -8,5 +8,6 @@ export enum ItemType {
   DRINK = 'DRINK',
   SNACK = 'SNACK',
   DESSERT = 'DESSERT',
+  TOPPING = 'TOPPING',
   OTHER = 'OTHER',
 }

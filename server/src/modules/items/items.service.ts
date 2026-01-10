@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Item } from './entities/item.entity';
 import { CreateItemDto } from './dtos/create-item.dto';
 import { UpdateItemDto } from './dtos/update-item.dto';
@@ -31,6 +31,7 @@ export class ItemsService {
 
     const item = this.itemRepository.create({
       ...dto,
+      menu: { id: dto.menuId },
       store: { id: storeId },
     });
 
@@ -60,11 +61,21 @@ export class ItemsService {
   }
 
   async getItemById(id: string): Promise<Item> {
-    const item = await this.itemRepository.findOne({ where: { id } });
+    const item = await this.itemRepository.findOne({
+      where: { id },
+      relations: ['store'],
+    });
     if (!item) {
       throw new NotFoundException(`Item with ID ${id} not found.`);
     }
     return item;
+  }
+
+  async getItemsByIds(ids: string[]): Promise<Item[]> {
+    return this.itemRepository.find({
+      where: { id: In(ids) },
+      relations: ['store'],
+    });
   }
 
   async updateItem(id: string, dto: UpdateItemDto): Promise<Item> {

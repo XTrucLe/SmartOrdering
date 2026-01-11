@@ -8,8 +8,10 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { OrderItemsService } from '../services/order-items.service';
-import { CreateOrderItemDto } from '../dtos/create-order-item.dto';
-import { UpdateOrderItemDto } from '../dtos/update-order-item.dto';
+import { CreateOrderItemDto } from '../dtos/order-items/create-order-item.dto';
+import { UpdateOrderItemDto } from '../dtos/order-items/update-order-item.dto';
+import { OrderItemResponseDto } from '../dtos/order-items/order-item.response.dto';
+import { mapToOrderItemDto } from '../mappers/order-item.mapper';
 
 @Controller()
 export class OrderItemsController {
@@ -19,16 +21,18 @@ export class OrderItemsController {
   async addItem(
     @Param('orderId', ParseUUIDPipe) orderId: string,
     @Body() dto: CreateOrderItemDto,
-  ) {
-    return this.orderItemsService.addItemToOrder(orderId, dto);
+  ): Promise<OrderItemResponseDto> {
+    const orderItem = await this.orderItemsService.addItemToOrder(orderId, dto);
+    return mapToOrderItemDto(orderItem);
   }
 
   @Patch('order-items/:itemId')
   async updateItem(
     @Param('itemId', ParseUUIDPipe) itemId: string,
     @Body() dto: UpdateOrderItemDto,
-  ) {
-    return this.orderItemsService.updateItem(itemId, dto);
+  ): Promise<OrderItemResponseDto> {
+    const orderItem = await this.orderItemsService.updateItem(itemId, dto);
+    return mapToOrderItemDto(orderItem);
   }
 
   @Delete('order-items/:itemId')

@@ -6,8 +6,8 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { DeliveryMethod } from '../constants/order.constant';
-import { CreateOrderItemDto } from './create-order-item.dto';
+import { DeliveryMethod } from '../../constants/order.constant';
+import { CreateOrderItemDto } from '../order-items/create-order-item.dto';
 
 export class CreateOrderDto {
   @IsArray()

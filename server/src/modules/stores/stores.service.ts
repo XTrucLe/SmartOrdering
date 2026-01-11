@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateStoreDto } from './dtos/create-store.dto';
 import { UpdateStoreDto } from './dtos/update-store.dto';
+import { StoreStatus } from './constants/store.constant';
 
 @Injectable()
 export class StoresService {
@@ -20,6 +21,7 @@ export class StoresService {
     const slug = dto.slug
       ? await this.validateCustomSlug(dto.slug)
       : await this.generateUniqueSlug(dto.name);
+
     const store = this.storeRepository.create({
       name: dto.name,
       slug,
@@ -37,7 +39,10 @@ export class StoresService {
   }
 
   async getStoreById(id: string): Promise<Store> {
-    const store = await this.storeRepository.findOneBy({ id });
+    const store = await this.storeRepository.findOneBy({
+      id,
+      status: StoreStatus.ACTIVE,
+    });
     if (!store) {
       throw new NotFoundException('Store not found.');
     }
@@ -52,6 +57,13 @@ export class StoresService {
     return store;
   }
 
+  async getAllStores(): Promise<Store[]> {
+    return this.storeRepository.find({
+      where: { status: StoreStatus.ACTIVE },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async updateStore(
     id: string,
     updateStoreDto: UpdateStoreDto,
@@ -60,6 +72,7 @@ export class StoresService {
     Object.assign(store, updateStoreDto);
     return this.storeRepository.save(store);
   }
+
   async deleteStore(id: string): Promise<void> {
     const store = await this.getStoreById(id);
     await this.storeRepository.remove(store);

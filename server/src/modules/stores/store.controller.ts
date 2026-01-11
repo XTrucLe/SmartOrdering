@@ -9,31 +9,36 @@ import {
 } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dtos/create-store.dto';
-import { Store } from './entities/store.entity';
 import { UpdateStoreDto } from './dtos/update-store.dto';
 import { isUUID } from 'class-validator';
+import { StoreResponseDto } from './dtos/store.response.dto';
+import { mapToStoreDto } from './mappers/store.mapper';
 
 @Controller('stores')
 export class StoresController {
   constructor(private readonly storesService: StoresService) {}
   @Post()
-  async createStore(@Body() dto: CreateStoreDto): Promise<Store> {
-    return this.storesService.createStore(dto);
+  async createStore(@Body() dto: CreateStoreDto): Promise<StoreResponseDto> {
+    const store = await this.storesService.createStore(dto);
+    return mapToStoreDto(store);
   }
   @Get(':param')
-  async getStore(@Param('param') param: string): Promise<Store> {
+  async getStore(@Param('param') param: string): Promise<StoreResponseDto> {
     if (isUUID(param)) {
-      return this.storesService.getStoreById(param);
+      const store = await this.storesService.getStoreById(param);
+      return mapToStoreDto(store);
     } else {
-      return this.storesService.getStoreBySlug(param);
+      const store = await this.storesService.getStoreBySlug(param);
+      return mapToStoreDto(store);
     }
   }
   @Put(':id')
   async updateStore(
     @Param('id') id: string,
     @Body() updateStoreDto: UpdateStoreDto,
-  ): Promise<Store> {
-    return this.storesService.updateStore(id, updateStoreDto);
+  ): Promise<StoreResponseDto> {
+    const store = await this.storesService.updateStore(id, updateStoreDto);
+    return mapToStoreDto(store);
   }
   @Delete(':id')
   async deleteStore(@Param('id') id: string): Promise<void> {

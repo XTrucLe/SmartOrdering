@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Order } from '../entities/order.entity';
 import { OrderItem } from '../entities/order-item.entity';
-import { CreateOrderDto } from '../dtos/create-order.dto';
+import { CreateOrderDto } from '../dtos/orders/create-order.dto';
 import {
   DELIVERY_FEE_AMOUNT,
   DeliveryMethod,

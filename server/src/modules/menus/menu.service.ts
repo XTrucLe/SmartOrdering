@@ -33,11 +33,17 @@ export class MenuService {
   }
 
   async getMenus(storeId: string): Promise<Menu[]> {
-    return this.menuRepository.find({ where: { store: { id: storeId } } });
+    return this.menuRepository.find({
+      where: { store: { id: storeId } },
+      relations: ['items'],
+    });
   }
 
   async getMenuById(id: string): Promise<Menu> {
-    const menu = await this.menuRepository.findOne({ where: { id } });
+    const menu = await this.menuRepository.findOne({
+      where: { id },
+      relations: ['items'],
+    });
     if (!menu) {
       throw new NotFoundException(`Menu with ID ${id} not found.`);
     }

@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class CreateStoreDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
     message:

@@ -8,7 +8,7 @@ import {
   Index,
 } from 'typeorm';
 import { Menu } from '../../menus/entities/menu.entity';
-import { Store } from 'src/modules/stores/entities/store.entity';
+import { Store } from '../../stores/entities/store.entity';
 import { ItemStatus, ItemType } from '../constants/item.constant';
 
 @Entity('items')

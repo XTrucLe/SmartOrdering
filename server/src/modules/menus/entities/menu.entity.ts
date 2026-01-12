@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Store } from '../../stores/entities/store.entity';
 import { MenuStatus } from '../constants/menu.constant';
-import { Item } from 'src/modules/items/entities/item.entity';
+import { Item } from '../../items/entities/item.entity';
 
 @Entity('menus')
 export class Menu {

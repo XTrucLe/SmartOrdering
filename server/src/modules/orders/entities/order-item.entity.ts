@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { Item } from 'src/modules/items/entities/item.entity';
+import { Item } from '../../items/entities/item.entity';
 import { Order } from './order.entity';
 
 @Entity('order_items')

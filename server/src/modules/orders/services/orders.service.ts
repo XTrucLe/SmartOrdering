@@ -15,8 +15,8 @@ import {
   DeliveryMethod,
   OrderStatus,
 } from '../constants/order.constant';
-import { StoresService } from 'src/modules/stores/stores.service';
-import { ItemsService } from 'src/modules/items/items.service';
+import { StoresService } from '../../stores/stores.service';
+import { ItemsService } from '../../items/items.service';
 import { VALID_TRANSITIONS } from '../constants/order-transition.constant';
 
 @Injectable()

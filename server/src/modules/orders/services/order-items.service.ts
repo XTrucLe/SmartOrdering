@@ -10,7 +10,7 @@ import { CreateOrderItemDto } from '../dtos/order-items/create-order-item.dto';
 import { UpdateOrderItemDto } from '../dtos/order-items/update-order-item.dto';
 import { OrderStatus } from '../constants/order.constant';
 import { OrdersService } from './orders.service';
-import { ItemsService } from 'src/modules/items/items.service';
+import { ItemsService } from '../../items/items.service';
 
 @Injectable()
 export class OrderItemsService {

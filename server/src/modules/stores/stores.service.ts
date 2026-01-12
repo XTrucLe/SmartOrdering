@@ -23,9 +23,9 @@ export class StoresService {
       : await this.generateUniqueSlug(dto.name);
 
     const store = this.storeRepository.create({
-      name: dto.name,
+      ...dto,
       slug,
-      description: dto.description,
+      status: StoreStatus.ACTIVE,
     });
 
     try {

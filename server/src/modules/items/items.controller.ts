@@ -7,6 +7,7 @@ import {
   Body,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dtos/create-item.dto';
@@ -21,8 +22,10 @@ import {
   ItemResponseDto,
   ItemWithStoreResponseDto,
 } from './dtos/item.response.dto';
+import { StoreGuard } from '../stores/guards/store.guard';
 
 @Controller('stores/:storeId/items')
+@UseGuards(StoreGuard)
 export class ItemController {
   constructor(private readonly itemsService: ItemsService) {}
   @Post()

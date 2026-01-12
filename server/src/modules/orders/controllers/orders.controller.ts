@@ -6,14 +6,17 @@ import {
   Param,
   Body,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from '../services/orders.service';
 import { CreateOrderDto } from '../dtos/orders/create-order.dto';
 import { OrderResponseDto } from '../dtos/orders/order.response.dto';
 import { mapToOrderDto, mapToOrderDtos } from '../mappers/order.mapper';
 import { CancelReason } from '../constants/order.constant';
+import { StoreGuard } from '../../stores/guards/store.guard';
 
 @Controller('stores/:storeId/orders')
+@UseGuards(StoreGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 

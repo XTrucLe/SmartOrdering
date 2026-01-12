@@ -6,14 +6,17 @@ import {
   Get,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dtos/create-menu.dto';
 import { UpdateMenuDto } from './dtos/update-menu.dto';
 import { MenuResponseDto } from './dtos/menu.response.dto';
 import { mapToMenuDto, mapToMenuDtos } from './mappers/menu.mapper';
+import { StoreGuard } from '../stores/guards/store.guard';
 
 @Controller('stores/:storeId/menus')
+@UseGuards(StoreGuard)
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 

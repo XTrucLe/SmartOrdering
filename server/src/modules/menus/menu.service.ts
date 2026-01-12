@@ -28,6 +28,7 @@ export class MenuService {
     const newMenu = this.menuRepository.create({
       ...dto,
       store: { id: storeId },
+      status: dto.status ?? MenuStatus.ACTIVE,
     });
     return this.menuRepository.save(newMenu);
   }

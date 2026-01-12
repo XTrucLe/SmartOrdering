@@ -16,4 +16,8 @@ export class CreateStoreDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  address: string;
 }

@@ -30,6 +30,9 @@ export class Store {
   })
   status: StoreStatus;
 
+  @Column({ length: 500 })
+  address: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

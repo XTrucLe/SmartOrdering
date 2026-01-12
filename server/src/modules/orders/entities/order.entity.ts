@@ -13,6 +13,7 @@ import {
   OrderStatus,
   PaymentStatus,
   DeliveryMethod,
+  CancelReason,
 } from '../constants/order.constant';
 import { OrderItem } from './order-item.entity';
 
@@ -77,6 +78,9 @@ export class Order {
 
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   totalPrice: number;
+
+  @Column({ type: 'enum', enum: CancelReason, nullable: true })
+  cancelReason?: CancelReason;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

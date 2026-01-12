@@ -9,9 +9,10 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from '../services/orders.service';
 import { CreateOrderDto } from '../dtos/orders/create-order.dto';
-import { OrderStatus } from '../constants/order.constant';
 import { OrderResponseDto } from '../dtos/orders/order.response.dto';
 import { mapToOrderDto, mapToOrderDtos } from '../mappers/order.mapper';
+import { CancelReason } from '../constants/order.constant';
+
 @Controller('stores/:storeId/orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
@@ -41,20 +42,44 @@ export class OrdersController {
     return mapToOrderDto(order);
   }
 
-  @Patch(':orderId/status')
-  async updateStatus(
+  @Patch(':orderId/confirm')
+  async confirm(
     @Param('orderId', ParseUUIDPipe) orderId: string,
-    @Body('status') status: OrderStatus,
   ): Promise<OrderResponseDto> {
-    const updatedOrder = await this.ordersService.updateStatus(orderId, status);
-    return mapToOrderDto(updatedOrder);
+    const confirmedOrder = await this.ordersService.confirm(orderId);
+    return mapToOrderDto(confirmedOrder);
+  }
+
+  @Patch(':orderId/prepare')
+  async prepare(
+    @Param('orderId', ParseUUIDPipe) orderId: string,
+  ): Promise<OrderResponseDto> {
+    const preparedOrder = await this.ordersService.prepare(orderId);
+    return mapToOrderDto(preparedOrder);
+  }
+
+  @Patch(':orderId/ready')
+  async ready(
+    @Param('orderId', ParseUUIDPipe) orderId: string,
+  ): Promise<OrderResponseDto> {
+    const readyOrder = await this.ordersService.ready(orderId);
+    return mapToOrderDto(readyOrder);
+  }
+
+  @Patch(':orderId/complete')
+  async complete(
+    @Param('orderId', ParseUUIDPipe) orderId: string,
+  ): Promise<OrderResponseDto> {
+    const completedOrder = await this.ordersService.complete(orderId);
+    return mapToOrderDto(completedOrder);
   }
 
   @Patch(':orderId/cancel')
   async cancel(
     @Param('orderId', ParseUUIDPipe) orderId: string,
+    @Body('reason') reason: CancelReason,
   ): Promise<OrderResponseDto> {
-    const cancelledOrder = await this.ordersService.cancel(orderId);
+    const cancelledOrder = await this.ordersService.cancel(orderId, reason);
     return mapToOrderDto(cancelledOrder);
   }
 }

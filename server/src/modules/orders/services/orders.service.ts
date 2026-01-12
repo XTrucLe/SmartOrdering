@@ -10,12 +10,14 @@ import { Order } from '../entities/order.entity';
 import { OrderItem } from '../entities/order-item.entity';
 import { CreateOrderDto } from '../dtos/orders/create-order.dto';
 import {
+  CancelReason,
   DELIVERY_FEE_AMOUNT,
   DeliveryMethod,
   OrderStatus,
 } from '../constants/order.constant';
 import { StoresService } from 'src/modules/stores/stores.service';
 import { ItemsService } from 'src/modules/items/items.service';
+import { VALID_TRANSITIONS } from '../constants/order-transition.constant';
 
 @Injectable()
 export class OrdersService {
@@ -96,6 +98,8 @@ export class OrdersService {
         orderItems,
       });
 
+      this.validateOrderInfo(order);
+
       const savedOrder = await queryRunner.manager.save(order);
       await queryRunner.commitTransaction();
 
@@ -140,33 +144,89 @@ export class OrdersService {
     return order;
   }
 
-  async updateStatus(orderId: string, status: OrderStatus): Promise<Order> {
-    const order = await this.orderRepository.findOne({
-      where: { id: orderId },
+  async confirm(orderId: string): Promise<Order> {
+    return this.updateStatus(orderId, OrderStatus.CONFIRM);
+  }
+
+  async prepare(orderId: string): Promise<Order> {
+    return this.updateStatus(orderId, OrderStatus.PREPARING);
+  }
+
+  async ready(orderId: string): Promise<Order> {
+    return this.updateStatus(orderId, OrderStatus.READY);
+  }
+
+  async complete(orderId: string): Promise<Order> {
+    return this.updateStatus(orderId, OrderStatus.COMPLETED);
+  }
+
+  async cancel(orderId: string, reason: CancelReason): Promise<Order> {
+    return this.updateStatus(orderId, OrderStatus.CANCELLED, {
+      cancelReason: reason,
     });
-    if (!order) {
-      throw new NotFoundException(`Order with ID ${orderId} not found`);
+  }
+
+  private async updateStatus(
+    orderId: string,
+    nextStatus: OrderStatus,
+    option?: { cancelReason?: CancelReason },
+  ): Promise<Order> {
+    const order = await this.findOne(orderId);
+
+    const validNextStatuses = VALID_TRANSITIONS[order.status];
+
+    if (!validNextStatuses.includes(nextStatus)) {
+      throw new BadRequestException(
+        `Invalid transition from ${order.status} to ${nextStatus}`,
+      );
     }
 
-    order.status = status;
+    if (nextStatus === OrderStatus.CANCELLED) {
+      if (!option?.cancelReason) {
+        throw new BadRequestException('Cancel reason is required');
+      }
+      order.cancelReason = option.cancelReason;
+    }
+
+    order.status = nextStatus;
+
     return this.orderRepository.save(order);
   }
 
-  async cancel(orderId: string): Promise<Order> {
-    const order = await this.orderRepository.findOne({
-      where: { id: orderId },
-    });
-    if (!order) {
-      throw new NotFoundException(`Order with ID ${orderId} not found`);
-    }
+  private validateOrderInfo(order: Order): void {
+    switch (order.deliveryMethod) {
+      case DeliveryMethod.DELIVERY:
+        if (
+          !order.customerName ||
+          !order.customerContact ||
+          !order.customerAddress
+        ) {
+          throw new BadRequestException('Missing Customer info for delivery');
+        }
+        if (order.table) {
+          throw new BadRequestException('Delivery order must not have table');
+        }
+        break;
 
-    if (order.status !== OrderStatus.PENDING) {
-      throw new BadRequestException('Only pending orders can be cancelled');
-    }
+      case DeliveryMethod.DINE_IN:
+        if (!order.table) {
+          throw new BadRequestException('Table is required for dine-in');
+        }
+        if (order.customerAddress) {
+          throw new BadRequestException('Dine-in must not have address');
+        }
+        break;
 
-    order.status = OrderStatus.CANCELLED;
-    return this.orderRepository.save(order);
+      case DeliveryMethod.TAKEAWAY:
+        if (order.table || order.customerAddress) {
+          throw new BadRequestException(
+            'Takeaway order must not have table or address',
+          );
+        }
+        break;
+    }
   }
+
   async recalculateTotal(orderId: string): Promise<void> {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },

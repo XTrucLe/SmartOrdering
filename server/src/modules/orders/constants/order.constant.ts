@@ -7,6 +7,14 @@ export enum OrderStatus {
   CANCELLED = 'CANCELLED',
 }
 
+export enum CancelReason {
+  CUSTOMER_REQUEST = 'CUSTOMER_REQUEST',
+  CUSTOMER_NO_SHOW = 'CUSTOMER_NO_SHOW',
+  OUT_OF_STOCK = 'OUT_OF_STOCK',
+  KITCHEN_ERROR = 'KITCHEN_ERROR',
+  DELIVERY_FAILED = 'DELIVERY_FAILED',
+}
+
 export enum PaymentStatus {
   PENDING = 'PENDING',
   PAID = 'PAID',

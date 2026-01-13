@@ -32,5 +32,5 @@ export class CreateItemDto {
 
   @IsString()
   @IsOptional()
-  menuId?: string;
+  categoryId?: string;
 }

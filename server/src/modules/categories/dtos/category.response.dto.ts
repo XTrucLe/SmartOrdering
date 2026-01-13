@@ -1,13 +1,13 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { MenuStatus } from '../constants/menu.constant';
+import { CategoryStatus } from '../constants/category.constant';
 import { ItemResponseDto } from '../../items/dtos/item.response.dto';
 
 @Exclude()
-export class MenuResponseDto {
+export class CategoryResponseDto {
   @Expose() id: string;
   @Expose() name: string;
   @Expose() description?: string;
-  @Expose() status: MenuStatus;
+  @Expose() status: CategoryStatus;
   @Expose()
   @Type(() => ItemResponseDto)
   items: ItemResponseDto[];

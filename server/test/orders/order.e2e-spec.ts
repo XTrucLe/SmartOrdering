@@ -5,7 +5,7 @@ import { AppModule } from '../../src/app.module';
 import { DataSource } from 'typeorm';
 import { resetDatabase } from '../helpers/reset_db.helper';
 import { CreateStoreDto } from '../../src/modules/stores/dtos/create-store.dto';
-import { CreateMenuDto } from '../../src/modules/menus/dtos/create-menu.dto';
+import { CreateCategoryDto } from '../../src/modules/categories/dtos/create-category.dto';
 import { CreateItemDto } from '../../src/modules/items/dtos/create-item.dto';
 import { ItemType } from '../../src/modules/items/constants/item.constant';
 import { CreateOrderDto } from '../../src/modules/orders/dtos/orders/create-order.dto';
@@ -18,14 +18,14 @@ import { App } from 'supertest/types';
 import { OrderResponseDto } from 'src/modules/orders/dtos/orders/order.response.dto';
 import { ItemResponseDto } from 'src/modules/items/dtos/item.response.dto';
 import { StoreResponseDto } from 'src/modules/stores/dtos/store.response.dto';
-import { MenuResponseDto } from 'src/modules/menus/dtos/menu.response.dto';
+import { CategoryResponseDto } from 'src/modules/categories/dtos/category.response.dto';
 
 describe('OrdersController (e2e)', () => {
   let app: INestApplication<App>;
   let dataSource: DataSource;
 
   let store: StoreResponseDto;
-  let menu: MenuResponseDto;
+  let category: CategoryResponseDto;
   let item: ItemResponseDto;
 
   const createStoreDto: CreateStoreDto = {
@@ -33,8 +33,8 @@ describe('OrdersController (e2e)', () => {
     address: '456 Order Ave',
   };
 
-  const createMenuDto: CreateMenuDto = {
-    name: 'Order Menu',
+  const createCategoryDto: CreateCategoryDto = {
+    name: 'Order Category',
   };
 
   const createItemDto: CreateItemDto = {
@@ -59,20 +59,20 @@ describe('OrdersController (e2e)', () => {
   });
 
   beforeEach(async () => {
-    // Create a store, menu, and item for testing orders
+    // Create a store, category, and item for testing orders
     const storeResponse = await request(app.getHttpServer())
       .post('/stores')
       .send(createStoreDto);
     store = storeResponse.body as StoreResponseDto;
 
-    const menuResponse = await request(app.getHttpServer())
-      .post(`/stores/${store.id}/menus`)
-      .send(createMenuDto);
-    menu = menuResponse.body as MenuResponseDto;
+    const categoryResponse = await request(app.getHttpServer())
+      .post(`/stores/${store.id}/categorys`)
+      .send(createCategoryDto);
+    category = categoryResponse.body as CategoryResponseDto;
 
     const itemResponse = await request(app.getHttpServer())
       .post(`/stores/${store.id}/items`)
-      .send({ ...createItemDto, menuId: menu.id });
+      .send({ ...createItemDto, categoryId: category.id });
     item = itemResponse.body as ItemResponseDto;
   });
 

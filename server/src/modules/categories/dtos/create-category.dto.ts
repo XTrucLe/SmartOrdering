@@ -1,14 +1,14 @@
 import { IsString, IsEnum, IsOptional, IsNotEmpty } from 'class-validator';
-import { MenuStatus } from '../constants/menu.constant';
+import { CategoryStatus } from '../constants/category.constant';
 
-export class CreateMenuDto {
+export class CreateCategoryDto {
   @IsNotEmpty()
   @IsString()
   name: string;
 
   @IsOptional()
-  @IsEnum(MenuStatus)
-  status?: MenuStatus;
+  @IsEnum(CategoryStatus)
+  status?: CategoryStatus;
 
   @IsOptional()
   @IsString({ each: true })

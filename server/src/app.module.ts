@@ -4,10 +4,10 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StoresModule } from './modules/stores/store.module';
-import { MenusModule } from './modules/menus/menu.module';
 import { ItemsModule } from './modules/items/items.module';
 import { CommonModule } from './common/common.module';
 import { OrdersModule } from './modules/orders/order.module';
+import { CategoriesModule } from './modules/categories/category.module';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { OrdersModule } from './modules/orders/order.module';
     }),
     CommonModule,
     StoresModule,
-    MenusModule,
+    CategoriesModule,
     ItemsModule,
     OrdersModule,
   ],

@@ -1,4 +1,4 @@
-export enum MenuStatus {
+export enum CategoryStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
 }

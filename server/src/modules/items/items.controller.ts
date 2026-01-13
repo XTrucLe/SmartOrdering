@@ -52,6 +52,7 @@ export class ItemController {
     const item = await this.itemsService.updateItem(id, dto);
     return mapToItemDto(item);
   }
+
   @Put(':id/change-status')
   async changeItemStatus(
     @Param('id') id: string,
@@ -70,11 +71,11 @@ export class ItemController {
   async queryItems(
     @Param('storeId') storeId: string,
     @Query('query') query?: string,
-    @Query('menuId') menuId?: string,
+    @Query('menuId') categoryId?: string,
   ): Promise<ItemResponseDto[]> {
     const items = await this.itemsService.queryItems(storeId, {
       query,
-      menuId,
+      categoryId,
     });
     return mapToItemDtos(items);
   }

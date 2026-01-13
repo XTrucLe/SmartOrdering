@@ -8,11 +8,11 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Store } from '../../stores/entities/store.entity';
-import { MenuStatus } from '../constants/menu.constant';
+import { CategoryStatus } from '../constants/category.constant';
 import { Item } from '../../items/entities/item.entity';
 
-@Entity('menus')
-export class Menu {
+@Entity('categorys')
+export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,15 +24,15 @@ export class Menu {
 
   @Column({
     type: 'enum',
-    enum: MenuStatus,
-    default: MenuStatus.ACTIVE,
+    enum: CategoryStatus,
+    default: CategoryStatus.ACTIVE,
   })
-  status: MenuStatus;
+  status: CategoryStatus;
 
   @ManyToOne(() => Store, (store) => store.id, { onDelete: 'CASCADE' })
   store: Store;
 
-  @OneToMany(() => Item, (item) => item.menu)
+  @OneToMany(() => Item, (item) => item.category)
   items: Item[];
 
   @CreateDateColumn({ name: 'created_at' })

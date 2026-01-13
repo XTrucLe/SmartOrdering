@@ -5,12 +5,12 @@ import { AppModule } from '../../src/app.module';
 import { DataSource } from 'typeorm';
 import { resetDatabase } from '../helpers/reset_db.helper';
 import { CreateStoreDto } from '../../src/modules/stores/dtos/create-store.dto';
-import { CreateMenuDto } from '../../src/modules/menus/dtos/create-menu.dto';
+import { CreateCategoryDto } from '../../src/modules/categories/dtos/create-category.dto';
 import { CreateItemDto } from '../../src/modules/items/dtos/create-item.dto';
 import { ItemType } from '../../src/modules/items/constants/item.constant';
 import { UpdateItemDto } from 'src/modules/items/dtos/update-item.dto';
 import { App } from 'supertest/types';
-import { MenuResponseDto } from 'src/modules/menus/dtos/menu.response.dto';
+import { CategoryResponseDto } from 'src/modules/categories/dtos/category.response.dto';
 import { StoreResponseDto } from 'src/modules/stores/dtos/store.response.dto';
 import { ItemResponseDto } from 'src/modules/items/dtos/item.response.dto';
 
@@ -19,16 +19,16 @@ describe('ItemController (e2e)', () => {
   let dataSource: DataSource;
 
   let store: StoreResponseDto;
-  let menu: MenuResponseDto;
+  let category: CategoryResponseDto;
 
   const createStoreDto: CreateStoreDto = {
     name: 'Test Store',
     address: '123 Test St',
   };
 
-  const createMenuDto: CreateMenuDto = {
-    name: 'Test Menu',
-    description: 'A test menu',
+  const createCategoryDto: CreateCategoryDto = {
+    name: 'Test Category',
+    description: 'A test category',
   };
 
   const createItemDto: CreateItemDto = {
@@ -66,12 +66,12 @@ describe('ItemController (e2e)', () => {
       .expect(201);
     store = storeResponse.body as StoreResponseDto;
 
-    // Create a menu
-    const menuResponse = await request(app.getHttpServer())
-      .post(`/stores/${store.id}/menus`)
-      .send(createMenuDto)
+    // Create a category
+    const categoryResponse = await request(app.getHttpServer())
+      .post(`/stores/${store.id}/categories`)
+      .send(createCategoryDto)
       .expect(201);
-    menu = menuResponse.body as MenuResponseDto;
+    category = categoryResponse.body as CategoryResponseDto;
   });
 
   afterAll(async () => {
@@ -81,7 +81,7 @@ describe('ItemController (e2e)', () => {
   // Test suite for creating an item
   describe('POST /stores/:storeId/items', () => {
     it('should create a new item successfully', async () => {
-      const itemToCreate = { ...createItemDto, menuId: menu.id };
+      const itemToCreate = { ...createItemDto, categoryId: category.id };
 
       const response = await request(app.getHttpServer())
         .post(`/stores/${store.id}/items`)
@@ -113,13 +113,13 @@ describe('ItemController (e2e)', () => {
       // Create first item
       await request(app.getHttpServer())
         .post(`/stores/${store.id}/items`)
-        .send({ ...createItemDto, menuId: menu.id })
+        .send({ ...createItemDto, categoryId: category.id })
         .expect(201);
 
       // Attempt to create another with the same name
       await request(app.getHttpServer())
         .post(`/stores/${store.id}/items`)
-        .send({ ...createItemDto, menuId: menu.id, name: 'Test Item' })
+        .send({ ...createItemDto, categoryId: category.id, name: 'Test Item' })
         .expect(409);
     });
   });
@@ -130,11 +130,11 @@ describe('ItemController (e2e)', () => {
       // Create some items
       const res1 = await request(app.getHttpServer())
         .post(`/stores/${store.id}/items`)
-        .send({ ...createItemDto, name: 'Burger', menuId: menu.id });
+        .send({ ...createItemDto, name: 'Burger', categoryId: category.id });
 
       const res2 = await request(app.getHttpServer())
         .post(`/stores/${store.id}/items`)
-        .send({ ...createItemDto, name: 'Fries', menuId: menu.id });
+        .send({ ...createItemDto, name: 'Fries', categoryId: category.id });
       const item1 = res1.body as ItemResponseDto;
       const item2 = res2.body as ItemResponseDto;
 
@@ -157,27 +157,12 @@ describe('ItemController (e2e)', () => {
       expect(body.map((item: ItemResponseDto) => item.name)).toContain('Fries');
     });
 
-    it('should filter items by menuId', async () => {
+    it('should filter items by categoryId', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/stores/${store.id}/items?menuId=${menu.id}`)
+        .get(`/stores/${store.id}/items?categoryId=${category.id}`)
         .expect(200);
 
       expect(response.body).toHaveLength(2);
-    });
-
-    it('should return an empty array if menuId has no items', async () => {
-      // Create another menu
-      const otherMenuResponse = await request(app.getHttpServer())
-        .post(`/stores/${store.id}/menus`)
-        .send({ name: 'Empty Menu' })
-        .expect(201);
-      const otherMenu = otherMenuResponse.body as MenuResponseDto;
-
-      const response = await request(app.getHttpServer())
-        .get(`/stores/${store.id}/items?menuId=${otherMenu.id}`)
-        .expect(200);
-
-      expect(response.body).toHaveLength(0);
     });
   });
 
@@ -188,7 +173,7 @@ describe('ItemController (e2e)', () => {
     beforeEach(async () => {
       const res = await request(app.getHttpServer())
         .post(`/stores/${store.id}/items`)
-        .send({ ...createItemDto, menuId: menu.id });
+        .send({ ...createItemDto, categoryId: category.id });
       item = res.body as ItemResponseDto;
     });
 
@@ -217,7 +202,7 @@ describe('ItemController (e2e)', () => {
     beforeEach(async () => {
       const res = await request(app.getHttpServer())
         .post(`/stores/${store.id}/items`)
-        .send({ ...createItemDto, menuId: menu.id });
+        .send({ ...createItemDto, categoryId: category.id });
       item = res.body as ItemResponseDto;
     });
 
@@ -252,7 +237,7 @@ describe('ItemController (e2e)', () => {
     beforeEach(async () => {
       const res = await request(app.getHttpServer())
         .post(`/stores/${store.id}/items`)
-        .send({ ...createItemDto, menuId: menu.id });
+        .send({ ...createItemDto, categoryId: category.id });
       item = res.body as ItemResponseDto;
     });
 

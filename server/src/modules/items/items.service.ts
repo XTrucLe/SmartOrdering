@@ -10,7 +10,7 @@ import { CreateItemDto } from './dtos/create-item.dto';
 import { UpdateItemDto } from './dtos/update-item.dto';
 import { ItemStatus } from './constants/item.constant';
 import { StoresService } from '../stores/stores.service';
-import { MenuService } from '../menus/menu.service';
+import { CategoryService } from '../categories/category.service';
 
 @Injectable()
 export class ItemsService {
@@ -18,20 +18,20 @@ export class ItemsService {
     @InjectRepository(Item)
     private readonly itemRepository: Repository<Item>,
     private readonly storeService: StoresService,
-    private readonly menuService: MenuService,
+    private readonly categoryService: CategoryService,
   ) {}
 
   async createItem(storeId: string, dto: CreateItemDto): Promise<Item> {
     await this.existsStore(storeId);
-    if (dto.menuId) {
-      await this.existsMenu(dto.menuId);
+    if (dto.categoryId) {
+      await this.existsCategory(dto.categoryId);
     }
 
     await this.existsItem(storeId, dto.name);
 
     const item = this.itemRepository.create({
       ...dto,
-      menu: { id: dto.menuId },
+      category: { id: dto.categoryId },
       store: { id: storeId },
     });
 
@@ -40,7 +40,7 @@ export class ItemsService {
 
   async queryItems(
     storeId: string,
-    options?: { query?: string; menuId?: string },
+    options?: { query?: string; categoryId?: string },
   ): Promise<Item[]> {
     const qb = this.itemRepository
       .createQueryBuilder('item')
@@ -53,8 +53,10 @@ export class ItemsService {
       });
     }
 
-    if (options?.menuId) {
-      qb.andWhere('item.menuId = :menuId', { menuId: options.menuId });
+    if (options?.categoryId) {
+      qb.andWhere('item.categoryId = :categoryId', {
+        categoryId: options.categoryId,
+      });
     }
 
     return qb.getMany();
@@ -111,10 +113,11 @@ export class ItemsService {
     }
   }
 
-  private async existsMenu(menuId: string): Promise<void> {
-    const exitstMenu = await this.menuService.getMenuById(menuId);
-    if (!exitstMenu) {
-      throw new NotFoundException(`Menu with ID ${menuId} not found.`);
+  private async existsCategory(categoryId: string): Promise<void> {
+    const exitstCategory =
+      await this.categoryService.getCategoryById(categoryId);
+    if (!exitstCategory) {
+      throw new NotFoundException(`Category with ID ${categoryId} not found.`);
     }
   }
 

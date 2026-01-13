@@ -12,7 +12,7 @@ export class CreateMenuDto {
 
   @IsOptional()
   @IsString({ each: true })
-  tags: string[];
+  tags?: string[];
 
   @IsOptional()
   @IsString()

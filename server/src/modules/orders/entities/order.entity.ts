@@ -26,7 +26,7 @@ export class Order {
   @JoinColumn({ name: 'store_id' })
   store: Store;
 
-  @Column({ name: 'store_id', nullable: true, insert: false, update: false })
+  @Column({ name: 'store_id' })
   storeId: string;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {

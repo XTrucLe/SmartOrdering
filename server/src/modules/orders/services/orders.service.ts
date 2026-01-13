@@ -89,9 +89,10 @@ export class OrdersService {
           : 0;
 
       const order = queryRunner.manager.create(Order, {
+        ...dto,
         store,
+        storeId: storeId,
         status: OrderStatus.PENDING,
-        deliveryMethod: dto.deliveryMethod,
         subTotal,
         deliveryFee,
         totalPrice: subTotal + deliveryFee,

@@ -8,6 +8,7 @@ import { ItemsModule } from './modules/items/items.module';
 import { CommonModule } from './common/common.module';
 import { OrdersModule } from './modules/orders/order.module';
 import { CategoriesModule } from './modules/categories/category.module';
+import { MenusModule } from './modules/menus/menus.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CategoriesModule } from './modules/categories/category.module';
     CategoriesModule,
     ItemsModule,
     OrdersModule,
+    MenusModule,
   ],
   controllers: [AppController],
   providers: [AppService],

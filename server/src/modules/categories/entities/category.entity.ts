@@ -11,7 +11,7 @@ import { Store } from '../../stores/entities/store.entity';
 import { CategoryStatus } from '../constants/category.constant';
 import { Item } from '../../items/entities/item.entity';
 
-@Entity('categorys')
+@Entity('categories')
 export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;

@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { MenuSectionService } from '../services/menu-section.service';
 import { CreateMenuSectionDto } from '../dtos/menu-sections/create-menu-section.dto';
@@ -15,18 +17,19 @@ import {
   toMenuSectionResponseDtos,
 } from '../mappers/menu-section.mapper';
 import { MenuSectionResponseDto } from '../dtos/menu-sections/menu-section.response.dto';
+import { UpdateMenuSectionOrderDto } from '../dtos/menu-sections/update-menu-section-order.dto';
 
-@Controller('stores/:storeId/menus/:menuId/sections')
+@Controller('stores/:storeId')
 export class MenuSectionController {
   constructor(private readonly menuSectionService: MenuSectionService) {}
 
-  @Post()
+  @Post('menus/:menuId/sections')
   async create(
     @Param('storeId') storeId: string,
     @Param('menuId') menuId: string,
     @Body() createMenuSectionDto: CreateMenuSectionDto,
   ): Promise<MenuSectionResponseDto> {
-    const menuSection = await this.menuSectionService.createMenuSection(
+    const menuSection = await this.menuSectionService.create(
       storeId,
       menuId,
       createMenuSectionDto,
@@ -34,54 +37,64 @@ export class MenuSectionController {
     return toMenuSectionResponseDto(menuSection);
   }
 
-  @Get()
+  @Get('menus/:menuId/sections')
   async findAll(
     @Param('storeId') storeId: string,
     @Param('menuId') menuId: string,
   ): Promise<MenuSectionResponseDto[]> {
-    const menuSections = await this.menuSectionService.getMenuSectionsByMenuId(
+    const menuSections = await this.menuSectionService.findAllByMenu(
       storeId,
       menuId,
     );
     return toMenuSectionResponseDtos(menuSections);
   }
 
-  @Get(':sectionId')
-  async findOne(
+  @Patch('menus/:menuId/sections/order')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateOrder(
     @Param('storeId') storeId: string,
     @Param('menuId') menuId: string,
-    @Param('sectionId') sectionId: string,
-  ): Promise<MenuSectionResponseDto> {
-    const menuSection = await this.menuSectionService.getMenuSectionById(
+    @Body() updateOrderDto: UpdateMenuSectionOrderDto,
+  ): Promise<void> {
+    await this.menuSectionService.updateOrder(
       storeId,
       menuId,
+      updateOrderDto.sectionIds,
+    );
+  }
+
+  @Get('menu-sections/:sectionId')
+  async findOne(
+    @Param('storeId') storeId: string,
+    @Param('sectionId') sectionId: string,
+  ): Promise<MenuSectionResponseDto> {
+    const menuSection = await this.menuSectionService.findOne(
+      storeId,
       sectionId,
     );
     return toMenuSectionResponseDto(menuSection);
   }
 
-  @Patch(':sectionId')
+  @Patch('menu-sections/:sectionId')
   async update(
     @Param('storeId') storeId: string,
-    @Param('menuId') menuId: string,
     @Param('sectionId') sectionId: string,
     @Body() updateMenuSectionDto: UpdateMenuSectionDto,
   ): Promise<MenuSectionResponseDto> {
-    const menuSection = await this.menuSectionService.updateMenuSection(
+    const menuSection = await this.menuSectionService.update(
       storeId,
-      menuId,
       sectionId,
       updateMenuSectionDto,
     );
     return toMenuSectionResponseDto(menuSection);
   }
 
-  @Delete(':sectionId')
+  @Delete('menu-sections/:sectionId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async remove(
     @Param('storeId') storeId: string,
-    @Param('menuId') menuId: string,
     @Param('sectionId') sectionId: string,
   ): Promise<void> {
-    await this.menuSectionService.deleteMenuSection(storeId, menuId, sectionId);
+    await this.menuSectionService.remove(storeId, sectionId);
   }
 }

@@ -2,10 +2,12 @@ import {
   Controller,
   Get,
   Post,
-  Patch,
-  Delete,
-  Param,
   Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { MenuItemService } from '../services/menu-item.service';
 import { CreateMenuItemDto } from '../dtos/menu-items/create-menu-item.dto';
@@ -15,91 +17,81 @@ import {
   toMenuItemResponseDto,
   toMenuItemResponseDtos,
 } from '../mappers/menu-item.mapper';
+import { UpdateMenuItemOrderDto } from '../dtos/menu-items/update-menu-item-order.dto';
 
-@Controller('stores/:storeId/menus/:menuId/sections/:menuSectionId/items')
+@Controller('stores/:storeId')
 export class MenuItemController {
   constructor(private readonly menuItemService: MenuItemService) {}
 
-  @Post()
-  async createMenuItem(
+  @Post('menu-sections/:sectionId/items')
+  async create(
     @Param('storeId') storeId: string,
-    @Param('menuId') menuId: string,
-    @Param('menuSectionId') menuSectionId: string,
+    @Param('sectionId') sectionId: string,
     @Body() createMenuItemDto: CreateMenuItemDto,
   ): Promise<MenuItemResponseDto> {
-    const menuItem = await this.menuItemService.createMenuItem(
+    const menuItem = await this.menuItemService.create(
       storeId,
-      menuId,
-      menuSectionId,
+      sectionId,
       createMenuItemDto,
     );
-
     return toMenuItemResponseDto(menuItem);
   }
 
-  @Get()
-  async getMenuItemsByMenuSectionId(
+  @Get('menu-sections/:sectionId/items')
+  async findAll(
     @Param('storeId') storeId: string,
-    @Param('menuId') menuId: string,
-    @Param('menuSectionId') menuSectionId: string,
+    @Param('sectionId') sectionId: string,
   ): Promise<MenuItemResponseDto[]> {
-    const menuItems = await this.menuItemService.getMenuItemsByMenuSectionId(
+    const menuItems = await this.menuItemService.findAllBySection(
       storeId,
-      menuId,
-      menuSectionId,
+      sectionId,
     );
-
     return toMenuItemResponseDtos(menuItems);
   }
 
-  @Get(':menuItemId')
-  async getMenuItemById(
+  @Patch('menu-sections/:sectionId/items/order')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateOrder(
     @Param('storeId') storeId: string,
-    @Param('menuId') menuId: string,
-    @Param('menuSectionId') menuSectionId: string,
-    @Param('menuItemId') menuItemId: string,
-  ): Promise<MenuItemResponseDto> {
-    const menuItem = await this.menuItemService.getMenuItemById(
+    @Param('sectionId') sectionId: string,
+    @Body() updateOrderDto: UpdateMenuItemOrderDto,
+  ): Promise<void> {
+    await this.menuItemService.updateOrder(
       storeId,
-      menuId,
-      menuSectionId,
-      menuItemId,
+      sectionId,
+      updateOrderDto.itemIds,
     );
+  }
 
+  @Get('menu-items/:itemId')
+  async findOne(
+    @Param('storeId') storeId: string,
+    @Param('itemId') itemId: string,
+  ): Promise<MenuItemResponseDto> {
+    const menuItem = await this.menuItemService.findOne(storeId, itemId);
     return toMenuItemResponseDto(menuItem);
   }
 
-  @Patch(':menuItemId')
-  async updateMenuItem(
+  @Patch('menu-items/:itemId')
+  async update(
     @Param('storeId') storeId: string,
-    @Param('menuId') menuId: string,
-    @Param('menuSectionId') menuSectionId: string,
-    @Param('menuItemId') menuItemId: string,
+    @Param('itemId') itemId: string,
     @Body() updateMenuItemDto: UpdateMenuItemDto,
   ): Promise<MenuItemResponseDto> {
-    const menuItem = await this.menuItemService.updateMenuItem(
+    const menuItem = await this.menuItemService.update(
       storeId,
-      menuId,
-      menuSectionId,
-      menuItemId,
+      itemId,
       updateMenuItemDto,
     );
-
     return toMenuItemResponseDto(menuItem);
   }
 
-  @Delete(':menuItemId')
-  async deleteMenuItem(
+  @Delete('menu-items/:itemId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(
     @Param('storeId') storeId: string,
-    @Param('menuId') menuId: string,
-    @Param('menuSectionId') menuSectionId: string,
-    @Param('menuItemId') menuItemId: string,
+    @Param('itemId') itemId: string,
   ): Promise<void> {
-    await this.menuItemService.deleteMenuItem(
-      storeId,
-      menuId,
-      menuSectionId,
-      menuItemId,
-    );
+    await this.menuItemService.remove(storeId, itemId);
   }
 }

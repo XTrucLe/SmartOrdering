@@ -7,6 +7,7 @@ export class MenuResponseDto {
   @Expose() name: string;
   @Expose() description?: string;
   @Expose() type: string;
+  @Expose() imageUrl?: string;
 
   @Expose()
   @Type(() => MenuSectionResponseDto)

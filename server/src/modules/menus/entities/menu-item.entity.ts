@@ -1,8 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  Unique,
+} from 'typeorm';
 import { MenuSection } from './menu-section.entity';
 import { Item } from '../../items/entities/item.entity';
 
-@Entity('menu-items')
+@Entity('menu_items')
+@Unique(['menuSection', 'item'])
 export class MenuItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;

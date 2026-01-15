@@ -5,46 +5,41 @@ import { MenuSection } from '../entities/menu-section.entity';
 import { CreateMenuSectionDto } from '../dtos/menu-sections/create-menu-section.dto';
 import { UpdateMenuSectionDto } from '../dtos/menu-sections/update-menu-section.dto';
 import { MenuService } from './menu.service';
-import { MenuItem } from '../entities/menu-item.entity';
 
 @Injectable()
 export class MenuSectionService {
   constructor(
     @InjectRepository(MenuSection)
     private readonly menuSectionRepository: Repository<MenuSection>,
-    @InjectRepository(MenuItem)
-    private readonly menuItemRepository: Repository<MenuItem>,
     private readonly menuService: MenuService,
   ) {}
 
-  async createMenuSection(
+  async create(
     storeId: string,
     menuId: string,
     createMenuSectionDto: CreateMenuSectionDto,
   ): Promise<MenuSection> {
-    const menu = await this.menuService.getMenuById(storeId, menuId);
+    const menu = await this.menuService.findOne(storeId, menuId);
 
-    const nextDisplayOrder = await this.getNextDisplayOrder(menuId);
+    const displayOrder =
+      createMenuSectionDto.displayOrder ??
+      (await this.getNextDisplayOrder(menuId));
 
     const menuSection = this.menuSectionRepository.create({
       ...createMenuSectionDto,
-      displayOrder: createMenuSectionDto.displayOrder ?? nextDisplayOrder,
+      displayOrder,
       menu,
     });
 
     return this.menuSectionRepository.save(menuSection);
   }
 
-  async getMenuSectionsByMenuId(
-    storeId: string,
-    menuId: string,
-  ): Promise<MenuSection[]> {
-    // Validate menu existence (optional, but good for security)
-    // await this.menuService.getMenuById(storeId, menuId);
+  async findAllByMenu(storeId: string, menuId: string): Promise<MenuSection[]> {
+    await this.menuService.findOne(storeId, menuId);
 
     return this.menuSectionRepository.find({
       where: {
-        menu: { id: menuId, store: { id: storeId } },
+        menu: { id: menuId },
       },
       order: {
         displayOrder: 'ASC',
@@ -52,91 +47,73 @@ export class MenuSectionService {
     });
   }
 
-  async getMenuSectionById(
-    storeId: string,
-    menuId: string,
-    menuSectionId: string,
-  ): Promise<MenuSection> {
+  async findOne(storeId: string, sectionId: string): Promise<MenuSection> {
     const menuSection = await this.menuSectionRepository.findOne({
       where: {
-        id: menuSectionId,
-        menu: { id: menuId, store: { id: storeId } },
+        id: sectionId,
+        menu: { store: { id: storeId } },
       },
     });
 
     if (!menuSection) {
-      throw new NotFoundException('Menu section not found');
+      throw new NotFoundException(
+        `Menu Section with ID "${sectionId}" not found`,
+      );
     }
 
     return menuSection;
   }
 
-  async updateMenuSection(
+  async update(
     storeId: string,
-    menuId: string,
-    menuSectionId: string,
+    sectionId: string,
     updateMenuSectionDto: UpdateMenuSectionDto,
   ): Promise<MenuSection> {
-    const menuSection = await this.getMenuSectionById(
-      storeId,
-      menuId,
-      menuSectionId,
+    const menuSection = await this.findOne(storeId, sectionId);
+
+    const updatedSection = this.menuSectionRepository.merge(
+      menuSection,
+      updateMenuSectionDto,
     );
 
-    this.menuSectionRepository.merge(menuSection, updateMenuSectionDto);
-
-    return this.menuSectionRepository.save(menuSection);
+    return this.menuSectionRepository.save(updatedSection);
   }
 
-  async deleteMenuSection(
-    storeId: string,
-    menuId: string,
-    menuSectionId: string,
-  ): Promise<void> {
-    const menuSection = await this.getMenuSectionById(
-      storeId,
-      menuId,
-      menuSectionId,
-    );
-
-    await this.menuItemRepository.delete({
-      menuSection: { id: menuSection.id },
-    });
-
+  async remove(storeId: string, sectionId: string): Promise<void> {
+    const menuSection = await this.findOne(storeId, sectionId);
     await this.menuSectionRepository.remove(menuSection);
   }
 
-  async reOrderMenuSections(
+  async updateOrder(
     storeId: string,
     menuId: string,
     orderedSectionIds: string[],
   ): Promise<void> {
+    await this.menuService.findOne(storeId, menuId);
+
     const menuSections = await this.menuSectionRepository.find({
       where: {
         id: In(orderedSectionIds),
-        menu: { id: menuId, store: { id: storeId } },
+        menu: { id: menuId },
       },
     });
 
-    const menuSectionMap = new Map(
-      menuSections.map((section) => [section.id, section]),
-    );
+    if (menuSections.length !== orderedSectionIds.length) {
+      throw new NotFoundException('One or more section IDs are invalid.');
+    }
 
-    orderedSectionIds.forEach((sectionId, index) => {
-      const section = menuSectionMap.get(sectionId);
-      if (section) {
-        section.displayOrder = index;
-      }
+    const updatedSections = menuSections.map((section) => {
+      const newOrder = orderedSectionIds.indexOf(section.id);
+      return { ...section, displayOrder: newOrder };
     });
 
-    await this.menuSectionRepository.save(menuSections);
+    await this.menuSectionRepository.save(updatedSections);
   }
 
   private async getNextDisplayOrder(menuId: string): Promise<number> {
     const lastSection = await this.menuSectionRepository.findOne({
       where: { menu: { id: menuId } },
       order: { displayOrder: 'DESC' },
-      select: ['displayOrder'],
     });
 
     return lastSection ? lastSection.displayOrder + 1 : 0;

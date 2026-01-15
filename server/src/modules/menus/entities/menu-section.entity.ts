@@ -9,7 +9,7 @@ import {
 import { Menu } from './menu.entity';
 import { MenuItem } from './menu-item.entity';
 
-@Entity('menu-sections')
+@Entity('menu_sections')
 export class MenuSection {
   @PrimaryGeneratedColumn('uuid')
   id: string;

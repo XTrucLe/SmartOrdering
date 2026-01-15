@@ -24,6 +24,9 @@ export class Menu {
   @Column({ length: 255 })
   name: string;
 
+  @Column({ length: 500, nullable: true })
+  imageUrl: string;
+
   @Column({ type: 'text', nullable: true })
   description?: string;
 

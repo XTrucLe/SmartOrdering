@@ -11,10 +11,6 @@ export class CreateMenuItemDto {
   @Type(() => Number)
   price: number;
 
-  @IsNotEmpty()
-  @IsString()
-  menuSectionId: string;
-
   @IsOptional()
   @IsNumber()
   @Type(() => Number)

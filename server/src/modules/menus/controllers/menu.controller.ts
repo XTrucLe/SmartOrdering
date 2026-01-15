@@ -7,6 +7,8 @@ import {
   Param,
   Body,
   Query,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { MenuService } from '../services/menu.service';
 import { CreateMenuDto } from '../dtos/menus/create-menu.dto';
@@ -19,73 +21,66 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Post()
-  async createMenu(
+  async create(
     @Param('storeId') storeId: string,
     @Body() createMenuDto: CreateMenuDto,
   ): Promise<MenuResponseDto> {
-    const menu = await this.menuService.createMenu(storeId, createMenuDto);
+    const menu = await this.menuService.create(storeId, createMenuDto);
     return toMenuResponseDto(menu);
   }
 
   @Get()
-  async getMenusByStore(
+  async findAll(
     @Param('storeId') storeId: string,
-    @Query('includeSections') includeSections?: string,
+    @Query('withRelations') withRelations?: string,
   ): Promise<MenuResponseDto[]> {
-    const menus = await this.menuService.getMenusByStore(
+    const menus = await this.menuService.findAll(
       storeId,
-      includeSections === 'true',
+      withRelations === 'true',
     );
     return toMenuResponseDtos(menus);
   }
 
   @Get(':menuId')
-  async getMenuById(
+  async findOne(
     @Param('storeId') storeId: string,
     @Param('menuId') menuId: string,
-    @Query('includeSections') includeSections?: string,
+    @Query('withRelations') withRelations?: string,
   ): Promise<MenuResponseDto> {
-    const menu = await this.menuService.getMenuById(
+    const menu = await this.menuService.findOne(
       storeId,
       menuId,
-      includeSections === 'true',
+      withRelations === 'true',
     );
     return toMenuResponseDto(menu);
   }
 
   @Patch(':menuId')
-  async updateMenu(
+  async update(
     @Param('storeId') storeId: string,
     @Param('menuId') menuId: string,
     @Body() updateMenuDto: UpdateMenuDto,
   ): Promise<MenuResponseDto> {
-    const menu = await this.menuService.updateMenu(
-      storeId,
-      menuId,
-      updateMenuDto,
-    );
+    const menu = await this.menuService.update(storeId, menuId, updateMenuDto);
     return toMenuResponseDto(menu);
   }
 
   @Patch(':menuId/status')
-  async updateMenuStatus(
+  async updateStatus(
     @Param('storeId') storeId: string,
     @Param('menuId') menuId: string,
     @Body('isActive') isActive: boolean,
   ): Promise<MenuResponseDto> {
-    const menu = await this.menuService.updateMenuStatus(
-      storeId,
-      menuId,
-      isActive,
-    );
+    const menu = await this.menuService.updateStatus(storeId, menuId, isActive);
     return toMenuResponseDto(menu);
   }
 
   @Delete(':menuId')
-  async deleteMenu(
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(
     @Param('storeId') storeId: string,
     @Param('menuId') menuId: string,
   ): Promise<void> {
-    return this.menuService.deleteMenu(storeId, menuId);
+    await this.menuService.remove(storeId, menuId);
   }
 }

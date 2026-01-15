@@ -10,7 +10,7 @@ import { CreateOrderItemDto } from '../dtos/order-items/create-order-item.dto';
 import { UpdateOrderItemDto } from '../dtos/order-items/update-order-item.dto';
 import { OrderStatus } from '../constants/order.constant';
 import { OrdersService } from './orders.service';
-import { ItemsService } from '../../items/items.service';
+import { MenuItemService } from 'src/modules/menus/services/menu-item.service';
 
 @Injectable()
 export class OrderItemsService {
@@ -18,7 +18,7 @@ export class OrderItemsService {
     @InjectRepository(OrderItem)
     private readonly orderItemRepository: Repository<OrderItem>,
     private readonly ordersService: OrdersService,
-    private readonly itemsService: ItemsService,
+    private readonly menuItemService: MenuItemService,
   ) {}
 
   async addItemToOrder(
@@ -31,15 +31,21 @@ export class OrderItemsService {
       throw new BadRequestException('Order cannot be modified');
     }
 
-    const item = await this.itemsService.getItemById(dto.itemId);
+    const menuItem = await this.menuItemService.findOne(
+      order.store.id,
+      dto.itemId,
+    );
 
-    if (item.store.id !== order.store.id) {
+    if (menuItem.item.store.id !== order.store.id) {
       throw new BadRequestException('Item does not belong to this store');
     }
 
-    const existedItem = order.orderItems.find(
-      (oi) => oi.item.id === dto.itemId,
-    );
+    const existedItem = await this.orderItemRepository.findOne({
+      where: {
+        order: { id: orderId },
+        item: { id: dto.itemId },
+      },
+    });
 
     let savedItem: OrderItem;
 
@@ -49,9 +55,9 @@ export class OrderItemsService {
     } else {
       const newItem = this.orderItemRepository.create({
         order,
-        item,
-        itemName: item.name,
-        price: item.price,
+        item: menuItem,
+        itemName: menuItem.item.name,
+        price: menuItem.price,
         quantity: dto.quantity,
       });
       savedItem = await this.orderItemRepository.save(newItem);
@@ -76,14 +82,9 @@ export class OrderItemsService {
       throw new BadRequestException('Order cannot be modified');
     }
 
-    if (dto.quantity !== undefined) {
-      if (dto.quantity <= 0) {
-        throw new BadRequestException('Quantity must be greater than 0');
-      }
-      item.quantity = dto.quantity;
-    }
+    const newItem = this.orderItemRepository.merge(item, dto);
 
-    const savedItem = await this.orderItemRepository.save(item);
+    const savedItem = await this.orderItemRepository.save(newItem);
 
     await this.ordersService.recalculateTotal(item.order.id);
 

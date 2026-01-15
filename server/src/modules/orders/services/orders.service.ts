@@ -16,8 +16,8 @@ import {
   OrderStatus,
 } from '../constants/order.constant';
 import { StoresService } from '../../stores/stores.service';
-import { ItemsService } from '../../items/items.service';
 import { VALID_TRANSITIONS } from '../constants/order-transition.constant';
+import { MenuItemService } from 'src/modules/menus/services/menu-item.service';
 
 @Injectable()
 export class OrdersService {
@@ -26,7 +26,7 @@ export class OrdersService {
     private readonly orderRepository: Repository<Order>,
     private readonly dataSource: DataSource,
     private readonly storesService: StoresService,
-    private readonly itemsService: ItemsService,
+    private readonly itemsService: MenuItemService,
   ) {}
 
   async create(storeId: string, dto: CreateOrderDto): Promise<Order> {
@@ -49,7 +49,9 @@ export class OrdersService {
       }
 
       const itemIds = [...itemQuantityMap.keys()];
-      const dbItems = await this.itemsService.getItemsByIds(itemIds);
+      const dbItems = await Promise.all(
+        itemIds.map((id) => this.itemsService.findOne(storeId, id)),
+      );
 
       if (dbItems.length !== itemIds.length) {
         const foundIds = new Set(dbItems.map((i) => i.id));
@@ -63,7 +65,7 @@ export class OrdersService {
       const orderItems: OrderItem[] = [];
 
       for (const item of dbItems) {
-        if (item.store.id !== storeId) {
+        if (item.item.store.id !== storeId) {
           throw new BadRequestException(
             `Item ${item.id} does not belong to store ${storeId}`,
           );
@@ -74,7 +76,7 @@ export class OrdersService {
         orderItems.push(
           queryRunner.manager.create(OrderItem, {
             item,
-            itemName: item.name,
+            itemName: item.item.name,
             price: item.price,
             quantity,
           }),

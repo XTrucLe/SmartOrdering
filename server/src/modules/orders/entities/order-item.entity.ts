@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { Item } from '../../items/entities/item.entity';
 import { Order } from './order.entity';
+import { MenuItem } from '../../menus/entities/menu-item.entity';
 
 @Entity('order_items')
 export class OrderItem {
@@ -19,8 +19,8 @@ export class OrderItem {
   @JoinColumn({ name: 'order_id' })
   order: Order;
 
-  @ManyToOne(() => Item, (item) => item.id)
-  item: Item;
+  @ManyToOne(() => MenuItem, (item) => item.id)
+  item: MenuItem;
 
   @Column()
   itemName: string;

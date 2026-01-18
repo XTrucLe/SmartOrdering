@@ -22,10 +22,24 @@ export const useProductStore = create<ProductStore>()(
             0,
           );
         },
-        selectProduct: (product: SelectedProduct) =>
-          set((state) => ({
-            selectedProducts: [...state.selectedProducts, product],
-          })),
+        selectProduct: (product: SelectedProduct) => {
+          set((state) =>
+            state.selectedProducts.find((p) => p.id === product.id)
+              ? {
+                  selectedProducts: state.selectedProducts.map((p) =>
+                    p.id === product.id
+                      ? { ...p, quantity: p.quantity + 1 }
+                      : p,
+                  ),
+                }
+              : {
+                  selectedProducts: [
+                    ...state.selectedProducts,
+                    { ...product, quantity: 1 },
+                  ],
+                },
+          );
+        },
         changeQuantity: (productId: string, delta: number) =>
           set((state) => {
             const updatedProducts = state.selectedProducts.map((product) => {

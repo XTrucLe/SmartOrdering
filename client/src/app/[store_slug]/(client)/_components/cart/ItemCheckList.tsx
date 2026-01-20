@@ -2,13 +2,21 @@ import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Trash2, Minus, Plus, ShoppingBag } from "lucide-react";
 import Image from "next/image";
-import { Dialog, DialogTrigger } from "../../../../../components/ui/dialog";
-import { ConfirmOrder } from "./ConfirmOrder";
 import { useCartStore } from "../../_stores/cart.store";
+import { useParams, useRouter } from "next/navigation";
+import { ClientRoute } from "@/routes/client";
 
 function ItemCheckList() {
   const { items, changeQuantity, removeItem, getTotalPrice } = useCartStore();
   const total = getTotalPrice();
+  const router = useRouter();
+
+  const { store_slug } = useParams() as { store_slug: string | undefined };
+
+  const handleConfirm = () => {
+    const route = ClientRoute.checkout(store_slug || "");
+    router.push(route);
+  };
 
   return (
     <SheetContent className="flex h-full w-full flex-col gap-0 p-0 sm:max-w-md">
@@ -121,18 +129,14 @@ function ItemCheckList() {
             </span>
           </div>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className="w-full text-base font-bold"
-                disabled={items.length === 0}
-              >
-                Thanh toán ngay
-              </Button>
-            </DialogTrigger>
-            <ConfirmOrder />
-          </Dialog>
+          <Button
+            size="lg"
+            className="w-full text-base font-bold"
+            disabled={items.length === 0}
+            onClick={handleConfirm}
+          >
+            Xác nhận đặt hàng
+          </Button>
         </div>
       </div>
     </SheetContent>

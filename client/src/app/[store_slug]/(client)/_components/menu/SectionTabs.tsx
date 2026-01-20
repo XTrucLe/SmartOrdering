@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Section } from "@/types";
+import { Section } from "../../_types";
 import { cn } from "@/lib/utils";
 
 interface SectionTabsProps {
@@ -56,7 +56,7 @@ export function SectionTabs({
   }, [activeId]);
 
   return (
-    <div className="sticky top-0 z-30 bg-white/95 transition-all duration-300">
+    <div className="sticky top-0 z-30 bg-background transition-all duration-300">
       <div
         ref={tabsRef}
         className="flex overflow-x-auto no-scrollbar py-3 px-4 gap-3 snap-x"

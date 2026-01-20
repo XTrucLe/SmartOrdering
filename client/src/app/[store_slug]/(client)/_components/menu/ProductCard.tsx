@@ -3,18 +3,22 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Plus, ImageOff, Loader2 } from "lucide-react";
-import { Product } from "@/types";
+import { Item } from "../../_types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-interface ProductCardProps {
-  product: Product;
-  onClick?: (product: Product) => void;
+interface ItemCardProps {
+  item: Item;
+  onClick?: (item: Item) => void;
 }
 
-export default function ProductCard({ product, onClick }: ProductCardProps) {
+export default function ItemCard({ item, onClick }: ItemCardProps) {
   const [isImageLoading, setIsImageLoading] = useState(true);
 
   const formatPrice = (price: number) => {
@@ -27,7 +31,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <Card className="group overflow-hidden bg-card shadow-sm transition-all duration-300 hover:shadow-md flex flex-col h-full active:scale-[0.98]">
       <div className="relative aspect-square w-full overflow-hidden bg-muted">
-        {product.imageUrl ? (
+        {item.imageUrl ? (
           <>
             {isImageLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-100 z-10">
@@ -36,8 +40,8 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
             )}
 
             <Image
-              src={product.imageUrl}
-              alt={product.name}
+              src={item.imageUrl}
+              alt={item.name}
               fill
               className={cn(
                 "object-cover transition-all duration-500 will-change-transform",
@@ -60,12 +64,12 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
 
       <CardContent className="px-3 flex-1 flex flex-col gap-1.5">
         <h3 className="font-bold text-md md:text-lg leading-tight text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-          {product.name}
+          {item.name}
         </h3>
 
-        {product.description && (
+        {item.description && (
           <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-            {product.description}
+            {item.description}
           </p>
         )}
       </CardContent>
@@ -75,8 +79,12 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
           <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
             Giá bán
           </span>
-          <span className="font-bold text-lg md:text-xl text-primary leading-none">
-            {formatPrice(product.price)}
+
+          <span className="inline-flex items-baseline gap-1 font-bold text-md md:text-lg text-primary leading-none">
+            {formatPrice(item.price)}
+            <span className="text-[11px] font-normal text-muted-foreground">
+              /{item.unit}
+            </span>
           </span>
         </div>
 
@@ -84,11 +92,11 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              className="h-9 w-9 rounded-full bg-primary shadow-sm hover:shadow-md hover:bg-primary/90 transition-all duration-300 active:scale-90"
+              className="h-8 w-8 rounded-full bg-primary shadow-sm hover:shadow-md hover:bg-primary/90 transition-all duration-300 active:scale-90"
               onClick={(e) => {
                 e.preventDefault();
                 if (onClick) {
-                  onClick(product);
+                  onClick(item);
                 }
               }}
             >

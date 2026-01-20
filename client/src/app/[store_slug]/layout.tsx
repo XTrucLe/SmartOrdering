@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import "@/app/globals.css";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Smart Ordering",
+  title: "Smart Ordering System ",
 };
 
 export default function RootLayout({

@@ -22,7 +22,7 @@ export function SectionTabs({
 
     const element = document.getElementById(id);
     if (element) {
-      const headerOffset = 180;
+      const headerOffset = 128;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition =
         elementPosition + window.pageYOffset - headerOffset;
@@ -72,9 +72,10 @@ export function SectionTabs({
               className={cn(
                 "whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 border snap-center",
                 isActive
-                  ? "bg-slate-900 text-white border-slate-900 shadow-lg scale-105"
-                  : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-900",
+                  ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
+                  : "bg-muted text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground",
               )}
+              aria-current={isActive ? "page" : undefined}
             >
               {section.name}
             </button>

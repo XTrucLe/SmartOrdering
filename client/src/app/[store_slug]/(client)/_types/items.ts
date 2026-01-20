@@ -1,12 +1,9 @@
-export type Product = {
+export type Item = {
   id: string;
   name: string;
   price: number;
   description?: string;
   imageUrl?: string;
   displayOrder: number;
-};
-
-export type SelectedProduct = Product & {
-  quantity: number;
+  unit: string;
 };

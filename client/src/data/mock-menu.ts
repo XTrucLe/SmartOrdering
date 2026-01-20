@@ -1,4 +1,4 @@
-import { Menu } from "@/types";
+import { Menu } from "@/app/[store_slug]/(client)/_types/menu";
 
 export const MOCK_MENU: Menu = {
   id: "menu_01",
@@ -20,16 +20,17 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80",
           displayOrder: 1,
+          unit: "phần",
         },
         {
           id: "kv_02",
           name: "Chả Giò Rế Hải Sản",
           price: 45000,
           description: "Vỏ rế giòn rụm, nhân tôm cua, ăn kèm rau sống.",
-
           imageUrl:
             "https://images.unsplash.com/photo-1564436872-f6d81182df12?auto=format&fit=crop&w=800&q=80",
           displayOrder: 2,
+          unit: "phần",
         },
         {
           id: "kv_03",
@@ -39,6 +40,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80",
           displayOrder: 3,
+          unit: "phần",
         },
         {
           id: "kv_04",
@@ -48,6 +50,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
           displayOrder: 4,
+          unit: "phần",
         },
       ],
     },
@@ -66,6 +69,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80",
           displayOrder: 1,
+          unit: "phần",
         },
         {
           id: "nuoc_02",
@@ -76,6 +80,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80",
           displayOrder: 2,
+          unit: "phần",
         },
         {
           id: "nuoc_03",
@@ -85,6 +90,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1594221708779-94832f4320d1?auto=format&fit=crop&w=800&q=80",
           displayOrder: 3,
+          unit: "phần",
         },
       ],
     },
@@ -103,6 +109,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80",
           displayOrder: 1,
+          unit: "phần",
         },
         {
           id: "com_02",
@@ -112,6 +119,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=80",
           displayOrder: 2,
+          unit: "phần",
         },
         {
           id: "com_03",
@@ -122,6 +130,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?auto=format&fit=crop&w=800&q=80",
           displayOrder: 3,
+          unit: "phần",
         },
       ],
     },
@@ -139,6 +148,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
           displayOrder: 1,
+          unit: "phần",
         },
         {
           id: "rau_02",
@@ -148,6 +158,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1604152135912-04a022e23696?auto=format&fit=crop&w=800&q=80",
           displayOrder: 2,
+          unit: "phần",
         },
       ],
     },
@@ -165,6 +176,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80",
           displayOrder: 1,
+          unit: "ly",
         },
         {
           id: "drink_02",
@@ -174,6 +186,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?auto=format&fit=crop&w=800&q=80",
           displayOrder: 2,
+          unit: "ly",
         },
         {
           id: "drink_03",
@@ -183,6 +196,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1610970881699-44a5587cabec?auto=format&fit=crop&w=800&q=80",
           displayOrder: 3,
+          unit: "ly",
         },
         {
           id: "drink_04",
@@ -192,6 +206,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80",
           displayOrder: 4,
+          unit: "ly",
         },
       ],
     },
@@ -209,6 +224,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80",
           displayOrder: 1,
+          unit: "phần",
         },
         {
           id: "tm_02",
@@ -218,6 +234,7 @@ export const MOCK_MENU: Menu = {
           imageUrl:
             "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80",
           displayOrder: 2,
+          unit: "phần",
         },
       ],
     },

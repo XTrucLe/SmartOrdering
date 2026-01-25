@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ClientRoute } from "@/routes/client";
 
-import { useCartStore } from "../_stores/cart.store";
+import { useCartStore } from "../../_stores/cart.store";
 import { CheckoutActions } from "./_components/CheckoutAction";
 import { CheckoutHeader } from "./_components/CheckoutHeader";
 import { CheckoutItemList } from "./_components/CheckoutItemList";

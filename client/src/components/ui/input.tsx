@@ -20,11 +20,10 @@ function Input({
         )}
         {...props}
       />
-      {error && (
-        <p className="text-sm text-destructive mt-1">
-          {typeof error === "string" ? error : "&nbsp;"}
-        </p>
-      )}
+
+      <p className="-mt-px ml-2 text-[13px] text-destructive">
+        {error ? error : "\u00A0"}
+      </p>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Section } from "../../_types";
+import { Section } from "../../../app/(client)/_types";
 import { cn } from "@/lib/utils";
 
 interface SectionTabsProps {

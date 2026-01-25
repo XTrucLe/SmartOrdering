@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Section } from "../_types";
+import { Section } from "@/types";
 
-export function useActiveSection(sections: Section[]) {
+export function useCurentSection(sections: Section[]) {
   const [activeId, setActiveId] = useState(sections[0]?.id);
 
   useEffect(() => {

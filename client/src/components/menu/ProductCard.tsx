@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Plus, ImageOff, Loader2 } from "lucide-react";
-import { Item } from "../../_types";
+import { Item } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";

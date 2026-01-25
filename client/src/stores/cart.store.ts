@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
-import { CartItem } from "../_types/cart-item";
+import { CartItem, Item } from "@/types";
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: CartItem) => void;
+  addItem: (product: Item) => void;
   changeQuantity: (productId: string, delta: number) => void;
   removeItem: (productId: string) => void;
   clearItems: () => void;
@@ -18,7 +18,7 @@ export const useCartStore = create<CartStore>()(
       (set, get) => ({
         items: [],
 
-        addItem: (product: CartItem) => {
+        addItem: (product: Item) => {
           const { items } = get();
           const existingItem = items.find((p) => p.id === product.id);
 

@@ -5,5 +5,5 @@ export type Section = {
   name: string;
   description?: string;
   displayOrder: number;
-  products: Item[];
+  items: Item[];
 };

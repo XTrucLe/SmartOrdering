@@ -1,9 +1,8 @@
-// _components/MenuToolbar.tsx
-import { SectionTabs } from "@/components/common/menu/SectionTabs";
-import { CartButton } from "../cart/CartButton";
-import ItemCheckList from "../cart/ItemCheckList";
+import { SectionTabs } from "@/components/menu/SectionTabs";
+import { CartButton } from "../../../../components/cart/CartButton";
+import ItemCheckList from "../../../../components/cart/ItemCheckList";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import { Section } from "../../_types";
+import { Section } from "@/types";
 
 export function MenuToolbar({
   sections,
@@ -25,12 +24,14 @@ export function MenuToolbar({
           }
         />
 
-        <Sheet>
-          <SheetTrigger asChild>
-            <CartButton quantity={cartQuantity} />
-          </SheetTrigger>
-          <ItemCheckList />
-        </Sheet>
+        <div className="ml-auto mr-4">
+          <Sheet>
+            <SheetTrigger asChild>
+              <CartButton quantity={cartQuantity} />
+            </SheetTrigger>
+            <ItemCheckList />
+          </Sheet>
+        </div>
       </div>
     </div>
   );

@@ -7,3 +7,7 @@ export type Item = {
   displayOrder: number;
   unit: string;
 };
+
+export type CartItem = Item & {
+  quantity: number;
+};

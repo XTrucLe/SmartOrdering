@@ -1,8 +1,8 @@
 "use client";
 
-import { useCartStore } from "../_stores/cart.store";
+import { useCartStore } from "@/stores/cart.store";
 import { MOCK_MENU } from "@/data/mock-menu";
-import { Section } from "../_types";
+import { Section } from "@/types";
 import { useEffect, useState } from "react";
 import { MenuHeader } from "../_components/menu/MenuHeader";
 import { MenuToolbar } from "../_components/menu/MenuToolbar";

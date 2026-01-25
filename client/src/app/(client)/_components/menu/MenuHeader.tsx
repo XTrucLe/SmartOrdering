@@ -1,6 +1,6 @@
 import { CurrentTime } from "@/components/common/current-timer";
 import { Store, UtensilsCrossed } from "lucide-react";
-import { Menu } from "../../_types";
+import { Menu } from "@/types";
 
 export function MenuHeader({ menu }: { menu: Menu }) {
   return (

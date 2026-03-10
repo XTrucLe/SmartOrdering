@@ -4,7 +4,7 @@ import { Trash2, Minus, Plus, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import { useCartStore } from "../../stores/cart.store";
 import { useParams, useRouter } from "next/navigation";
-import { ClientRoute } from "@/routes/client";
+import { ClientRoute } from "@/routes/client.routes";
 
 function ItemCheckList() {
   const { items, changeQuantity, removeItem, getTotalPrice } = useCartStore();

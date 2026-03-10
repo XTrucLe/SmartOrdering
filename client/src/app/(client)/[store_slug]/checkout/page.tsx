@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import EmptyPage from "@/components/common/Empty";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ClientRoute } from "@/routes/client";
+import { ClientRoute } from "@/routes/client.routes";
 
 import { useCartStore } from "../../../../stores/cart.store";
 import { CheckoutActions } from "../../../../components/checkout/CheckoutAction";

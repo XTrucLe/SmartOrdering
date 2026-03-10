@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { CartItem } from "../../../../../types";
+import { CartItem } from "../../types";
 
 export function CheckoutSummary({
   items,

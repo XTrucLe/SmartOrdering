@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { Section } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -8,58 +8,72 @@ interface SectionTabsProps {
   sections: Section[];
   activeId: string;
   onSelect?: (id: string) => void;
+  offset?: number;
+  isEmbedded?: boolean;
 }
 
 export function SectionTabs({
   sections,
   activeId,
   onSelect,
+  offset = 100,
+  isEmbedded = false,
 }: SectionTabsProps) {
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const scrollToSection = (id: string) => {
-    if (onSelect) onSelect(id);
+  const scrollToSection = useCallback(
+    (id: string) => {
+      onSelect?.(id);
 
-    const element = document.getElementById(id);
-    if (element) {
-      const headerOffset = 128;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition =
-        elementPosition + window.pageYOffset - headerOffset;
+      const element = document.getElementById(id);
+      if (element) {
+        const elementPosition =
+          element.getBoundingClientRect().top + window.scrollY;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (activeId && tabsRef.current) {
-      const activeButton = tabsRef.current.querySelector<HTMLButtonElement>(
-        `button[data-id="${activeId}"]`,
-      );
-
-      if (activeButton) {
-        const container = tabsRef.current;
-        const scrollLeft =
-          activeButton.offsetLeft -
-          container.offsetWidth / 2 +
-          activeButton.offsetWidth / 2;
-
-        container.scrollTo({
-          left: scrollLeft,
+        window.scrollTo({
+          top: elementPosition - offset,
           behavior: "smooth",
         });
       }
+    },
+    [onSelect, offset],
+  );
+
+  useEffect(() => {
+    const container = tabsRef.current;
+    if (!activeId || !container) return;
+
+    const activeButton = container.querySelector<HTMLButtonElement>(
+      `button[data-id="${activeId}"]`,
+    );
+
+    if (activeButton) {
+      const scrollLeft = Math.max(
+        0,
+        activeButton.offsetLeft -
+          container.offsetWidth / 2 +
+          activeButton.offsetWidth / 2,
+      );
+
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: "smooth",
+      });
     }
   }, [activeId]);
 
   return (
-    <div className="sticky top-0 z-30 bg-background transition-all duration-300">
+    <nav
+      className={cn(
+        "sticky top-0 z-30 w-full  transition-all",
+        isEmbedded && "sticky top-0 z-30",
+      )}
+      aria-label="Section Navigation"
+    >
       <div
         ref={tabsRef}
-        className="flex overflow-x-auto no-scrollbar py-3 px-4 gap-3 snap-x"
+        role="tablist"
+        className="flex items-center overflow-x-auto no-scrollbar py-2 px-4 gap-2 snap-x scroll-smooth"
       >
         {sections.map((section) => {
           const isActive = activeId === section.id;
@@ -67,21 +81,23 @@ export function SectionTabs({
           return (
             <button
               key={section.id}
+              role="tab"
               data-id={section.id}
+              aria-selected={isActive}
               onClick={() => scrollToSection(section.id)}
               className={cn(
-                "whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 border snap-center",
+                "relative whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all snap-center outline-none",
+                "border focus-visible:ring-2 focus-visible:ring-primary",
                 isActive
-                  ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
-                  : "bg-muted text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground",
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : "bg-muted/20 text-muted-foreground border-gray/80 hover:bg-muted ",
               )}
-              aria-current={isActive ? "page" : undefined}
             >
               {section.name}
             </button>
           );
         })}
       </div>
-    </div>
+    </nav>
   );
 }

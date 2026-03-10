@@ -5,19 +5,22 @@ import { ShoppingBag } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-import EmptyPage from "@/components/common/empty-page";
+import EmptyPage from "@/components/common/Empty";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ClientRoute } from "@/routes/client";
 
 import { useCartStore } from "../../../../stores/cart.store";
-import { CheckoutActions } from "./_components/CheckoutAction";
-import { CheckoutHeader } from "./_components/CheckoutHeader";
-import { CheckoutItemList } from "./_components/CheckoutItemList";
-import { CheckoutNote } from "./_components/CheckoutNote";
-import { CheckoutSummary } from "./_components/CheckoutSummary";
-import InformationForm from "./_components/InformationForm";
-import { DeliveryInfo, deliveryInfoSchema } from "./_utils/validate";
+import { CheckoutActions } from "../../../../components/checkout/CheckoutAction";
+import { CheckoutHeader } from "../../../../components/checkout/CheckoutHeader";
+import { CheckoutItemList } from "../../../../components/checkout/CheckoutItemList";
+import { CheckoutNote } from "../../../../components/checkout/CheckoutNote";
+import { CheckoutSummary } from "../../../../components/checkout/CheckoutSummary";
+import InformationForm from "../../../../components/checkout/InformationForm";
+import {
+  DeliveryInfo,
+  deliveryInfoSchema,
+} from "../../../../lib/validations/delivery.schema";
 
 function CheckoutPage() {
   const router = useRouter();

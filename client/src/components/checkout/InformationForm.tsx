@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
-import { DeliveryInfo } from "../_utils/validate";
+import { DeliveryInfo } from "../../lib/validations/delivery.schema";
 
 type Props = {
   form: UseFormReturn<DeliveryInfo>;

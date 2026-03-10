@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { loginSchema, type LoginFormData } from "./_utils/validate";
+import {
+  loginSchema,
+  type LoginFormData,
+} from "../../../lib/validations/login.schema";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CartItem } from "../../../../../types";
+import { CartItem } from "../../types";
 import { ImageIcon } from "lucide-react";
 
 export function CheckoutItemList({ items }: { items: CartItem[] }) {

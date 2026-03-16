@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CartItem } from "../../types";
+import { OrderedItem } from "@/types";
 import { ImageIcon } from "lucide-react";
 
-export function CheckoutItemList({ items }: { items: CartItem[] }) {
+export function CheckoutItemList({ items }: { items: OrderedItem[] }) {
   return (
     <ul className="space-y-6 px-2 pb-4">
       {items.map((item) => (

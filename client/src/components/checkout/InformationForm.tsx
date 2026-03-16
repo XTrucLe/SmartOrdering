@@ -93,7 +93,7 @@ function InformationForm({ form }: Props) {
             <Input
               {...register("name")}
               placeholder="Nguyễn Văn A"
-              error={errors.name?.message}
+              error={errors.name?.message as string}
               autoFocus
             />
           </div>
@@ -103,7 +103,7 @@ function InformationForm({ form }: Props) {
             <Input
               {...register("phone")}
               placeholder="0123 456 789"
-              error={errors.phone?.message}
+              error={errors.phone?.message as string}
             />
           </div>
 
@@ -112,7 +112,7 @@ function InformationForm({ form }: Props) {
             <Input
               {...register("address")}
               placeholder="123 Nguyễn Trãi, Q1"
-              error={errors.address?.message}
+              error={errors.address?.message as string}
             />
           </div>
 

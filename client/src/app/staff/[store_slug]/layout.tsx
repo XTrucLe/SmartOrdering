@@ -1,7 +1,6 @@
 "use client";
 
 import AppSidebar from "@/components/layouts/AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { StaffNavItems } from "@/routes/staff.routes";
 import { NavItem } from "@/types/navItem";
 import { useParams } from "next/navigation";
@@ -21,13 +20,11 @@ export const StaffLayout = ({ children }: { children: React.ReactNode }) => {
   );
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen">
-        <AppSidebar items={NavItems} />
+    <div className="flex min-h-screen">
+      <AppSidebar items={NavItems} />
 
-        <main className="flex-1">{children}</main>
-      </div>
-    </SidebarProvider>
+      <main className="flex-1">{children}</main>
+    </div>
   );
 };
 

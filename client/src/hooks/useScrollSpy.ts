@@ -1,36 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
-export function useScrollSpy(ids: string[], offset: number = 0) {
-  const [activeId, setActiveId] = useState(ids[0] || "");
+export function useScrollSpy(
+  ids: string[],
+  options: {
+    offset?: number;
+    root?: HTMLElement | null;
+    threshold?: number | number[];
+  } = {},
+) {
+  const { offset = 0, root = null, threshold = 0 } = options;
+  const [activeId, setActiveId] = useState<string>("");
+
+  const idsRef = useRef(ids);
+  // eslint-disable-next-line react-hooks/refs
+  idsRef.current = ids;
 
   useEffect(() => {
-    const handleScroll = () => {
-      let closestId = ids[0];
-      let closestDistance = Infinity;
+    const elements = idsRef.current
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
 
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (!el) continue;
+    if (elements.length === 0) return;
 
-        const top = Math.abs(el.getBoundingClientRect().top - offset);
+    const visibleElements = new Map<string, boolean>();
 
-        if (top < closestDistance) {
-          closestDistance = top;
-          closestId = id;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          visibleElements.set(entry.target.id, entry.isIntersecting);
+        });
+
+        const firstVisibleId = idsRef.current.find((id) =>
+          visibleElements.get(id),
+        );
+
+        if (firstVisibleId) {
+          setActiveId(firstVisibleId);
         }
-      }
+      },
+      {
+        root,
+        rootMargin: `-${offset}px 0px -40% 0px`,
+        threshold,
+      },
+    );
 
-      setActiveId(closestId);
-    };
+    elements.forEach((el) => observer.observe(el));
 
-    handleScroll();
+    return () => observer.disconnect();
+  }, [offset, root, threshold]);
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [ids, offset]);
-
-  return activeId;
+  return activeId || ids[0];
 }

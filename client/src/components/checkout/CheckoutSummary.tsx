@@ -1,11 +1,11 @@
 import { Separator } from "@/components/ui/separator";
-import { CartItem } from "../../types";
+import { OrderedItem } from "@/types";
 
 export function CheckoutSummary({
   items,
   serviceFee = 25000,
 }: {
-  items: CartItem[];
+  items: OrderedItem[];
   serviceFee?: number;
 }) {
   const subtotal = items.reduce(

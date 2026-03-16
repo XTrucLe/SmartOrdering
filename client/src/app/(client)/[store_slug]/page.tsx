@@ -4,7 +4,7 @@ import { useCartStore } from "@/stores/cart.store";
 import { MOCK_MENU } from "@/data/mock-menu";
 import { MenuHeader } from "@/components/menu/MenuHeader";
 import { MenuToolbar } from "@/components/menu/MenuToolbar";
-import { MenuSectionList } from "@/components/menu/MenuSectionList";
+import { Catalog } from "@/components/menu/Catalog";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 
 export default function MenuPage() {
@@ -16,11 +16,13 @@ export default function MenuPage() {
 
   const activeId = useScrollSpy(
     sections.map((s) => s.id),
-    80,
+    {
+      offset: 100,
+    },
   );
 
   return (
-    <>
+    <div className="min-h-screen w-full bg-background">
       <MenuHeader menu={menu} />
 
       <MenuToolbar
@@ -30,7 +32,7 @@ export default function MenuPage() {
       />
 
       <main className="max-w-7xl mx-auto px-4 pb-18 pt-8">
-        <MenuSectionList sections={sections} onAdd={addItem} />
+        <Catalog sections={sections} onAdd={addItem} />
       </main>
 
       <div className="py-16 text-center ">
@@ -41,6 +43,6 @@ export default function MenuPage() {
         </div>
         <p className="text-slate-500 italic">Chúc quý khách ngon miệng </p>
       </div>
-    </>
+    </div>
   );
 }

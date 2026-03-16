@@ -17,7 +17,7 @@ export function CartButton({
   return (
     <Button
       variant="ghost"
-      size="icon-xl"
+      size="icon-lg"
       className={cn("relative hover:bg-slate-100 self-center", className)}
       {...props}
     >

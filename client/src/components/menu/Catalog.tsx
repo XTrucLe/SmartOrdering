@@ -1,7 +1,7 @@
 import ItemCard from "@/components/menu/ItemCard";
 import { Item, Section } from "@/types";
 
-export function MenuSectionList({
+export function Catalog({
   sections,
   onAdd,
 }: {
@@ -9,7 +9,7 @@ export function MenuSectionList({
   onAdd: (item: Item) => void;
 }) {
   return (
-    <div className="space-y-12 md:space-y-14">
+    <div className="space-y-10 md:space-y-12 mt-2">
       {sections.map((section) => (
         <section
           key={section.id}
@@ -28,7 +28,7 @@ export function MenuSectionList({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
             {section.items?.map((p: Item) => (
               <ItemCard key={p.id} item={p} onClick={onAdd} />
             ))}

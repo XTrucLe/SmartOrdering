@@ -8,6 +8,6 @@ export type Item = {
   unit: string;
 };
 
-export type CartItem = Item & {
+export type OrderedItem = Item & {
   quantity: number;
 };

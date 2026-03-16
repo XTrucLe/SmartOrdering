@@ -1,15 +1,25 @@
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
-import { CartItem, Item } from "@/types";
+
+import { OrderedItem, Item } from "@/types";
+import {
+  addItemLogic,
+  changeQuantityLogic,
+  removeItemLogic,
+  getTotalPrice,
+  getTotalQuantity,
+} from "./order.logic";
 
 interface CartStore {
-  items: CartItem[];
+  items: OrderedItem[];
+
   addItem: (product: Item) => void;
-  changeQuantity: (productId: string, delta: number) => void;
-  removeItem: (productId: string) => void;
-  clearItems: () => void;
-  getTotalPrice: () => number;
-  getTotalQuantity: () => number;
+  changeQuantity: (id: string, delta: number) => void;
+  removeItem: (id: string) => void;
+  clear: () => void;
+
+  totalPrice: () => number;
+  totalQuantity: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -18,49 +28,28 @@ export const useCartStore = create<CartStore>()(
       (set, get) => ({
         items: [],
 
-        addItem: (product: Item) => {
-          const { items } = get();
-          const existingItem = items.find((p) => p.id === product.id);
-
-          if (existingItem) {
-            set({
-              items: items.map((p) =>
-                p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p,
-              ),
-            });
-          } else {
-            set({
-              items: [...items, { ...product, quantity: 1 }],
-            });
-          }
-        },
-
-        changeQuantity: (productId: string, delta: number) =>
+        addItem: (product) =>
           set((state) => ({
-            items: state.items.map((product) =>
-              product.id === productId
-                ? {
-                    ...product,
-                    quantity: Math.max(1, product.quantity + delta),
-                  }
-                : product,
-            ),
+            items: addItemLogic(state.items, product),
           })),
 
-        removeItem: (productId: string) =>
+        changeQuantity: (id, delta) =>
           set((state) => ({
-            items: state.items.filter((product) => product.id !== productId),
+            items: changeQuantityLogic(state.items, id, delta),
           })),
 
-        clearItems: () => set({ items: [] }),
+        removeItem: (id) =>
+          set((state) => ({
+            items: removeItemLogic(state.items, id),
+          })),
 
-        getTotalPrice: () =>
-          get().items.reduce((sum, p) => sum + p.price * p.quantity, 0),
+        clear: () => set({ items: [] }),
 
-        getTotalQuantity: () =>
-          get().items.reduce((sum, p) => sum + p.quantity, 0),
+        totalPrice: () => getTotalPrice(get().items),
+
+        totalQuantity: () => getTotalQuantity(get().items),
       }),
-      { name: "product-storage" },
+      { name: "cart-storage" },
     ),
   ),
 );

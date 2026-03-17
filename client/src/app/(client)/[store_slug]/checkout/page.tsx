@@ -10,17 +10,17 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ClientRoute } from "@/routes/client.routes";
 
-import { useCartStore } from "../../../../stores/cart.store";
-import { CheckoutActions } from "../../../../components/checkout/CheckoutAction";
-import { CheckoutHeader } from "../../../../components/checkout/CheckoutHeader";
-import { CheckoutItemList } from "../../../../components/checkout/CheckoutItemList";
-import { CheckoutNote } from "../../../../components/checkout/CheckoutNote";
-import { CheckoutSummary } from "../../../../components/checkout/CheckoutSummary";
-import InformationForm from "../../../../components/checkout/InformationForm";
+import { useCartStore } from "@/stores/cart.store";
+import { CheckoutActions } from "@/components/checkout/CheckoutAction";
+import { CheckoutHeader } from "@/components/checkout/CheckoutHeader";
+import { CheckoutItemList } from "@/components/checkout/CheckoutItemList";
+import { CheckoutNote } from "@/components/checkout/CheckoutNote";
+import { CheckoutSummary } from "@/components/checkout/CheckoutSummary";
+import InformationForm from "@/components/checkout/InformationForm";
 import {
   DeliveryInfo,
   deliveryInfoSchema,
-} from "../../../../lib/validations/delivery.schema";
+} from "@/lib/validations/delivery.schema";
 
 function CheckoutPage() {
   const router = useRouter();

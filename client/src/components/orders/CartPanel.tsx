@@ -4,9 +4,9 @@ import { useCartStore } from "@/stores/cart.store";
 import OrderPanel from "@/components/orders/OrderPanel";
 
 export default function CartPanel({ onConfirm }: { onConfirm: () => void }) {
-  const { items, changeQuantity, removeItem, getTotalPrice } = useCartStore();
+  const { items, changeQuantity, removeItem, totalPrice } = useCartStore();
 
-  const total = getTotalPrice();
+  const total = totalPrice();
 
   return (
     <OrderPanel

@@ -7,7 +7,7 @@ function Input({
   type,
   error,
   ...props
-}: React.ComponentProps<"input"> & { error: string }) {
+}: React.ComponentProps<"input"> & { error?: string }) {
   return (
     <div className="space-0.5 flex-col flex">
       <input
@@ -22,9 +22,9 @@ function Input({
         {...props}
         aria-invalid={error ? "true" : "false"}
       />
-      <p className="-mt-px ml-2 text-[13px] text-destructive min-h-4.5">
-        {error ?? "\u00A0"}
-      </p>
+      {error && (
+        <p className="ml-2 text-xs text-destructive min-h-4">{error}</p>
+      )}
     </div>
   );
 }

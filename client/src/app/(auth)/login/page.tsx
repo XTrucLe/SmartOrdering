@@ -43,7 +43,7 @@ export default function LoginPage() {
       //   return;
       // }
 
-      router.replace(`/pho-88/dashboard`);
+      router.replace(`/pho-88/`);
     } catch {
     } finally {
       setLoading(false);

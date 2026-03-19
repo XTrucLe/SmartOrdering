@@ -24,7 +24,7 @@ export default function AppSidebar({
   items: Record<string, NavItem>;
 }) {
   const pathname = usePathname();
-  const { state, toggleSidebar, } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
   const setCollapsed = useUIStore((s) => s.toggleCollapsed);
 
   const collapsed = state === "collapsed";
@@ -72,14 +72,14 @@ export default function AppSidebar({
 
         <div
           className={`
-            absolute  z-50 transition-all duration-300
+            absolute z-100 transition-all duration-300
             ${collapsed ? "-right-3.5 -bottom-3" : "right-2 top-1/2 -translate-y-1/2"}
           `}
         >
           <SidebarTrigger
             onClick={handleToggle}
             className={`
-              h-7 w-7 rounded-full border bg-background shadow-md hover:bg-accent hover:text-accent-foreground
+              h-7 w-7 rounded-full border bg-background shadow-md hover:bg-accent hover:text-accent-foreground 
               ${collapsed ? "flex" : "flex"} 
             `}
           />

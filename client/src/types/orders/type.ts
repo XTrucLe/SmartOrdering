@@ -1,4 +1,4 @@
-export const ORRDER_STATUS = {
+export const ORDER_STATUS = {
   PENDING: "PENDING",
   CONFIRMED: "CONFIRMED",
   COMPLETED: "COMPLETED",
@@ -23,7 +23,7 @@ export const CANCELLED_REASON = {
   OTHER: "OTHER",
 };
 
-export type OrderStatus = (typeof ORRDER_STATUS)[keyof typeof ORRDER_STATUS];
+export type OrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
 export type PaymentStatus =
   (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS];
 export type DeliveryMethod =

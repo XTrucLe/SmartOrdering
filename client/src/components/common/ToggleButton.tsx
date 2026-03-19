@@ -27,7 +27,7 @@ export const ToggleButton = ({
     <div
       role="group"
       className={cn(
-        "flex rounded-lg border border-border bg-muted p-1",
+        "flex rounded-md border border-border bg-muted p-0.5",
         className,
       )}
     >
@@ -41,11 +41,11 @@ export const ToggleButton = ({
             data-state={isActive ? "active" : "inactive"}
             onClick={() => handleClick(option.value)}
             className={cn(
-              "px-4 py-2 text-sm font-medium rounded-md transition-all duration-150 ease-in-out",
+              "p-2 text-xs font-medium rounded-sm transition-all duration-150 ease-in-out",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               "disabled:opacity-50 disabled:pointer-events-none",
               isActive
-                ? "bg-background text-foreground shadow-sm ring-1 ring-border"
+                ? "bg-background text-foreground shadow-xs ring-1 ring-border"
                 : "text-muted-foreground hover:bg-muted",
             )}
           >

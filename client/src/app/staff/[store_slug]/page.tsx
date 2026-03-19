@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 
-export default function StaffPage({
+export default async function StaffPage({
   params,
 }: {
   params: { store_slug: string };
 }) {
-  redirect(`/staff/${params.store_slug}/dashboard`);
+  const { store_slug } = await params;
+  redirect(`${store_slug}/order`);
 }

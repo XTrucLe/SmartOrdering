@@ -7,6 +7,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { MenuType } from '../constants/menus.constant';
 import { Store } from '../../stores/entities/store.entity';
@@ -17,7 +18,11 @@ export class Menu {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Store, (store) => store.id, { onDelete: 'CASCADE' })
+  @Index()
+  @Column()
+  storeId: string;
+
+  @ManyToOne(() => Store, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'store_id' })
   store: Store;
 
@@ -25,7 +30,7 @@ export class Menu {
   name: string;
 
   @Column({ length: 500, nullable: true })
-  imageUrl: string;
+  imageUrl?: string;
 
   @Column({ type: 'text', nullable: true })
   description?: string;
@@ -37,7 +42,9 @@ export class Menu {
   })
   type: MenuType;
 
-  @OneToMany(() => MenuSection, (menuSection) => menuSection.menu)
+  @OneToMany(() => MenuSection, (menuSection) => menuSection.menu, {
+    cascade: true,
+  })
   menuSections: MenuSection[];
 
   @Column({ default: true })

@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module';
 import { OrdersModule } from './modules/orders/order.module';
 import { CategoriesModule } from './modules/categories/category.module';
 import { MenusModule } from './modules/menus/menus.module';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Module({
   imports: [
@@ -23,6 +24,9 @@ import { MenusModule } from './modules/menus/menus.module';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
+
+        namingStrategy: new SnakeNamingStrategy(),
+
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
       }),

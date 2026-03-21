@@ -27,7 +27,7 @@ export class Category {
   })
   status: CategoryStatus;
 
-  @ManyToOne(() => Store, (store) => store.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Store, { onDelete: 'CASCADE' })
   store: Store;
 
   @CreateDateColumn({ name: 'created_at' })

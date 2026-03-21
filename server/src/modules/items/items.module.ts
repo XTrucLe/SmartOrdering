@@ -4,10 +4,15 @@ import { Item } from './entities/item.entity';
 import { ItemsService } from './items.service';
 import { ItemController } from './items.controller';
 import { StoresModule } from '../stores/store.module';
-import { CategoriesModule } from '../categories/category.module';
+import { CategoriesModule } from '../catalog/category.module';
+import { Recipe } from './entities/recipe.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Item]), StoresModule, CategoriesModule],
+  imports: [
+    TypeOrmModule.forFeature([Item, Recipe]),
+    StoresModule,
+    CategoriesModule,
+  ],
   controllers: [ItemController],
   providers: [ItemsService],
   exports: [ItemsService],

@@ -6,16 +6,33 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { Category } from '../../catalog/entities/category.entity';
 import { Store } from '../../stores/entities/store.entity';
-import { ItemStatus, ItemType } from '../constants/item.constant';
+import { ItemType } from '../constants/item.constant';
+import { Recipe } from './recipe.entity';
 
 @Entity('items')
-@Index(['name', 'store'], { unique: true })
+@Index(['name', 'store_id'], { unique: true })
 export class Item {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ name: 'store_id' })
+  storeId: string;
+
+  @ManyToOne(() => Store, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'store_id' })
+  store: Store;
+
+  @Column({ name: 'category_id', nullable: true })
+  categoryId?: string;
+
+  @ManyToOne(() => Category, { nullable: true })
+  @JoinColumn({ name: 'category_id' })
+  category?: Category;
 
   @Column()
   name: string;
@@ -31,23 +48,21 @@ export class Item {
 
   @Column({
     type: 'enum',
-    enum: ItemStatus,
-    default: ItemStatus.ACTIVE,
-  })
-  status: ItemStatus;
-
-  @Column({
-    type: 'enum',
     enum: ItemType,
-    default: ItemType.OTHER,
+    default: ItemType.PRODUCT,
   })
   type: ItemType;
 
-  @ManyToOne(() => Category, { nullable: true })
-  category?: Category;
+  @Column({ default: true })
+  isActive: boolean;
 
-  @ManyToOne(() => Store, (store) => store.id)
-  store: Store;
+  @Column({ default: false })
+  isStockTracked: boolean;
+
+  @OneToMany(() => Recipe, (recipe) => recipe.item, {
+    cascade: true,
+  })
+  recipes: Recipe[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

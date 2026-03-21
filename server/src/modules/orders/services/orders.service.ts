@@ -16,7 +16,7 @@ import {
   OrderStatus,
 } from '../constants/order.constant';
 import { StoresService } from '../../stores/stores.service';
-import { VALID_TRANSITIONS } from '../constants/order-transition.constant';
+import { VALID_TRANSITIONS } from '../constants/transition.constant';
 import { MenuItemService } from 'src/modules/menus/services/menu-item.service';
 
 @Injectable()

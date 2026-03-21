@@ -1,9 +1,11 @@
 import { OrderStatus } from './order.constant';
 
-export const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
-  [OrderStatus.PENDING]: [OrderStatus.CONFIRM, OrderStatus.CANCELLED],
+export const VALID_TRANSITIONS: {
+  [K in OrderStatus]: readonly OrderStatus[];
+} = {
+  [OrderStatus.PENDING]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
 
-  [OrderStatus.CONFIRM]: [OrderStatus.PREPARING, OrderStatus.CANCELLED],
+  [OrderStatus.CONFIRMED]: [OrderStatus.PREPARING, OrderStatus.CANCELLED],
 
   [OrderStatus.PREPARING]: [OrderStatus.READY, OrderStatus.CANCELLED],
 

@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   Index,
 } from 'typeorm';
-import { Category } from '../../categories/entities/category.entity';
+import { Category } from '../../catalog/entities/category.entity';
 import { Store } from '../../stores/entities/store.entity';
 import { ItemStatus, ItemType } from '../constants/item.constant';
 
@@ -43,7 +43,7 @@ export class Item {
   })
   type: ItemType;
 
-  @ManyToOne(() => Category, (category) => category.items, { nullable: true })
+  @ManyToOne(() => Category, { nullable: true })
   category?: Category;
 
   @ManyToOne(() => Store, (store) => store.id)

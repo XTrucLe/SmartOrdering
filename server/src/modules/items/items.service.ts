@@ -10,7 +10,7 @@ import { CreateItemDto } from './dtos/create-item.dto';
 import { UpdateItemDto } from './dtos/update-item.dto';
 import { ItemStatus } from './constants/item.constant';
 import { StoresService } from '../stores/stores.service';
-import { CategoryService } from '../categories/category.service';
+import { CategoryService } from '../catalog/category.service';
 
 @Injectable()
 export class ItemsService {

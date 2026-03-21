@@ -5,11 +5,9 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm';
 import { Store } from '../../stores/entities/store.entity';
 import { CategoryStatus } from '../constants/category.constant';
-import { Item } from '../../items/entities/item.entity';
 
 @Entity('categories')
 export class Category {
@@ -31,9 +29,6 @@ export class Category {
 
   @ManyToOne(() => Store, (store) => store.id, { onDelete: 'CASCADE' })
   store: Store;
-
-  @OneToMany(() => Item, (item) => item.category)
-  items: Item[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

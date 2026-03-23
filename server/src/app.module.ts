@@ -3,13 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { StoresModule } from './modules/stores/store.module';
-import { ItemsModule } from './modules/items/items.module';
-import { CommonModule } from './common/common.module';
-import { OrdersModule } from './modules/orders/order.module';
-import { CategoriesModule } from './modules/categories/category.module';
-import { MenusModule } from './modules/menus/menus.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { AuthModule } from './modules/auth/auth.module';
+import { ProfileModule } from './modules/profiles/profile.module';
+import { AccountModule } from './modules/accounts/account.module';
+import { NotificationModule } from './modules/notifications/notification.module';
 
 @Module({
   imports: [
@@ -31,12 +29,10 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
         synchronize: true,
       }),
     }),
-    CommonModule,
-    StoresModule,
-    CategoriesModule,
-    ItemsModule,
-    OrdersModule,
-    MenusModule,
+    AccountModule,
+    AuthModule,
+    NotificationModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

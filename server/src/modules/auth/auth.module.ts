@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AccountModule } from '../accounts/account.module';
 import { ProfileModule } from '../profiles/profile.module';
@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { OtpModule } from '../notifications/otps/otp.module';
 
+@Global()
 @Module({
   imports: [
     AccountModule,

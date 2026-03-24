@@ -22,7 +22,7 @@ export class CustomerLoginDto {
   phoneNumber: string;
 }
 
-export class VeryfyOtpDto {
+export class VerifyOtpDto {
   @Expose()
   @IsString()
   @IsNotEmpty()

@@ -1,78 +1,65 @@
 import { Controller, Post, Patch, Body, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAccountDto } from '../accounts/dtos/account.dto';
+// import { CreateAccountDto } from '../accounts/dtos/account.dto';
 import {
-  CustomerLoginDto,
+  // CustomerLoginDto,
   StaffLoginDto,
-  VeryfyOtpDto,
+  // VerifyOtpDto,
 } from './dtos/login.dto';
 import { AuthResponseDto, JwtPayload } from './dtos/auth.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import {
   ChangePasswordDto,
-  VerifyStaffOtpDto,
-  ResetPasswordDto,
+  // VerifyStaffOtpDto,
+  // ResetPasswordDto,
 } from './dtos/password.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtGuard } from './guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
-  async registerStaff(
-    @Body() createAccountDto: CreateAccountDto,
-  ): Promise<AuthResponseDto> {
-    return this.authService.register(createAccountDto);
+  @Post('staff/login')
+  loginStaff(@Body() dto: StaffLoginDto): Promise<AuthResponseDto> {
+    return this.authService.staffLogin(dto);
   }
 
-  @Post('login')
-  async loginStaff(
-    @Body() staffLoginDto: StaffLoginDto,
-  ): Promise<AuthResponseDto> {
-    return this.authService.staffLogin(staffLoginDto);
-  }
+  // @Post('staff/register')
+  // registerStaff(@Body() dto: CreateAccountDto): Promise<AuthResponseDto> {
+  //   return this.authService.register(dto);
+  // }
 
-  @Post('customer/otp/send')
-  async sendCustomerOtp(
-    @Body() customerLoginDto: CustomerLoginDto,
-  ): Promise<void> {
-    return this.authService.sendOTP(customerLoginDto);
-  }
+  // @Post('customer/otp/send')
+  // sendCustomerOtp(@Body() dto: CustomerLoginDto): Promise<void> {
+  //   return this.authService.sendOtp(dto);
+  // }
 
-  @Post('customer/otp/verify')
-  async verifyCustomerOtp(
-    @Body() verifyOtpDto: VeryfyOtpDto,
-  ): Promise<AuthResponseDto> {
-    return this.authService.verifyOTP(verifyOtpDto);
-  }
+  // @Post('customer/otp/verify')
+  // verifyCustomerOtp(@Body() dto: VerifyOtpDto): Promise<AuthResponseDto> {
+  //   return this.authService.verifyOtp(dto);
+  // }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Patch('password/change')
-  async changeStaffPassword(
+  @UseGuards(JwtGuard)
+  @Patch('staff/password/change')
+  changePassword(
     @CurrentUser() user: JwtPayload,
-    @Body() changePasswordDto: ChangePasswordDto,
+    @Body() dto: ChangePasswordDto,
   ): Promise<void> {
-    return this.authService.changePassword(user.sub, changePasswordDto);
+    return this.authService.changePassword(user.sub, dto);
   }
 
-  @Post('password/forgot')
-  async forgotStaffPassword(@Body('email') email: string): Promise<void> {
-    return this.authService.forgotPassword(email);
-  }
+  // @Post('staff/password/forgot')
+  // forgotPassword(@Body('email') email: string): Promise<void> {
+  //   return this.authService.forgotPassword(email);
+  // }
 
-  @Post('password/verify-otp')
-  async verifyForgotPasswordOtp(
-    @Body() verifyOtpDto: VerifyStaffOtpDto,
-  ): Promise<string> {
-    const { email, otp } = verifyOtpDto;
-    return this.authService.verifyFogotPasswordOtp(email, otp);
-  }
+  // @Post('staff/password/verify-otp')
+  // verifyForgotPasswordOtp(@Body() dto: VerifyStaffOtpDto): Promise<string> {
+  //   return this.authService.verifyForgotPasswordOtp(dto.email, dto.otp);
+  // }
 
-  @Patch('password/reset')
-  async resetStaffPassword(
-    @Body() resetPasswordDto: ResetPasswordDto,
-  ): Promise<void> {
-    return this.authService.resetPassword(resetPasswordDto);
-  }
+  // @Patch('staff/password/reset')
+  // resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
+  //   return this.authService.resetPassword(dto);
+  // }
 }

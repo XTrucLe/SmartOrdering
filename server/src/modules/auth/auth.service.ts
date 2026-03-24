@@ -18,6 +18,8 @@ import {
 } from './dtos/login.dto';
 import { AuthResponseDto, JwtPayload } from './dtos/auth.dto';
 import { ChangePasswordDto, ResetPasswordDto } from './dtos/password.dto';
+import { StoreRole } from '../stores/constants/store-role.constant';
+import { StoreMemberService } from '../stores/services/store-member.service';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +27,7 @@ export class AuthService {
     private readonly dataSource: DataSource,
     private readonly accountService: AccountService,
     private readonly profileService: ProfileService,
+    private readonly storeMemberService: StoreMemberService,
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
   ) {}
@@ -42,8 +45,8 @@ export class AuthService {
     if (!isMatch) {
       throw new BadRequestException('Invalid email or password');
     }
-
-    return this.generateAuthResponse(account);
+    //check if staff has store
+    return this.staffHasStore(account, dto.storeId);
   }
 
   async sendOtp(dto: CustomerLoginDto): Promise<void> {
@@ -69,10 +72,6 @@ export class AuthService {
     return this.generateAuthResponse(account);
   }
 
-  // ========================
-  // REGISTER (OWNER / STAFF)
-  // ========================
-
   async register(dto: CreateAccountDto): Promise<AuthResponseDto> {
     const existing = await this.accountService.findByEmail(dto.email);
 
@@ -95,10 +94,6 @@ export class AuthService {
 
     return this.generateAuthResponse(account);
   }
-
-  // ========================
-  // PASSWORD FLOW
-  // ========================
 
   async forgotPassword(email: string): Promise<void> {
     const account = await this.accountService.findByEmail(email);
@@ -158,10 +153,6 @@ export class AuthService {
     await this.accountService.updatePassword(account.id, hashed);
   }
 
-  // ========================
-  // INTERNAL HELPERS
-  // ========================
-
   private ensureAccountExists(
     account: Account | null,
   ): asserts account is Account {
@@ -191,16 +182,58 @@ export class AuthService {
     } as CreateAccountDto);
   }
 
-  private generateAuthResponse(account: Account): AuthResponseDto {
+  private async staffHasStore(
+    account: Account,
+    requestedStoreId?: string,
+  ): Promise<AuthResponseDto> {
+    const store = await this.storeMemberService.findStoreByAccount(account.id);
+    if (!store || store.length === 0) {
+      throw new BadRequestException(
+        'Staff account is not associated with any store',
+      );
+    }
+
+    if (store.length > 1) {
+      if (!requestedStoreId) {
+        throw new BadRequestException({
+          statusCode: 400,
+          message: 'Multiple stores found. Please select one.',
+          errorCode: 'STORE_SELECTION_REQUIRED',
+          data: store,
+        });
+      }
+
+      const selectedStore = store.find((s) => s.storeId === requestedStoreId);
+      if (!selectedStore) {
+        throw new BadRequestException(
+          'Requested store not found in user associations',
+        );
+      }
+
+      return this.generateAuthResponse(
+        account,
+        selectedStore.storeId,
+        selectedStore.role,
+      );
+    }
+
+    return this.generateAuthResponse(account, store[0].storeId, store[0].role);
+  }
+
+  private generateAuthResponse(
+    account: Account,
+    storeId?: string,
+    storeRole?: StoreRole,
+  ): AuthResponseDto {
     const payload = {
       sub: account.id,
       username: account.email || account.phoneNumber,
-      role: account.role,
+      storeId: storeId,
+      storeRole: storeRole,
     };
 
     return {
       jwt: this.jwtService.sign(payload),
-      role: account.role,
     };
   }
 

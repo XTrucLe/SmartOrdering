@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { OtpModule } from '../notifications/otps/otp.module';
+import { StoresModule } from '../stores/store.module';
 
 @Global()
 @Module({
@@ -14,6 +15,7 @@ import { OtpModule } from '../notifications/otps/otp.module';
     AccountModule,
     OtpModule,
     ProfileModule,
+    StoresModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

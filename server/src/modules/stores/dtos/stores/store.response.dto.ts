@@ -6,5 +6,8 @@ export class StoreResponseDto {
   @Expose() slug: string;
   @Expose() name: string;
   @Expose() description?: string;
-  @Expose() address: string;
+  @Expose() streetAddress: string;
+  @Expose() ward: string;
+  @Expose() district: string;
+  @Expose() province: string;
 }

@@ -12,11 +12,11 @@ import { Profile } from '../../profiles/entities/profile.entity';
 import { Role } from '../constants/role.constant';
 
 @Entity('accounts')
-@Index('IDX_email_role', ['email', 'role'], {
+@Index('IDX_account_email', ['email'], {
   unique: true,
   where: '"deleted_at" IS NULL',
 })
-@Index('IDX_phone_role', ['phoneNumber', 'role'], {
+@Index('IDX_account_phone', ['phoneNumber'], {
   unique: true,
   where: '"deleted_at" IS NULL',
 })

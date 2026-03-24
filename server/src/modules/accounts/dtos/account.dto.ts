@@ -29,3 +29,10 @@ export class CreateAccountDto {
   @IsNotEmpty()
   profile: CreateProfileDto;
 }
+
+@Exclude()
+export class AccountResponseDto {
+  @Expose() id: string;
+  @Expose() email?: string;
+  @Expose() phoneNumber?: string;
+}

@@ -16,3 +16,11 @@ export class ProfileResponseDto {
   @Expose() province: string;
   @Expose() createdAt: Date;
 }
+
+@Exclude()
+export class ProfileSummaryDto {
+  @Expose() id: string;
+  @Expose() firstName: string;
+  @Expose() lastName: string;
+  @Expose() avatar: string;
+}

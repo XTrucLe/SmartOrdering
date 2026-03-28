@@ -7,7 +7,7 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { Gender, ProfileType } from '../constants/profile.constant';
+import { Gender } from '../constants/profile.constant';
 import { Account } from '@/modules/accounts/entities/account.entity';
 
 @Entity('profiles')
@@ -33,9 +33,6 @@ export class Profile {
 
   @Column({ type: 'text', nullable: true })
   avatar?: string;
-
-  @Column({ type: 'enum', enum: ProfileType, default: ProfileType.CUSTOMER })
-  type: ProfileType;
 
   @Column({ type: 'text', nullable: true })
   streetAddress?: string;

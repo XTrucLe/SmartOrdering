@@ -10,7 +10,6 @@ export class ProfileResponseDto {
   @Expose() email: string;
   @Expose() dateOfBirth: Date;
   @Expose() avatar: string;
-  @Expose() type: string;
   @Expose() streetAddress: string;
   @Expose() ward: string;
   @Expose() province: string;

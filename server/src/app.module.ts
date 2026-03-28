@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profiles/profile.module';
 import { AccountModule } from './modules/accounts/account.module';
 import { NotificationModule } from './modules/notifications/notification.module';
+import { StoresModule } from './modules/stores/store.module';
 
 @Module({
   imports: [
@@ -25,7 +26,16 @@ import { NotificationModule } from './modules/notifications/notification.module'
 
         namingStrategy: new SnakeNamingStrategy(),
 
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        entities: [
+          // __dirname + '/**/*.entity{.ts,.js}'
+          __dirname + '/modules/auth/**/*.entity{.ts,.js}',
+          __dirname + '/modules/users/**/*.entity{.ts,.js}',
+          __dirname + '/modules/accounts/**/*.entity{.ts,.js}',
+          __dirname + '/modules/profiles/**/*.entity{.ts,.js}',
+          __dirname + '/modules/notifications/**/*.entity{.ts,.js}',
+          __dirname + '/modules/stores/**/*.entity{.ts,.js}',
+        ],
+        autoLoadEntities: false,
         synchronize: true,
       }),
     }),
@@ -33,6 +43,7 @@ import { NotificationModule } from './modules/notifications/notification.module'
     AuthModule,
     NotificationModule,
     ProfileModule,
+    StoresModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -22,24 +22,53 @@ export class AccountService {
     return manager ? manager.getRepository(Account) : this.accountRepository;
   }
 
-  private async findOrFail(id: string): Promise<Account> {
-    const account = await this.accountRepository.findOne({
-      where: { id, isActive: true },
-    });
-
-    if (!account) {
-      throw new NotFoundException('Account not found');
-    }
-
-    return account;
-  }
-
-  private createEntity(dto: CreateAccountDto, role?: Role): Account {
-    return this.accountRepository.create({
+  private createEntity(
+    dto: CreateAccountDto,
+    role?: Role,
+    manager?: EntityManager,
+  ): Account {
+    const repo = manager
+      ? manager.getRepository(Account)
+      : this.accountRepository;
+    return repo.create({
       email: dto.email,
       phoneNumber: dto.phoneNumber,
       passwordHash: dto.password,
       ...(role && { role }),
+    });
+  }
+
+  async getById(id: string): Promise<Account> {
+    const account = await this.findById(id);
+    if (!account) {
+      throw new NotFoundException(`Account with ID ${id} not found`);
+    }
+    return account;
+  }
+
+  async getActiveById(id: string): Promise<Account> {
+    const account = await this.accountRepository.findOne({
+      where: { id, isActive: true },
+    });
+    if (!account) {
+      throw new NotFoundException(`Active account with ID ${id} not found`);
+    }
+    return account;
+  }
+
+  async findById(id: string): Promise<Account | null> {
+    return this.accountRepository.findOneBy({ id });
+  }
+
+  async findByEmail(email: string): Promise<Account | null> {
+    return this.accountRepository.findOne({
+      where: { email, isActive: true },
+    });
+  }
+
+  async findByPhoneNumber(phoneNumber: string): Promise<Account | null> {
+    return this.accountRepository.findOne({
+      where: { phoneNumber, isActive: true },
     });
   }
 
@@ -66,40 +95,28 @@ export class AccountService {
     return saved;
   }
 
-  async toggleActive(id: string, isActive: boolean): Promise<Account> {
-    const account = await this.findOrFail(id);
+  async toggleActive(id: string, isActive: boolean): Promise<boolean> {
+    const account = await this.getById(id);
+
     if (account.isActive === isActive) {
-      throw new BadRequestException('Account already has this status');
+      throw new BadRequestException(
+        `Account is already ${isActive ? 'active' : 'inactive'}`,
+      );
     }
 
     account.isActive = isActive;
-    return this.accountRepository.save(account);
+    await this.accountRepository.save(account);
+    return true;
   }
 
   async updatePassword(id: string, newPasswordHash: string): Promise<Account> {
-    const account = await this.findOrFail(id);
+    const account = await this.getActiveById(id);
     account.passwordHash = newPasswordHash;
     return this.accountRepository.save(account);
   }
 
   async softDelete(id: string): Promise<void> {
-    await this.findOrFail(id);
+    await this.getById(id);
     await this.accountRepository.softDelete(id);
-  }
-
-  async findById(id: string): Promise<Account> {
-    return this.findOrFail(id);
-  }
-
-  async findByEmail(email: string): Promise<Account | null> {
-    return this.accountRepository.findOne({
-      where: { email, isActive: true },
-    });
-  }
-
-  async findByPhoneNumber(phoneNumber: string): Promise<Account | null> {
-    return this.accountRepository.findOne({
-      where: { phoneNumber, isActive: true },
-    });
   }
 }

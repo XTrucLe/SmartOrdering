@@ -3,7 +3,7 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StoreMember } from '../entities/store-member.entity';
 import { StoresService } from './stores.service';
@@ -21,8 +21,12 @@ export class StoreMemberService {
     private readonly storesService: StoresService,
   ) {}
 
-  async createOwner(storeId: string, userId: string): Promise<StoreMember> {
-    return this.addStoreMember(storeId, StoreRole.OWNER, userId);
+  async createOwner(
+    storeId: string,
+    userId: string,
+    manager?: EntityManager,
+  ): Promise<StoreMember> {
+    return this.addStoreMember(storeId, StoreRole.OWNER, userId, manager);
   }
 
   async createManager(
@@ -104,18 +108,23 @@ export class StoreMemberService {
     storeId: string,
     role: StoreRole,
     userId: string,
+    manager?: EntityManager,
   ): Promise<StoreMember> {
-    const store = await this.storesService.getStoreById(storeId);
+    const repo = manager
+      ? manager.getRepository(StoreMember)
+      : this.storeMemberRepository;
+
+    const store = await this.storesService.getStoreById(storeId, manager);
 
     await this.limitRoles(storeId, role);
 
-    const storeMember = this.storeMemberRepository.create({
+    const storeMember = repo.create({
       store,
       role,
       account: { id: userId },
     });
     try {
-      return await this.storeMemberRepository.save(storeMember);
+      return await repo.save(storeMember);
     } catch (err) {
       if (err instanceof Error && 'code' in err && err.code === '23505') {
         throw new ConflictException('User is already a member of this store.');

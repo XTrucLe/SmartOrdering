@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, EntityManager } from 'typeorm';
 import { Store } from '../entities/store.entity';
 import { CreateStoreDto } from '../dtos/stores/create-store.dto';
 import { UpdateStoreDto } from '../dtos/stores/update-store.dto';
@@ -17,28 +17,37 @@ export class StoresService {
     private readonly storeRepository: Repository<Store>,
   ) {}
 
-  async createStore(accountId: string, dto: CreateStoreDto): Promise<Store> {
+  async createStore(
+    accountId: string,
+    dto: CreateStoreDto,
+    manager?: EntityManager,
+  ): Promise<Store> {
+    const repo = manager ? manager.getRepository(Store) : this.storeRepository;
+
     const slug = dto.slug
       ? await this.validateCustomSlug(dto.slug)
       : await this.generateUniqueSlug(dto.name);
 
-    const store = this.storeRepository.create({
+    const store = repo.create({
       ...dto,
       slug,
       account: { id: accountId },
     });
 
-    return this.saveStoreOrThrowConflict(store);
+    return this.saveStoreOrThrowConflict(store, manager);
   }
 
-  async getStoreById(id: string): Promise<Store> {
-    const store = await this.storeRepository.findOneBy({ id, isActive: true });
+  async getStoreById(id: string, manager?: EntityManager): Promise<Store> {
+    const repo = manager ? manager.getRepository(Store) : this.storeRepository;
+    const store = await repo.findOneBy({ id, isActive: true });
     if (!store) throw new NotFoundException('Store not found.');
+
     return store;
   }
 
-  async getStoreBySlug(slug: string): Promise<Store> {
-    const store = await this.storeRepository.findOneBy({
+  async getStoreBySlug(slug: string, manager?: EntityManager): Promise<Store> {
+    const repo = manager ? manager.getRepository(Store) : this.storeRepository;
+    const store = await repo.findOneBy({
       slug,
       isActive: true,
     });
@@ -89,9 +98,13 @@ export class StoresService {
     await this.storeRepository.softDelete(id);
   }
 
-  private async saveStoreOrThrowConflict(store: Store): Promise<Store> {
+  private async saveStoreOrThrowConflict(
+    store: Store,
+    manager?: EntityManager,
+  ): Promise<Store> {
+    const repo = manager ? manager.getRepository(Store) : this.storeRepository;
     try {
-      return await this.storeRepository.save(store);
+      return await repo.save(store);
     } catch (err) {
       if (err instanceof Error && 'code' in err && err.code === '23505') {
         throw new ConflictException('Store slug already exists.');
@@ -122,7 +135,7 @@ export class StoresService {
 
   private async validateCustomSlug(slug: string): Promise<string> {
     slug = this.slugify(slug);
-    const exists = await this.storeRepository.exist({ where: { slug } });
+    const exists = await this.storeRepository.exists({ where: { slug } });
     if (exists) throw new ConflictException('Slug already exists.');
     return slug;
   }

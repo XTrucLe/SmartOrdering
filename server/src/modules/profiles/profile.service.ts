@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CreateProfileDto } from './dtos/create-profile.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
-import { ProfileType } from './constants/profile.constant';
 import { Account } from '../accounts/entities/account.entity';
 
 @Injectable()
@@ -32,7 +31,6 @@ export class ProfileService {
 
     if (account) {
       newProfile.account = account;
-      newProfile.type = ProfileType.STAFF;
     }
 
     try {
@@ -45,7 +43,7 @@ export class ProfileService {
       if (isDulicatePhone) {
         throw new ConflictException('Phone number already exists');
       }
-      throw error;
+      throw new ConflictException('Failed to create profile');
     }
   }
 

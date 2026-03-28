@@ -1,26 +1,8 @@
-import {
-  Controller,
-  Post,
-  Patch,
-  Body,
-  UseGuards,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
-// import { CreateAccountDto } from '../accounts/dtos/account.dto';
-import {
-  // CustomerLoginDto,
-  StaffLoginDto,
-  // VerifyOtpDto,
-} from './dtos/login.dto';
-import { AuthResponseDto, JwtPayload } from './dtos/auth.dto';
-import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import {
-  ChangePasswordDto,
-  // VerifyStaffOtpDto,
-  // ResetPasswordDto,
-} from './dtos/password.dto';
-import { JwtGuard } from './guards/jwt.guard';
+import { LoginDto } from './dtos/login.dto';
+import { AuthResponseDto } from './dtos/auth.dto';
+import { OwnerRegisterDto } from './dtos/register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -28,46 +10,13 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
-  loginStaff(@Body() dto: StaffLoginDto): Promise<AuthResponseDto> {
-    return this.authService.staffLogin(dto);
+  loginStaff(@Body() dto: LoginDto): Promise<AuthResponseDto> {
+    return this.authService.login(dto);
   }
 
-  // @Post('staff/register')
-  // registerStaff(@Body() dto: CreateAccountDto): Promise<AuthResponseDto> {
-  //   return this.authService.register(dto);
-  // }
-
-  // @Post('customer/otp/send')
-  // sendCustomerOtp(@Body() dto: CustomerLoginDto): Promise<void> {
-  //   return this.authService.sendOtp(dto);
-  // }
-
-  // @Post('customer/otp/verify')
-  // verifyCustomerOtp(@Body() dto: VerifyOtpDto): Promise<AuthResponseDto> {
-  //   return this.authService.verifyOtp(dto);
-  // }
-
-  @UseGuards(JwtGuard)
-  @Patch('staff/password/change')
-  changePassword(
-    @CurrentUser() user: JwtPayload,
-    @Body() dto: ChangePasswordDto,
-  ): Promise<void> {
-    return this.authService.changePassword(user.sub, dto);
+  @Post('owner-register')
+  async registerOwner(@Body() dto: OwnerRegisterDto): Promise<string> {
+    await this.authService.register(dto);
+    return 'Account created successfully, please wait for admin approval.';
   }
-
-  // @Post('staff/password/forgot')
-  // forgotPassword(@Body('email') email: string): Promise<void> {
-  //   return this.authService.forgotPassword(email);
-  // }
-
-  // @Post('staff/password/verify-otp')
-  // verifyForgotPasswordOtp(@Body() dto: VerifyStaffOtpDto): Promise<string> {
-  //   return this.authService.verifyForgotPasswordOtp(dto.email, dto.otp);
-  // }
-
-  // @Patch('staff/password/reset')
-  // resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
-  //   return this.authService.resetPassword(dto);
-  // }
 }

@@ -36,7 +36,7 @@ export class Account {
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
-  @Column({ default: true })
+  @Column({ default: false })
   isActive: boolean;
 
   @OneToOne(() => Profile, (profile) => profile.account)

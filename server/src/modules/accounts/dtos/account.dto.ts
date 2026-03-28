@@ -6,7 +6,7 @@ import {
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
-import { CreateProfileDto } from 'src/modules/profiles/dtos/create-profile.dto';
+import { CreateProfileDto } from '@/modules/profiles/dtos/create-profile.dto';
 
 @Exclude()
 export class CreateAccountDto {

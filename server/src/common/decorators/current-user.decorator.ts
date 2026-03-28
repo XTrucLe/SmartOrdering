@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtPayload } from 'src/modules/auth/dtos/auth.dto';
+import { JwtPayload } from '@/modules/auth/dtos/auth.dto';
 
 export const CurrentUser = createParamDecorator(
   <K extends keyof JwtPayload>(

@@ -13,9 +13,9 @@ import { UpdateStoreDto } from '../dtos/stores/update-store.dto';
 import { isUUID } from 'class-validator';
 import { StoreResponseDto } from '../dtos/stores/store.response.dto';
 import { mapToStoreDto, mapToStoreDtos } from '../mappers/store.mapper';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/modules/auth/dtos/auth.dto';
-import { Pages } from 'src/common/interfaces/page.interface';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { JwtPayload } from '@/modules/auth/dtos/auth.dto';
+import { Pages } from '@/common/interfaces/page.interface';
 
 @Controller('stores')
 export class StoresController {

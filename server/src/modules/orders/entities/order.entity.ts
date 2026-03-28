@@ -18,7 +18,7 @@ import {
   CancelReason,
 } from '../constants/order.constant';
 import { OrderItem } from './order-item.entity';
-import { Table } from 'src/modules/stores/entities/table.entity';
+import { Table } from '@/modules/stores/entities/table.entity';
 
 @Entity('orders')
 @Index(['storeId', 'createdAt'])

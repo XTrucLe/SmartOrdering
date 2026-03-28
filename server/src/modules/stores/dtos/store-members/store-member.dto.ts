@@ -4,8 +4,8 @@ import { PartialType } from '@nestjs/mapped-types';
 import {
   AccountResponseDto,
   CreateAccountDto,
-} from 'src/modules/accounts/dtos/account.dto';
-import { ProfileSummaryDto } from 'src/modules/profiles/dtos/profile-response.dto';
+} from '@/modules/accounts/dtos/account.dto';
+import { ProfileSummaryDto } from '@/modules/profiles/dtos/profile-response.dto';
 import { Exclude, Expose } from 'class-transformer';
 
 export class CreateStoreMemberDto {

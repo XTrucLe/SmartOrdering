@@ -6,7 +6,7 @@ import { mapToProfileDto } from './profile.mapper';
 import { Roles } from '../auth/decorators/role.decorator';
 import { Role } from '../accounts/constants/role.constant';
 import { JwtPayload } from '../auth/dtos/auth.dto';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
 
 @Controller('profiles')
 @UseGuards(AuthGuard('jwt'))

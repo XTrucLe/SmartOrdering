@@ -7,7 +7,7 @@ import {
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { StoreRole } from '../constants/store-role.constant';
-import { JwtPayload } from 'src/modules/auth/dtos/auth.dto';
+import { JwtPayload } from '@/modules/auth/dtos/auth.dto';
 
 @Injectable()
 export class StoreRoleGuard implements CanActivate {
@@ -24,7 +24,7 @@ export class StoreRoleGuard implements CanActivate {
     }
 
     const user = request.user as JwtPayload;
-    const storeRole = user?.storeRole;
+    const storeRole = user?.store?.role;
 
     if (!storeRole || !requiredRoles.includes(storeRole)) {
       throw new ForbiddenException(

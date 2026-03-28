@@ -16,10 +16,8 @@ import {
   StaffLoginDto,
   VerifyOtpDto,
 } from './dtos/login.dto';
-import { AuthResponseDto, JwtPayload } from './dtos/auth.dto';
+import { AuthResponseDto, JwtPayload, StoreInfo } from './dtos/auth.dto';
 import { ChangePasswordDto, ResetPasswordDto } from './dtos/password.dto';
-import { StoreRole } from '../stores/constants/store-role.constant';
-import { StoreMemberService } from '../stores/services/store-member.service';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +25,6 @@ export class AuthService {
     private readonly dataSource: DataSource,
     private readonly accountService: AccountService,
     private readonly profileService: ProfileService,
-    private readonly storeMemberService: StoreMemberService,
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
   ) {}
@@ -46,7 +43,7 @@ export class AuthService {
       throw new BadRequestException('Invalid email or password');
     }
     //check if staff has store
-    return this.staffHasStore(account, dto.storeId);
+    return this.generateAuthResponse(account);
   }
 
   async sendOtp(dto: CustomerLoginDto): Promise<void> {
@@ -120,7 +117,7 @@ export class AuthService {
     const payload: JwtPayload = this.jwtService.verify(resetToken);
     const account = await this.accountService.findById(payload.sub);
 
-    if (account.email !== email) {
+    if (!account.email || account.email !== email) {
       throw new BadRequestException('Account not found');
     }
 
@@ -182,58 +179,34 @@ export class AuthService {
     } as CreateAccountDto);
   }
 
-  private async staffHasStore(
-    account: Account,
-    requestedStoreId?: string,
-  ): Promise<AuthResponseDto> {
-    const store = await this.storeMemberService.findStoreByAccount(account.id);
-    if (!store || store.length === 0) {
-      throw new BadRequestException(
-        'Staff account is not associated with any store',
-      );
-    }
-
-    if (store.length > 1) {
-      if (!requestedStoreId) {
-        throw new BadRequestException({
-          statusCode: 400,
-          message: 'Multiple stores found. Please select one.',
-          errorCode: 'STORE_SELECTION_REQUIRED',
-          data: store,
-        });
-      }
-
-      const selectedStore = store.find((s) => s.storeId === requestedStoreId);
-      if (!selectedStore) {
-        throw new BadRequestException(
-          'Requested store not found in user associations',
-        );
-      }
-
-      return this.generateAuthResponse(
-        account,
-        selectedStore.storeId,
-        selectedStore.role,
-      );
-    }
-
-    return this.generateAuthResponse(account, store[0].storeId, store[0].role);
-  }
-
   private generateAuthResponse(
     account: Account,
-    storeId?: string,
-    storeRole?: StoreRole,
+    store?: StoreInfo,
   ): AuthResponseDto {
-    const payload = {
+    const storeContext = store
+      ? { id: store.id, slug: store.slug, role: store.role }
+      : undefined;
+
+    const username =
+      account.email ??
+      account.phoneNumber ??
+      `user_${account.id.substring(0, 8)}`;
+
+    const payload: JwtPayload = {
       sub: account.id,
-      username: account.email || account.phoneNumber,
-      storeId: storeId,
-      storeRole: storeRole,
+      username: username,
+      globalRole: account.role,
+      store: storeContext,
     };
 
     return {
-      jwt: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
+      globalRole: account.role,
+      user: {
+        id: account.id,
+        username: username,
+        store: storeContext,
+      },
     };
   }
 

@@ -7,7 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Item } from './item.entity';
-import { Ingredient } from 'src/modules/catalog/entities/ingredient.entity';
+import { Ingredient } from '@/modules/catalog/entities/ingredient.entity';
 
 @Entity('recipes')
 @Index(['itemId', 'ingredientId'], { unique: true })

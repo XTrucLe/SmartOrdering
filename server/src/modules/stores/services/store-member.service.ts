@@ -9,8 +9,8 @@ import { StoreMember } from '../entities/store-member.entity';
 import { StoresService } from './stores.service';
 import { RoleHierarchy, StoreRole } from '../constants/store-role.constant';
 import { StoreMaxMembers } from '../constants/store-limit.constant';
-import { CreateAccountDto } from 'src/modules/accounts/dtos/account.dto';
-import { AccountService } from 'src/modules/accounts/account.service';
+import { CreateAccountDto } from '@/modules/accounts/dtos/account.dto';
+import { AccountService } from '@/modules/accounts/account.service';
 
 @Injectable()
 export class StoreMemberService {
@@ -78,7 +78,7 @@ export class StoreMemberService {
     });
     return (
       member?.map((m) => {
-        return { storeId: m.store.id, storeName: m.store.name, role: m.role };
+        return { storeId: m.store.id, slug: m.store.slug, role: m.role };
       }) ?? []
     );
   }

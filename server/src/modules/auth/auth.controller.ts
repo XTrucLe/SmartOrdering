@@ -1,4 +1,11 @@
-import { Controller, Post, Patch, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Patch,
+  Body,
+  UseGuards,
+  HttpCode,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 // import { CreateAccountDto } from '../accounts/dtos/account.dto';
 import {
@@ -7,7 +14,7 @@ import {
   // VerifyOtpDto,
 } from './dtos/login.dto';
 import { AuthResponseDto, JwtPayload } from './dtos/auth.dto';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import {
   ChangePasswordDto,
   // VerifyStaffOtpDto,
@@ -19,7 +26,8 @@ import { JwtGuard } from './guards/jwt.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('staff/login')
+  @Post('login')
+  @HttpCode(200)
   loginStaff(@Body() dto: StaffLoginDto): Promise<AuthResponseDto> {
     return this.authService.staffLogin(dto);
   }

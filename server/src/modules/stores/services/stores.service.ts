@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { Store } from '../entities/store.entity';
 import { CreateStoreDto } from '../dtos/stores/create-store.dto';
 import { UpdateStoreDto } from '../dtos/stores/update-store.dto';
-import { Pages } from 'src/common/interfaces/page.interface';
+import { Pages } from '@/common/interfaces/page.interface';
 
 @Injectable()
 export class StoresService {

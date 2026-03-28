@@ -80,11 +80,11 @@ export class StoreMemberService extends BaseService<StoreMember> {
   async findStoreByAccount(accountId: string) {
     const members = await this.getRepo().find({
       where: { account: { id: accountId } },
-      relations: ['store'],
+      relations: ['store', 'store.account'],
     });
 
     return members.map((m) => ({
-      storeId: m.store.id,
+      id: m.store.id,
       slug: m.store.slug,
       role: m.role,
     }));

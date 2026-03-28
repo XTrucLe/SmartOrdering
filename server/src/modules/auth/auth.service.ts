@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -41,7 +42,30 @@ export class AuthService {
       throw new BadRequestException('Invalid email or password');
     }
 
-    return this.generateAuthResponse(account);
+    return this.checkAccount(account);
+  }
+
+  async loginWithStore(
+    accountId: string,
+    storeId: string,
+  ): Promise<AuthResponseDto> {
+    const account = await this.accountService.findById(accountId);
+    this.ensureAccountExists(account);
+
+    const existingStores =
+      await this.storeMemberService.findStoreByAccount(accountId);
+
+    if (!existingStores || existingStores.length === 0) {
+      throw new BadRequestException('No store access found for this account');
+    }
+
+    if (existingStores.length >= 1 && existingStores[0].id !== storeId) {
+      throw new BadRequestException(
+        'Selected store does not match account access',
+      );
+    }
+
+    return this.checkAccount(account, storeId);
   }
 
   async register(dto: OwnerRegisterDto): Promise<void> {
@@ -118,14 +142,40 @@ export class AuthService {
     }
   }
 
+  private async checkAccount(
+    account: Account,
+    selectedStoreId?: string,
+  ): Promise<AuthResponseDto> {
+    const stores = await this.storeMemberService.findStoreByAccount(account.id);
+
+    if (!stores || stores.length === 0) {
+      return this.generateAuthResponse(account);
+    }
+
+    if (stores.length === 1) {
+      return this.generateAuthResponse(account, undefined, stores[0]);
+    }
+
+    if (selectedStoreId) {
+      const activeStore = stores.find((store) => store.id === selectedStoreId);
+
+      if (!activeStore) {
+        throw new ForbiddenException(
+          'You do not have access to the selected store',
+        );
+      }
+
+      return this.generateAuthResponse(account, undefined, activeStore);
+    }
+
+    return this.generateAuthResponse(account, stores);
+  }
+
   private generateAuthResponse(
     account: Account,
-    store?: StoreInfo,
+    store?: StoreInfo[],
+    activeStore?: StoreInfo,
   ): AuthResponseDto {
-    const storeContext = store
-      ? { id: store.id, slug: store.slug, role: store.role }
-      : undefined;
-
     const username =
       account.email ??
       account.phoneNumber ??
@@ -135,7 +185,7 @@ export class AuthService {
       sub: account.id,
       username: username,
       globalRole: account.role,
-      store: storeContext,
+      store: activeStore,
     };
 
     return {
@@ -144,8 +194,9 @@ export class AuthService {
       user: {
         id: account.id,
         username: username,
-        store: storeContext,
       },
+      store: store,
+      activeStore: activeStore,
     };
   }
 

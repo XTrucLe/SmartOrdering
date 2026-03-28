@@ -9,17 +9,16 @@ import { Account } from './entities/account.entity';
 import { CreateAccountDto } from './dtos/account.dto';
 import { Role } from './constants/role.constant';
 import { ProfileService } from '../profiles/profile.service';
+import { BaseService } from '@/common/services/base.service';
 
 @Injectable()
-export class AccountService {
+export class AccountService extends BaseService<Account> {
   constructor(
     @InjectRepository(Account)
-    private readonly accountRepository: Repository<Account>,
+    repository: Repository<Account>,
     private readonly profileService: ProfileService,
-  ) {}
-
-  private getRepository(manager?: EntityManager): Repository<Account> {
-    return manager ? manager.getRepository(Account) : this.accountRepository;
+  ) {
+    super(repository, Account);
   }
 
   private createEntity(
@@ -27,10 +26,7 @@ export class AccountService {
     role?: Role,
     manager?: EntityManager,
   ): Account {
-    const repo = manager
-      ? manager.getRepository(Account)
-      : this.accountRepository;
-    return repo.create({
+    return this.getRepo(manager).create({
       email: dto.email,
       phoneNumber: dto.phoneNumber,
       passwordHash: dto.password,
@@ -38,46 +34,54 @@ export class AccountService {
     });
   }
 
-  async getById(id: string): Promise<Account> {
-    const account = await this.findById(id);
+  async findById(id: string, manager?: EntityManager): Promise<Account | null> {
+    return this.getRepo(manager).findOneBy({ id });
+  }
+
+  async findByEmail(
+    email: string,
+    manager?: EntityManager,
+  ): Promise<Account | null> {
+    return this.getRepo(manager).findOne({
+      where: { email, isActive: true },
+    });
+  }
+
+  async findByPhoneNumber(
+    phoneNumber: string,
+    manager?: EntityManager,
+  ): Promise<Account | null> {
+    return this.getRepo(manager).findOne({
+      where: { phoneNumber, isActive: true },
+    });
+  }
+
+  async getById(id: string, manager?: EntityManager): Promise<Account> {
+    const account = await this.findById(id, manager);
     if (!account) {
       throw new NotFoundException(`Account with ID ${id} not found`);
     }
     return account;
   }
 
-  async getActiveById(id: string): Promise<Account> {
-    const account = await this.accountRepository.findOne({
+  async getActiveById(id: string, manager?: EntityManager): Promise<Account> {
+    const account = await this.getRepo(manager).findOne({
       where: { id, isActive: true },
     });
+
     if (!account) {
       throw new NotFoundException(`Active account with ID ${id} not found`);
     }
+
     return account;
-  }
-
-  async findById(id: string): Promise<Account | null> {
-    return this.accountRepository.findOneBy({ id });
-  }
-
-  async findByEmail(email: string): Promise<Account | null> {
-    return this.accountRepository.findOne({
-      where: { email, isActive: true },
-    });
-  }
-
-  async findByPhoneNumber(phoneNumber: string): Promise<Account | null> {
-    return this.accountRepository.findOne({
-      where: { phoneNumber, isActive: true },
-    });
   }
 
   async create(
     dto: CreateAccountDto,
     manager?: EntityManager,
   ): Promise<Account> {
-    const repo = this.getRepository(manager);
-    const account = this.createEntity(dto);
+    const repo = this.getRepo(manager);
+    const account = this.createEntity(dto, undefined, manager);
     return repo.save(account);
   }
 
@@ -85,9 +89,9 @@ export class AccountService {
     dto: CreateAccountDto,
     manager?: EntityManager,
   ): Promise<Account> {
-    const repo = this.getRepository(manager);
+    const repo = this.getRepo(manager);
 
-    const account = this.createEntity(dto, Role.USER);
+    const account = this.createEntity(dto, Role.USER, manager);
     const saved = await repo.save(account);
 
     await this.profileService.create(dto.profile, saved, manager);
@@ -95,8 +99,27 @@ export class AccountService {
     return saved;
   }
 
-  async toggleActive(id: string, isActive: boolean): Promise<boolean> {
-    const account = await this.getById(id);
+  async updatePassword(
+    id: string,
+    newPasswordHash: string,
+    manager?: EntityManager,
+  ): Promise<Account> {
+    const repo = this.getRepo(manager);
+
+    const account = await this.getActiveById(id, manager);
+    account.passwordHash = newPasswordHash;
+
+    return repo.save(account);
+  }
+
+  async toggleActive(
+    id: string,
+    isActive: boolean,
+    manager?: EntityManager,
+  ): Promise<boolean> {
+    const repo = this.getRepo(manager);
+
+    const account = await this.getById(id, manager);
 
     if (account.isActive === isActive) {
       throw new BadRequestException(
@@ -105,18 +128,15 @@ export class AccountService {
     }
 
     account.isActive = isActive;
-    await this.accountRepository.save(account);
+    await repo.save(account);
+
     return true;
   }
 
-  async updatePassword(id: string, newPasswordHash: string): Promise<Account> {
-    const account = await this.getActiveById(id);
-    account.passwordHash = newPasswordHash;
-    return this.accountRepository.save(account);
-  }
+  async softDelete(id: string, manager?: EntityManager): Promise<void> {
+    const repo = this.getRepo(manager);
 
-  async softDelete(id: string): Promise<void> {
-    await this.getById(id);
-    await this.accountRepository.softDelete(id);
+    await this.getById(id, manager);
+    await repo.softDelete(id);
   }
 }

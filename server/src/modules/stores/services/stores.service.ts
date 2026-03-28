@@ -9,103 +9,98 @@ import { Store } from '../entities/store.entity';
 import { CreateStoreDto } from '../dtos/stores/create-store.dto';
 import { UpdateStoreDto } from '../dtos/stores/update-store.dto';
 import { Pages } from '@/common/interfaces/page.interface';
+import { Account } from '@/modules/accounts/entities/account.entity';
+import { BaseService } from '@/common/services/base.service';
 
 @Injectable()
-export class StoresService {
+export class StoresService extends BaseService<Store> {
   constructor(
     @InjectRepository(Store)
-    private readonly storeRepository: Repository<Store>,
-  ) {}
+    repository: Repository<Store>,
+  ) {
+    super(repository, Store);
+  }
 
   async createStore(
     accountId: string,
     dto: CreateStoreDto,
     manager?: EntityManager,
   ): Promise<Store> {
-    const repo = manager ? manager.getRepository(Store) : this.storeRepository;
-
     const slug = dto.slug
-      ? await this.validateCustomSlug(dto.slug)
-      : await this.generateUniqueSlug(dto.name);
+      ? await this.validateCustomSlug(dto.slug, this.getRepo(manager))
+      : await this.generateUniqueSlug(dto.name, this.getRepo(manager));
 
-    const store = repo.create({
+    const store = this.getRepo(manager).create({
       ...dto,
       slug,
       account: { id: accountId },
     });
 
-    return this.saveStoreOrThrowConflict(store, manager);
+    return this.saveOrThrowConflict(store, this.getRepo(manager));
   }
 
   async getStoreById(id: string, manager?: EntityManager): Promise<Store> {
-    const repo = manager ? manager.getRepository(Store) : this.storeRepository;
-    const store = await repo.findOneBy({ id, isActive: true });
-    if (!store) throw new NotFoundException('Store not found.');
+    const store = await this.getRepo(manager).findOneBy({
+      id,
+      isActive: true,
+    });
 
+    if (!store) throw new NotFoundException('Store not found.');
     return store;
   }
 
   async getStoreBySlug(slug: string, manager?: EntityManager): Promise<Store> {
-    const repo = manager ? manager.getRepository(Store) : this.storeRepository;
-    const store = await repo.findOneBy({
+    const store = await this.getRepo(manager).findOneBy({
       slug,
       isActive: true,
     });
+
     if (!store) throw new NotFoundException('Store not found.');
     return store;
   }
 
-  async getAllStores(
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<Pages<Store>> {
-    const skip = (page - 1) * limit;
-    const [data, total] = await this.storeRepository.findAndCount({
-      where: { isActive: true },
-      order: { createdAt: 'DESC' },
-      skip,
-      take: limit,
-    });
-    return { data, total, page, limit };
+  async getAllStores(page = 1, limit = 10): Promise<Pages<Store>> {
+    return this.paginate(this.getRepo(), { isActive: true }, page, limit);
   }
 
   async getMyStores(
     accountId: string,
-    page: number = 1,
-    limit: number = 10,
+    page = 1,
+    limit = 10,
   ): Promise<Pages<Store>> {
-    const skip = (page - 1) * limit;
-    const [data, total] = await this.storeRepository.findAndCount({
-      where: { account: { id: accountId }, isActive: true },
-      order: { createdAt: 'DESC' },
-      skip,
-      take: limit,
-    });
-    return { data, total, page, limit };
+    return this.paginate(
+      this.getRepo(),
+
+      { account: { id: accountId } as Account, isActive: true },
+      page,
+      limit,
+    );
   }
 
   async updateStore(id: string, dto: UpdateStoreDto): Promise<Store> {
     const store = await this.getStoreById(id);
-    Object.assign(store, dto);
+
     if (dto.slug) {
-      store.slug = await this.validateCustomSlug(dto.slug);
+      store.slug = await this.validateCustomSlug(dto.slug, this.getRepo());
     }
-    return this.saveStoreOrThrowConflict(store);
+
+    Object.assign(store, dto);
+
+    return this.saveOrThrowConflict(store, this.getRepo());
   }
 
   async deleteStore(id: string): Promise<void> {
     await this.getStoreById(id);
-    await this.storeRepository.softDelete(id);
+    await this.getRepo().softDelete(id);
   }
 
-  private async saveStoreOrThrowConflict(
+  private async saveOrThrowConflict(
     store: Store,
-    manager?: EntityManager,
+    repo: Repository<Store>,
   ): Promise<Store> {
-    const repo = manager ? manager.getRepository(Store) : this.storeRepository;
     try {
       return await repo.save(store);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof Error && 'code' in err && err.code === '23505') {
         throw new ConflictException('Store slug already exists.');
       }
@@ -113,15 +108,32 @@ export class StoresService {
     }
   }
 
-  private async generateUniqueSlug(name: string): Promise<string> {
+  private async generateUniqueSlug(
+    name: string,
+    repo: Repository<Store>,
+  ): Promise<string> {
     const baseSlug = this.slugify(name);
     let slug = baseSlug;
     let counter = 0;
-    while (await this.storeRepository.exist({ where: { slug } })) {
-      counter += 1;
+
+    while (await repo.exist({ where: { slug } })) {
+      counter++;
       slug = `${baseSlug}-${counter}`;
     }
+
     return slug;
+  }
+
+  private async validateCustomSlug(
+    slug: string,
+    repo: Repository<Store>,
+  ): Promise<string> {
+    const normalized = this.slugify(slug);
+
+    const exists = await repo.exist({ where: { slug: normalized } });
+    if (exists) throw new ConflictException('Slug already exists.');
+
+    return normalized;
   }
 
   private slugify(name: string): string {
@@ -133,10 +145,21 @@ export class StoresService {
       .replace(/(^-|-$)/g, '');
   }
 
-  private async validateCustomSlug(slug: string): Promise<string> {
-    slug = this.slugify(slug);
-    const exists = await this.storeRepository.exists({ where: { slug } });
-    if (exists) throw new ConflictException('Slug already exists.');
-    return slug;
+  private async paginate(
+    repo: Repository<Store>,
+    where: Partial<Store>,
+    page: number,
+    limit: number,
+  ): Promise<Pages<Store>> {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await repo.findAndCount({
+      where,
+      order: { createdAt: 'DESC' },
+      skip,
+      take: limit,
+    });
+
+    return { data, total, page, limit };
   }
 }

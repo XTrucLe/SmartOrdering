@@ -50,6 +50,9 @@ export class StoreMemberService extends BaseService<StoreMember> {
 
   async removeStoreMember(storeId: string, userId: string): Promise<void> {
     const member = await this.findMemberOrFail(storeId, userId);
+    if (member.role === StoreRole.OWNER) {
+      throw new ConflictException('Cannot remove the owner of the store.');
+    }
     await this.getRepo().remove(member);
   }
 
@@ -70,6 +73,7 @@ export class StoreMemberService extends BaseService<StoreMember> {
     const members = await this.getRepo().find({
       where: { store: { id: storeId } },
       relations: ['account', 'account.profile'],
+      order: { account: { profile: { firstName: 'ASC' } } },
     });
 
     return members.sort(
@@ -77,7 +81,7 @@ export class StoreMemberService extends BaseService<StoreMember> {
     );
   }
 
-  async findStoreByAccount(accountId: string) {
+  async findStoresByAccount(accountId: string) {
     const members = await this.getRepo().find({
       where: { account: { id: accountId } },
       relations: ['store', 'store.account'],

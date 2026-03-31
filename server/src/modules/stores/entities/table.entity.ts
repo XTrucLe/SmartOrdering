@@ -33,6 +33,9 @@ export class Table {
   @Column({ length: 100 })
   name: string;
 
+  @Column({ default: 0 })
+  sortOrder: number;
+
   @Column({ type: 'int', default: 1 })
   capacity: number;
 

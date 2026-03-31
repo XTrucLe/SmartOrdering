@@ -16,23 +16,25 @@ import {
 } from '../constants/table.constant';
 
 @Injectable()
-export class TablesService {
+export class TableService {
   constructor(
     @InjectRepository(Table)
     private readonly tableRepository: Repository<Table>,
     private readonly zonesService: ZonesService,
   ) {}
 
-  async createTable(zoneId: string, dto: CreateTableDto): Promise<Table> {
-    const zone = await this.zonesService.getZoneById(zoneId);
+  async createTable(storeId: string, dto: CreateTableDto): Promise<Table> {
+    await this.zonesService.getZoneById(storeId, dto.zoneId);
+    const count = await this.countTablesInZone(storeId, dto.zoneId);
 
     for (let i = 0; i < 5; i++) {
       try {
         const table = this.tableRepository.create({
           ...dto,
           code: this.generateCode(),
-          zoneId: zone.id,
-          storeId: zone.storeId,
+          zoneId: dto.zoneId,
+          storeId,
+          sortOrder: count + 1,
         });
 
         return await this.tableRepository.save(table);
@@ -52,18 +54,23 @@ export class TablesService {
     throw new InternalServerErrorException('Failed to generate unique code');
   }
 
-  async updateTable(tableId: string, dto: UpdateTableDto): Promise<Table> {
-    const table = await this.getTableById(tableId);
+  async updateTable(
+    storeId: string,
+    tableId: string,
+    dto: UpdateTableDto,
+  ): Promise<Table> {
+    const table = await this.getTableById(storeId, tableId);
 
     Object.assign(table, dto);
     return this.tableRepository.save(table);
   }
 
   async changeTableStatus(
+    storeId: string,
     tableId: string,
     status: TableStatus,
   ): Promise<Table> {
-    const table = await this.getTableById(tableId);
+    const table = await this.getTableById(storeId, tableId);
     if (table.status === status)
       throw new BadRequestException('Table is already in the desired status');
 
@@ -77,9 +84,9 @@ export class TablesService {
     return this.tableRepository.save(table);
   }
 
-  async getTableById(id: string): Promise<Table> {
+  async getTableById(storeId: string, id: string): Promise<Table> {
     const table = await this.tableRepository.findOne({
-      where: { id },
+      where: { id, storeId },
     });
 
     if (!table) {
@@ -89,17 +96,17 @@ export class TablesService {
     return table;
   }
 
-  async getTablesByZoneId(zoneId: string): Promise<Table[]> {
+  async getTablesInZone(storeId: string, zoneId: string): Promise<Table[]> {
     return this.tableRepository.find({
-      where: { zoneId },
-      order: { createdAt: 'DESC' },
+      where: { zoneId, storeId },
+      order: { sortOrder: 'ASC' },
     });
   }
 
-  async getTablesByStoreId(storeId: string): Promise<Table[]> {
+  async getTablesInStore(storeId: string): Promise<Table[]> {
     return this.tableRepository.find({
       where: { storeId },
-      order: { createdAt: 'DESC' },
+      order: { sortOrder: 'ASC' },
       relations: ['zone'],
       select: {
         id: true,
@@ -116,6 +123,39 @@ export class TablesService {
     });
   }
 
+  async reorderTables(
+    storeId: string,
+    zoneId: string,
+    orderedIds: string[],
+  ): Promise<Table[]> {
+    const tables = await this.getTablesInZone(storeId, zoneId);
+
+    if (tables.length !== orderedIds.length) {
+      throw new BadRequestException(
+        'Invalid table order provided or missing tables',
+      );
+    }
+
+    const tablesMap = new Map(tables.map((t) => [t.id, t]));
+
+    const updatedTables: Table[] = [];
+
+    for (let i = 0; i < orderedIds.length; i++) {
+      const table = tablesMap.get(orderedIds[i]);
+
+      if (!table) {
+        throw new BadRequestException('Invalid table id');
+      }
+      table.sortOrder = i + 1;
+      updatedTables.push(table);
+    }
+
+    return this.tableRepository.manager.transaction(async (manager) => {
+      await manager.save(updatedTables);
+      return updatedTables;
+    });
+  }
+
   async getTableByCode(storeId: string, code: string): Promise<Table> {
     const table = await this.tableRepository.findOne({
       where: { storeId, code },
@@ -124,8 +164,8 @@ export class TablesService {
     return table;
   }
 
-  async deleteTable(tableId: string): Promise<void> {
-    await this.getTableById(tableId);
+  async deleteTable(storeId: string, tableId: string): Promise<void> {
+    await this.getTableById(storeId, tableId);
     await this.tableRepository.delete(tableId);
   }
 
@@ -133,5 +173,14 @@ export class TablesService {
     return Array.from({ length }, () =>
       randomInt(0, 36).toString(36).toUpperCase(),
     ).join('');
+  }
+
+  private async countTablesInZone(
+    storeId: string,
+    zoneId: string,
+  ): Promise<number> {
+    return this.tableRepository.count({
+      where: { zoneId, storeId },
+    });
   }
 }

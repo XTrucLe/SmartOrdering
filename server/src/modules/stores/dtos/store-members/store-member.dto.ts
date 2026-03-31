@@ -1,23 +1,24 @@
-import { IsNotEmpty, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsEnum, ValidateNested } from 'class-validator';
 import { StoreRole } from '../../constants/store-role.constant';
-import { PartialType } from '@nestjs/mapped-types';
 import {
   AccountResponseDto,
   CreateAccountDto,
 } from '@/modules/accounts/dtos/account.dto';
 import { ProfileSummaryDto } from '@/modules/profiles/dtos/profile-response.dto';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 export class CreateStoreMemberDto {
   @IsNotEmpty()
-  @IsEnum(StoreRole)
-  role: StoreRole;
-
-  @IsNotEmpty()
-  newStaff: CreateAccountDto;
+  @ValidateNested()
+  @Type(() => CreateAccountDto)
+  account: CreateAccountDto;
 }
 
-export class UpdateStoreMemberDto extends PartialType(CreateStoreMemberDto) {}
+export class UpdateStoreMemberDto {
+  @IsNotEmpty()
+  @IsEnum(StoreRole)
+  role: StoreRole;
+}
 
 @Exclude()
 export class StoreMemberResponseDto {

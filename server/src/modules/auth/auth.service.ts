@@ -54,7 +54,7 @@ export class AuthService {
     this.ensureAccountExists(account);
 
     const existingStores =
-      await this.storeMemberService.findStoreByAccount(accountId);
+      await this.storeMemberService.findStoresByAccount(accountId);
 
     if (!existingStores || existingStores.length === 0) {
       throw new BadRequestException('No store access found for this account');
@@ -147,7 +147,9 @@ export class AuthService {
     account: Account,
     selectedStoreId?: string,
   ): Promise<AuthResponseDto> {
-    const stores = await this.storeMemberService.findStoreByAccount(account.id);
+    const stores = await this.storeMemberService.findStoresByAccount(
+      account.id,
+    );
 
     if (!stores || stores.length === 0) {
       return this.generateAuthResponse(account);

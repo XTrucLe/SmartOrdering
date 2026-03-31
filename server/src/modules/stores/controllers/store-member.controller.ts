@@ -1,64 +1,86 @@
-import { Body, Controller, Get, Post, Delete, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { StoreMemberService } from '../services/store-member.service';
 import {
   CreateStoreMemberDto,
   StoreMemberResponseDto,
 } from '../dtos/store-members/store-member.dto';
 import { mapToStoreMemberDto } from '../mappers/store-member.mapper';
+import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { StoreRoleGuard } from '../guards/store-role.guard';
+import { CurrentStore } from '../decorators/current-store.decorator';
+import { StoreInfo } from '../dtos/stores/store-info.dto';
+import {
+  StoreManager,
+  StoreOwner,
+} from '../decorators/store-role-group.decorator';
 
-@Controller('stores/:storeId/members')
+@Controller('/members')
+@UseGuards(JwtGuard, StoreRoleGuard)
 export class StoreMemberController {
   constructor(private readonly storeMemberService: StoreMemberService) {}
 
-  @Post('create/manager')
+  @Post('managers')
+  @StoreManager()
   async createManager(
-    @Param('storeId') storeId: string,
+    @CurrentStore() store: StoreInfo,
     @Body() dto: CreateStoreMemberDto,
   ): Promise<StoreMemberResponseDto> {
     const member = await this.storeMemberService.createManager(
-      storeId,
-      dto.newStaff,
+      store.id,
+      dto.account,
     );
     return mapToStoreMemberDto(member);
   }
 
-  @Post('create/staff')
+  @Post('staff')
+  @StoreOwner()
   async createStaff(
-    @Param('storeId') storeId: string,
+    @CurrentStore() store: StoreInfo,
     @Body() dto: CreateStoreMemberDto,
   ): Promise<StoreMemberResponseDto> {
     const member = await this.storeMemberService.createStaff(
-      storeId,
-      dto.newStaff,
+      store.id,
+      dto.account,
+    );
+    return mapToStoreMemberDto(member);
+  }
+
+  @Get()
+  @StoreManager()
+  async listMembers(
+    @CurrentStore() store: StoreInfo,
+  ): Promise<StoreMemberResponseDto[]> {
+    const members = await this.storeMemberService.listStoreMembers(store.id);
+    return members.map(mapToStoreMemberDto);
+  }
+
+  @Get(':userId')
+  @StoreManager()
+  async getMember(
+    @CurrentStore() store: StoreInfo,
+    @Param('userId') userId: string,
+  ): Promise<StoreMemberResponseDto> {
+    const member = await this.storeMemberService.findMemberOrFail(
+      store.id,
+      userId,
     );
     return mapToStoreMemberDto(member);
   }
 
   @Delete(':userId')
-  async removeMember(
-    @Param('storeId') storeId: string,
+  @StoreOwner()
+  async deleteMember(
+    @CurrentStore() store: StoreInfo,
     @Param('userId') userId: string,
   ): Promise<void> {
-    await this.storeMemberService.removeStoreMember(storeId, userId);
-  }
-
-  @Get('members')
-  async listMembers(
-    @Param('storeId') storeId: string,
-  ): Promise<StoreMemberResponseDto[]> {
-    const members = await this.storeMemberService.listStoreMembers(storeId);
-    return members.map(mapToStoreMemberDto);
-  }
-
-  @Get(':userId')
-  async getMember(
-    @Param('storeId') storeId: string,
-    @Param('userId') userId: string,
-  ): Promise<StoreMemberResponseDto> {
-    const member = await this.storeMemberService.findMemberOrFail(
-      storeId,
-      userId,
-    );
-    return mapToStoreMemberDto(member);
+    await this.storeMemberService.removeStoreMember(store.id, userId);
   }
 }

@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
 import { TableStatus } from '../../constants/table.constant';
 import { Exclude, Expose } from 'class-transformer';
 import { ZoneResponseDto } from '../zones/zone.dto';
@@ -7,9 +7,15 @@ import { ZoneResponseDto } from '../zones/zone.dto';
 export class CreateTableDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  zoneId: string;
 
   @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsNotEmpty()
   capacity: number;
 }
@@ -27,7 +33,6 @@ export class TableResponseDto {
 }
 
 @Exclude()
-export class TableGroupByZoneDto {
-  @Expose() zone: ZoneResponseDto;
+export class TableGroupByZoneDto extends ZoneResponseDto {
   @Expose() tables: TableResponseDto[];
 }

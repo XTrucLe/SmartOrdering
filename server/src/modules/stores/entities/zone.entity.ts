@@ -29,6 +29,9 @@ export class Zone {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
+  @Column({ default: 0 })
+  sortOrder: number;
+
   @OneToMany(() => Table, (table) => table.zone)
   tables: Table[];
 

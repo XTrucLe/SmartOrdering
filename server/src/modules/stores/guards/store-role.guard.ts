@@ -8,6 +8,7 @@ import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { JwtPayload } from '@/modules/auth/dtos/auth.dto';
 import { STORE_ROLE_KEY } from '../decorators/store-role.decorator';
+import { StoreRole } from '../constants/store-role.constant';
 
 @Injectable()
 export class StoreRoleGuard implements CanActivate {
@@ -15,7 +16,7 @@ export class StoreRoleGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+    const requiredRoles = this.reflector.getAllAndOverride<StoreRole[]>(
       STORE_ROLE_KEY,
       [context.getHandler(), context.getClass()],
     );
@@ -23,14 +24,31 @@ export class StoreRoleGuard implements CanActivate {
       return true; // No roles required, allow access
     }
 
-    const user = request.user as JwtPayload;
-    const storeRole = user?.store?.role;
+    if (!request.user) {
+      throw new ForbiddenException('User not authenticated.');
+    }
 
-    if (!storeRole || !requiredRoles.includes(storeRole)) {
+    const user = request.user as JwtPayload;
+
+    if (!user.store) {
+      throw new ForbiddenException('User does not have a store role.');
+    }
+    const storeRole = user.store.role;
+
+    if (!storeRole) {
       throw new ForbiddenException(
         'You do not have permission to perform this action.',
       );
     }
+
+    const hasPermission = requiredRoles.includes(storeRole);
+
+    if (!hasPermission) {
+      throw new ForbiddenException(
+        'You do not have permission to perform this action.',
+      );
+    }
+
     return true;
   }
 }

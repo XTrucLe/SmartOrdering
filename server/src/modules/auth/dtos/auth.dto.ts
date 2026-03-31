@@ -1,15 +1,9 @@
 import { Role } from '@/modules/accounts/constants/role.constant';
-import { StoreRole } from '@/modules/stores/constants/store-role.constant';
+import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
 
 class AuthUser {
   id: string;
   username: string;
-}
-
-export class StoreInfo {
-  id: string;
-  slug: string;
-  role: StoreRole;
 }
 
 export class JwtPayload {

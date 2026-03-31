@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
-import { StoreRole } from '../constants/store-role.constant';
 import { JwtPayload } from '@/modules/auth/dtos/auth.dto';
+import { STORE_ROLE_KEY } from '../decorators/store-role.decorator';
 
 @Injectable()
 export class StoreRoleGuard implements CanActivate {
@@ -15,9 +15,9 @@ export class StoreRoleGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const requiredRoles = this.reflector.get<StoreRole[]>(
-      'storeRoles',
-      context.getHandler(),
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      STORE_ROLE_KEY,
+      [context.getHandler(), context.getClass()],
     );
     if (!requiredRoles) {
       return true; // No roles required, allow access

@@ -10,12 +10,13 @@ import { DataSource } from 'typeorm';
 import { AccountService } from '../accounts/account.service';
 import { ProfileService } from '../profiles/profile.service';
 import { Account } from '../accounts/entities/account.entity';
-import { AuthResponseDto, JwtPayload, StoreInfo } from './dtos/auth.dto';
+import { AuthResponseDto, JwtPayload } from './dtos/auth.dto';
 import { LoginDto } from './dtos/login.dto';
 import { ChangePasswordDto } from './dtos/password.dto';
 import { OwnerRegisterDto } from './dtos/register.dto';
 import { StoresService } from '../stores/services/stores.service';
 import { StoreMemberService } from '../stores/services/store-member.service';
+import { StoreInfo } from '../stores/dtos/stores/store-info.dto';
 
 @Injectable()
 export class AuthService {

@@ -25,5 +25,8 @@ export class StoreMemberResponseDto {
   @Expose() id: string;
   @Expose() role: StoreRole;
   @Expose() user: AccountResponseDto;
-  @Expose() profile: ProfileSummaryDto;
+  @Expose() email: string;
+  @Expose()
+  @Type(() => ProfileSummaryDto)
+  profile: ProfileSummaryDto;
 }

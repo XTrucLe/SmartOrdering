@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -129,7 +130,9 @@ export class StoreMemberService extends BaseService<StoreMember> {
       return await repo.save(member);
     } catch (err) {
       if (err instanceof Error && 'code' in err && err?.code === '23505') {
-        throw new ConflictException('User is already a member of this store.');
+        throw new UnprocessableEntityException(
+          'User is already a member of this store.',
+        );
       }
       throw err;
     }

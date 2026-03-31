@@ -5,17 +5,33 @@ import { StoreMemberResponseDto } from '../dtos/store-members/store-member.dto';
 export function mapToStoreMemberDto(
   storeMember: StoreMember,
 ): StoreMemberResponseDto {
-  return plainToInstance(StoreMemberResponseDto, storeMember, {
-    excludeExtraneousValues: true,
-  });
+  return plainToInstance(
+    StoreMemberResponseDto,
+    {
+      ...storeMember,
+      email: storeMember.account.email,
+      profile: storeMember.account.profile,
+    },
+    {
+      excludeExtraneousValues: true,
+    },
+  );
 }
 
 export function mapToStoreMemberDtos(
   storeMembers: StoreMember[],
 ): StoreMemberResponseDto[] {
   return storeMembers.map((member) =>
-    plainToInstance(StoreMemberResponseDto, member, {
-      excludeExtraneousValues: true,
-    }),
+    plainToInstance(
+      StoreMemberResponseDto,
+      {
+        ...member,
+        email: member.account.email,
+        profile: member.account.profile,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    ),
   );
 }

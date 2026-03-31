@@ -5,7 +5,7 @@ export enum StoreRole {
 }
 
 export const RoleHierarchy: Record<StoreRole, number> = {
-  [StoreRole.OWNER]: 3,
-  [StoreRole.MANAGER]: 2,
-  [StoreRole.STAFF]: 1,
+  [StoreRole.OWNER]: 0,
+  [StoreRole.MANAGER]: 1,
+  [StoreRole.STAFF]: 2,
 };

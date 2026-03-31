@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
@@ -19,19 +20,6 @@ export class AccountService extends BaseService<Account> {
     private readonly profileService: ProfileService,
   ) {
     super(repository, Account);
-  }
-
-  private createEntity(
-    dto: CreateAccountDto,
-    role?: Role,
-    manager?: EntityManager,
-  ): Account {
-    return this.getRepo(manager).create({
-      email: dto.email,
-      phoneNumber: dto.phoneNumber,
-      passwordHash: dto.password,
-      ...(role && { role }),
-    });
   }
 
   async findById(id: string, manager?: EntityManager): Promise<Account | null> {
@@ -59,7 +47,7 @@ export class AccountService extends BaseService<Account> {
   async getById(id: string, manager?: EntityManager): Promise<Account> {
     const account = await this.findById(id, manager);
     if (!account) {
-      throw new NotFoundException(`Account with ID ${id} not found`);
+      throw new NotFoundException(`Account ${id} not found`);
     }
     return account;
   }
@@ -70,7 +58,7 @@ export class AccountService extends BaseService<Account> {
     });
 
     if (!account) {
-      throw new NotFoundException(`Active account with ID ${id} not found`);
+      throw new NotFoundException(`Active account ${id} not found`);
     }
 
     return account;
@@ -80,23 +68,40 @@ export class AccountService extends BaseService<Account> {
     dto: CreateAccountDto,
     manager?: EntityManager,
   ): Promise<Account> {
-    const repo = this.getRepo(manager);
-    const account = this.createEntity(dto, undefined, manager);
-    return repo.save(account);
+    return this.createAccount(dto, undefined, manager);
   }
 
   async createCustomer(
     dto: CreateAccountDto,
     manager?: EntityManager,
   ): Promise<Account> {
+    return this.createAccount(dto, Role.USER, manager);
+  }
+
+  private async createAccount(
+    dto: CreateAccountDto,
+    role?: Role,
+    manager?: EntityManager,
+  ): Promise<Account> {
     const repo = this.getRepo(manager);
 
-    const account = this.createEntity(dto, Role.USER, manager);
-    const saved = await repo.save(account);
+    const account = repo.create({
+      email: dto.email,
+      phoneNumber: dto.phoneNumber,
+      passwordHash: dto.password,
+      ...(role && { role }),
+    });
 
-    await this.profileService.create(dto.profile, saved, manager);
+    let savedAccount: Account;
 
-    return saved;
+    try {
+      savedAccount = await repo.save(account);
+    } catch (err) {
+      this.handleDbError(err);
+    }
+    await this.profileService.create(dto.profile, savedAccount, manager);
+
+    return savedAccount;
   }
 
   async updatePassword(
@@ -123,7 +128,7 @@ export class AccountService extends BaseService<Account> {
 
     if (account.isActive === isActive) {
       throw new BadRequestException(
-        `Account is already ${isActive ? 'active' : 'inactive'}`,
+        `Account already ${isActive ? 'active' : 'inactive'}`,
       );
     }
 
@@ -134,9 +139,17 @@ export class AccountService extends BaseService<Account> {
   }
 
   async softDelete(id: string, manager?: EntityManager): Promise<void> {
-    const repo = this.getRepo(manager);
-
     await this.getById(id, manager);
-    await repo.softDelete(id);
+    await this.getRepo(manager).softDelete(id);
+  }
+
+  private handleDbError(err: unknown): never {
+    if (err instanceof Error && 'code' in err && err.code === '23505') {
+      throw new UnprocessableEntityException('Entity already exists.');
+    }
+
+    console.error('Database error:', err);
+
+    throw err;
   }
 }

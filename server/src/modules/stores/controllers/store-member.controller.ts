@@ -12,7 +12,10 @@ import {
   CreateStoreMemberDto,
   StoreMemberResponseDto,
 } from '../dtos/store-members/store-member.dto';
-import { mapToStoreMemberDto } from '../mappers/store-member.mapper';
+import {
+  mapToStoreMemberDto,
+  mapToStoreMemberDtos,
+} from '../mappers/store-member.mapper';
 import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
 import { StoreRoleGuard } from '../guards/store-role.guard';
 import { CurrentStore } from '../decorators/current-store.decorator';
@@ -59,7 +62,7 @@ export class StoreMemberController {
     @CurrentStore() store: StoreInfo,
   ): Promise<StoreMemberResponseDto[]> {
     const members = await this.storeMemberService.listStoreMembers(store.id);
-    return members.map(mapToStoreMemberDto);
+    return mapToStoreMemberDtos(members);
   }
 
   @Get(':userId')

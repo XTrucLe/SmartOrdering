@@ -5,14 +5,18 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  Unique,
 } from 'typeorm';
 import { Store } from '../../stores/entities/store.entity';
-import { CategoryStatus } from '../constants/category.constant';
 
 @Entity('categories')
+@Unique('unique_category_name_store', ['name', 'store'])
 export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @ManyToOne(() => Store, { onDelete: 'CASCADE' })
+  store: Store;
 
   @Column({ length: 255 })
   name: string;
@@ -20,15 +24,8 @@ export class Category {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @Column({
-    type: 'enum',
-    enum: CategoryStatus,
-    default: CategoryStatus.ACTIVE,
-  })
-  status: CategoryStatus;
-
-  @ManyToOne(() => Store, { onDelete: 'CASCADE' })
-  store: Store;
+  @Column({ default: true })
+  isActive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

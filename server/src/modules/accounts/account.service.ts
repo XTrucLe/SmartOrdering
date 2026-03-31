@@ -148,8 +148,6 @@ export class AccountService extends BaseService<Account> {
       throw new UnprocessableEntityException('Entity already exists.');
     }
 
-    console.error('Database error:', err);
-
     throw err;
   }
 }

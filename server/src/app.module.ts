@@ -9,6 +9,7 @@ import { ProfileModule } from './modules/profiles/profile.module';
 import { AccountModule } from './modules/accounts/account.module';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { StoresModule } from './modules/stores/store.module';
+import { CatalogModule } from './modules/catalog/catalog.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { StoresModule } from './modules/stores/store.module';
           __dirname + '/modules/profiles/**/*.entity{.ts,.js}',
           __dirname + '/modules/notifications/**/*.entity{.ts,.js}',
           __dirname + '/modules/stores/**/*.entity{.ts,.js}',
+          __dirname + '/modules/catalog/**/*.entity{.ts,.js}',
         ],
         autoLoadEntities: false,
         synchronize: true,
@@ -41,6 +43,7 @@ import { StoresModule } from './modules/stores/store.module';
     }),
     AccountModule,
     AuthModule,
+    CatalogModule,
     NotificationModule,
     ProfileModule,
     StoresModule,

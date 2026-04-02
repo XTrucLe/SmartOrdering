@@ -60,7 +60,7 @@ export class StoresService extends BaseService<Store> {
   }
 
   async getAllStores(page = 1, limit = 10): Promise<Pages<Store>> {
-    return this.paginate(this.getRepo(), { isActive: true }, page, limit);
+    return this.paginate({ isActive: true }, page, limit);
   }
 
   async getMyStores(
@@ -69,8 +69,6 @@ export class StoresService extends BaseService<Store> {
     limit = 10,
   ): Promise<Pages<Store>> {
     return this.paginate(
-      this.getRepo(),
-
       { account: { id: accountId } as Account, isActive: true },
       page,
       limit,
@@ -143,23 +141,5 @@ export class StoresService extends BaseService<Store> {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-  }
-
-  private async paginate(
-    repo: Repository<Store>,
-    where: Partial<Store>,
-    page: number,
-    limit: number,
-  ): Promise<Pages<Store>> {
-    const skip = (page - 1) * limit;
-
-    const [data, total] = await repo.findAndCount({
-      where,
-      order: { createdAt: 'DESC' },
-      skip,
-      take: limit,
-    });
-
-    return { data, total, page, limit };
   }
 }

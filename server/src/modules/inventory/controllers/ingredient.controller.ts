@@ -18,10 +18,7 @@ import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { StoreRoleGuard } from '../../stores/guards/store-role.guard';
 import { CurrentStore } from '../../stores/decorators/current-store.decorator';
 import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
-import {
-  mapToIngredientResponseDto,
-  mapToIngredientResponseDtos,
-} from '../mappers/ingredient.mapper';
+import { IngredientMapper } from '../mappers/ingredient.mapper';
 import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
 
 @Controller('ingredients')
@@ -36,7 +33,7 @@ export class IngredientController {
     @Body() dto: CreateIngredientDto,
   ): Promise<IngredientResponseDto> {
     const ingredient = await this.ingredientService.create(store.id, dto);
-    return mapToIngredientResponseDto(ingredient);
+    return IngredientMapper.toDto(ingredient);
   }
 
   @Get()
@@ -45,7 +42,7 @@ export class IngredientController {
     @CurrentStore() store: StoreInfo,
   ): Promise<IngredientResponseDto[]> {
     const ingredients = await this.ingredientService.findAll(store.id);
-    return mapToIngredientResponseDtos(ingredients);
+    return IngredientMapper.toList(ingredients);
   }
 
   @Get(':id')
@@ -57,7 +54,7 @@ export class IngredientController {
       store.id,
       id,
     );
-    return mapToIngredientResponseDto(ingredient);
+    return IngredientMapper.toDto(ingredient);
   }
 
   @Put(':id')
@@ -68,7 +65,7 @@ export class IngredientController {
     @Body() dto: UpdateIngredientDto,
   ): Promise<IngredientResponseDto> {
     const ingredient = await this.ingredientService.update(store.id, id, dto);
-    return mapToIngredientResponseDto(ingredient);
+    return IngredientMapper.toDto(ingredient);
   }
 
   @Delete(':id')

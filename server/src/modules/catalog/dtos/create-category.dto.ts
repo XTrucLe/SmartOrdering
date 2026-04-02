@@ -1,14 +1,9 @@
-import { IsString, IsEnum, IsOptional, IsNotEmpty } from 'class-validator';
-import { CategoryStatus } from '../constants/category.constant';
+import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
 
 export class CreateCategoryDto {
   @IsNotEmpty()
   @IsString()
   name: string;
-
-  @IsOptional()
-  @IsEnum(CategoryStatus)
-  status?: CategoryStatus;
 
   @IsOptional()
   @IsString({ each: true })

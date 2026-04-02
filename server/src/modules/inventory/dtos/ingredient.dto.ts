@@ -1,19 +1,31 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 import { Exclude, Expose } from 'class-transformer';
 
 export class CreateIngredientDto {
+  @IsOptional()
+  @IsString()
+  code?: string;
+
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  unitMeasure: string;
+  description?: string;
 
   @IsNotEmpty()
   @IsString()
-  unitCost: string;
+  baseUnit: string;
+
+  @IsNotEmpty()
+  @IsString()
+  importUnit: string;
+
+  @IsNotEmpty()
+  @IsString()
+  conversionRate: string;
 }
 
 export class UpdateIngredientDto extends PartialType(CreateIngredientDto) {}
@@ -21,8 +33,12 @@ export class UpdateIngredientDto extends PartialType(CreateIngredientDto) {}
 @Exclude()
 export class IngredientResponseDto {
   @Expose() id: string;
+  @Expose() code: string;
   @Expose() name: string;
-  @Expose() unitMeasure: string;
-  @Expose() unitCost: string;
+  @Expose() description: string;
+  @Expose() baseUnit: string;
+  @Expose() importUnit: string;
+  @Expose() conversionRate: string;
+  @Expose() stockQty: string;
   @Expose() isActive: boolean;
 }

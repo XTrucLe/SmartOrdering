@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { AuthModule } from './modules/auth/auth.module';
-import { ProfileModule } from './modules/profiles/profile.module';
 import { AccountModule } from './modules/accounts/account.module';
-import { NotificationModule } from './modules/notifications/notification.module';
-import { StoresModule } from './modules/stores/store.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
-// import { ItemsModule } from './modules/items/items.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
+import { NotificationModule } from './modules/notifications/notification.module';
+import { ProfileModule } from './modules/profiles/profile.module';
+import { StoresModule } from './modules/stores/store.module';
 
 @Module({
   imports: [
@@ -38,7 +38,6 @@ import { InventoryModule } from './modules/inventory/inventory.module';
           __dirname + '/modules/notifications/**/*.entity{.ts,.js}',
           __dirname + '/modules/stores/**/*.entity{.ts,.js}',
           __dirname + '/modules/catalog/**/*.entity{.ts,.js}',
-          // __dirname + '/modules/items/**/*.entity{.ts,.js}',
           __dirname + '/modules/inventory/**/*.entity{.ts,.js}',
         ],
         autoLoadEntities: false,
@@ -48,7 +47,6 @@ import { InventoryModule } from './modules/inventory/inventory.module';
     AccountModule,
     AuthModule,
     CatalogModule,
-    // ItemsModule,
     InventoryModule,
     NotificationModule,
     ProfileModule,

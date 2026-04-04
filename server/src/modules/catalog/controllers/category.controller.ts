@@ -1,59 +1,68 @@
 import {
-  Controller,
   Body,
-  Put,
-  Post,
+  Controller,
+  Delete,
   Get,
   Param,
-  Delete,
-  UseGuards,
   Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { CategoryService } from '../services/category.service';
-import { CreateCategoryDto } from '../dtos/create-category.dto';
-import { UpdateCategoryDto } from '../dtos/update-category.dto';
-import { CategoryResponseDto } from '../dtos/category.response.dto';
-import {
-  mapToCategoryDto,
-  mapToCategoryDtos,
-} from '../mappers/category.mapper';
-import { StoreRoleGuard } from '../../stores/guards/store-role.guard';
 import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
 import { CurrentStore } from '../../stores/decorators/current-store.decorator';
 import { StoreInfo } from '../../stores/dtos/stores/store-info.dto';
+import { StoreRoleGuard } from '../../stores/guards/store-role.guard';
+import { CategoryService } from '../services/category.service';
+import {
+  CategoryResponseDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from '../dtos/category.dto';
+import { CategoryMapper } from '../mappers/category.mapper';
+import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
 
 @Controller('categories')
 @UseGuards(JwtGuard, StoreRoleGuard)
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CategoryService) { }
 
   @Post()
+  @StoreManager()
   async createCategory(
     @CurrentStore() store: StoreInfo,
     @Body() dto: CreateCategoryDto,
   ): Promise<CategoryResponseDto> {
     const category = await this.categoryService.create(store.id, dto);
-    return mapToCategoryDto(category);
+    return CategoryMapper.toDto(category);
   }
 
   @Get()
   async getCategories(
     @CurrentStore() store: StoreInfo,
+    @Query('includeProducts') includeProducts?: boolean,
   ): Promise<CategoryResponseDto[]> {
-    const categories = await this.categoryService.getCategories(store.id);
-    return mapToCategoryDtos(categories);
+    const categories = includeProducts
+      ? await this.categoryService.getAll(store.id)
+      : await this.categoryService.getCategories(store.id);
+    return CategoryMapper.toDtoList(categories);
   }
 
   @Get(':id')
   async getCategoryById(
     @CurrentStore() store: StoreInfo,
     @Param('id') id: string,
+    @Query('includeProducts') includeProducts?: boolean,
   ): Promise<CategoryResponseDto> {
-    const category = await this.categoryService.getCategoryById(store.id, id);
-    return mapToCategoryDto(category);
+    const category = includeProducts
+      ? await this.categoryService.getCategoryWithProducts(store.id, id)
+      : await this.categoryService.getCategoryById(store.id, id);
+    return CategoryMapper.toDto(category);
   }
 
   @Put(':id')
+  @StoreManager()
   async updateCategory(
     @CurrentStore() store: StoreInfo,
     @Param('id') id: string,
@@ -64,10 +73,11 @@ export class CategoryController {
       id,
       dto,
     );
-    return mapToCategoryDto(category);
+    return CategoryMapper.toDto(category);
   }
 
   @Delete(':id')
+  @StoreManager()
   async deleteCategory(
     @CurrentStore() store: StoreInfo,
     @Param('id') id: string,
@@ -76,11 +86,22 @@ export class CategoryController {
   }
 
   @Patch(':id/disable')
+  @StoreManager()
   async disableCategory(
     @CurrentStore() store: StoreInfo,
     @Param('id') id: string,
   ): Promise<CategoryResponseDto> {
     const category = await this.categoryService.disableCategory(store.id, id);
-    return mapToCategoryDto(category);
+    return CategoryMapper.toDto(category);
+  }
+
+  @Patch(':id/enable')
+  @StoreManager()
+  async enableCategory(
+    @CurrentStore() store: StoreInfo,
+    @Param('id') id: string,
+  ): Promise<CategoryResponseDto> {
+    const category = await this.categoryService.enableCategory(store.id, id);
+    return CategoryMapper.toDto(category);
   }
 }

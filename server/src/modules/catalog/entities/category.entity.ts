@@ -6,14 +6,19 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Unique,
+  OneToMany,
 } from 'typeorm';
 import { Store } from '../../stores/entities/store.entity';
+import { Product } from './product.entity';
 
 @Entity('categories')
 @Unique('unique_category_name_store', ['name', 'store'])
 export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
+  storeId: string;
 
   @ManyToOne(() => Store, { onDelete: 'CASCADE' })
   store: Store;
@@ -23,6 +28,12 @@ export class Category {
 
   @Column({ type: 'text', nullable: true })
   description?: string;
+
+  @Column()
+  displayOrder: number;
+
+  @OneToMany(() => Product, (product) => product.category)
+  products: Product[];
 
   @Column({ default: true })
   isActive: boolean;

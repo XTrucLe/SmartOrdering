@@ -6,8 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../entities/category.entity';
-import { CreateCategoryDto } from '../dtos/create-category.dto';
-import { UpdateCategoryDto } from '../dtos/update-category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
 import { handleError } from '@/common/utils/handle-error';
 
 @Injectable()
@@ -15,22 +14,22 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
-  ) {}
+  ) { }
 
   async create(storeId: string, dto: CreateCategoryDto): Promise<Category> {
-    const { name } = dto;
 
     const existingCategory = await this.categoryRepository.findOne({
-      where: { name, store: { id: storeId } },
+      where: { name: dto.name, storeId },
     });
 
     if (existingCategory) {
-      throw new ConflictException(`Category with name ${name} already exists.`);
+      throw new ConflictException(`Category with name ${dto.name} already exists.`);
     }
 
     const newCategory = this.categoryRepository.create({
       ...dto,
-      store: { id: storeId },
+      storeId,
+      displayOrder: await this.getDisplayOrder(storeId),
     });
 
     try {
@@ -42,8 +41,8 @@ export class CategoryService {
 
   async getCategories(storeId: string): Promise<Category[]> {
     return this.categoryRepository.find({
-      where: { store: { id: storeId } },
-      relations: ['items'],
+      where: { storeId },
+      order: { displayOrder: 'ASC' },
     });
   }
 
@@ -57,8 +56,28 @@ export class CategoryService {
 
   async findCategory(storeId: string, id: string): Promise<Category | null> {
     return this.categoryRepository.findOne({
-      where: { id, store: { id: storeId } },
-      relations: ['items'],
+      where: { id, storeId },
+    });
+  }
+
+  async getCategoryWithProducts(storeId: string, categoryId: string): Promise<Category> {
+    const category = await this.categoryRepository.findOne({
+      where: { id: categoryId, storeId },
+      relations: ['products'],
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${categoryId} not found.`);
+    }
+
+    return category;
+  }
+
+  async getAll(storeId: string): Promise<Category[]> {
+    return this.categoryRepository.find({
+      where: { storeId },
+      order: { displayOrder: 'ASC' },
+      relations: ['products'],
     });
   }
 
@@ -78,8 +97,31 @@ export class CategoryService {
   }
 
   async disableCategory(storeId: string, id: string): Promise<Category> {
+    return this.toggleActive(storeId, id, 'disable');
+  }
+
+  async enableCategory(storeId: string, id: string): Promise<Category> {
+    return this.toggleActive(storeId, id, 'enable');
+  }
+
+  private async toggleActive(storeId: string, id: string, action: 'enable' | 'disable'): Promise<Category> {
     const category = await this.getCategoryById(storeId, id);
-    category.isActive = false;
+    if (action === 'disable' && !category.isActive) {
+      throw new ConflictException(`Category with ID ${id} is already disabled.`);
+    }
+
+    if (action === 'enable' && category.isActive) {
+      throw new ConflictException(`Category with ID ${id} is already enabled.`);
+    }
+
+    category.isActive = !category.isActive;
     return this.categoryRepository.save(category);
+  }
+
+  private async getDisplayOrder(storeId: string): Promise<number> {
+    const maxOrder = await this.categoryRepository.count({
+      where: { storeId },
+    }) ?? 0;
+    return maxOrder + 1;
   }
 }

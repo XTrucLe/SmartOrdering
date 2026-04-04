@@ -24,7 +24,7 @@ import { StoreManager } from '@/modules/stores/decorators/store-role-group.decor
 @Controller('ingredients')
 @UseGuards(JwtGuard, StoreRoleGuard)
 export class IngredientController {
-  constructor(private readonly ingredientService: IngredientService) {}
+  constructor(private readonly ingredientService: IngredientService) { }
 
   @Post()
   @StoreManager()
@@ -56,6 +56,19 @@ export class IngredientController {
     );
     return IngredientMapper.toDto(ingredient);
   }
+
+  @Get('code/:code')
+  async getIngredientByCode(
+    @CurrentStore() store: StoreInfo,
+    @Param('code') code: string,
+  ): Promise<IngredientResponseDto> {
+    const ingredient = await this.ingredientService.getIngredientByCode(
+      store.id,
+      code,
+    );
+    return IngredientMapper.toDto(ingredient);
+  }
+
 
   @Put(':id')
   @StoreManager()

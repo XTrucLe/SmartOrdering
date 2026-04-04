@@ -10,7 +10,7 @@ import { AccountModule } from './modules/accounts/account.module';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { StoresModule } from './modules/stores/store.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
-import { ItemsModule } from './modules/items/items.module';
+// import { ItemsModule } from './modules/items/items.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 
 @Module({
@@ -38,7 +38,7 @@ import { InventoryModule } from './modules/inventory/inventory.module';
           __dirname + '/modules/notifications/**/*.entity{.ts,.js}',
           __dirname + '/modules/stores/**/*.entity{.ts,.js}',
           __dirname + '/modules/catalog/**/*.entity{.ts,.js}',
-          __dirname + '/modules/items/**/*.entity{.ts,.js}',
+          // __dirname + '/modules/items/**/*.entity{.ts,.js}',
           __dirname + '/modules/inventory/**/*.entity{.ts,.js}',
         ],
         autoLoadEntities: false,
@@ -48,7 +48,7 @@ import { InventoryModule } from './modules/inventory/inventory.module';
     AccountModule,
     AuthModule,
     CatalogModule,
-    ItemsModule,
+    // ItemsModule,
     InventoryModule,
     NotificationModule,
     ProfileModule,
@@ -57,4 +57,4 @@ import { InventoryModule } from './modules/inventory/inventory.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -11,6 +11,7 @@ import {
 import { IngredientService } from './ingredient.service';
 import { Pages } from '@/common/interfaces/page.interface';
 import { BaseService } from '@/common/services/base.service';
+import { StockService } from './stock.service';
 
 @Injectable()
 export class ReceiptService extends BaseService<Receipt> {
@@ -18,6 +19,7 @@ export class ReceiptService extends BaseService<Receipt> {
     @InjectRepository(Receipt)
     repository: Repository<Receipt>,
     private readonly ingredientService: IngredientService,
+    private readonly stockService: StockService,
     private readonly datasource: DataSource,
   ) {
     super(repository, Receipt);
@@ -52,12 +54,11 @@ export class ReceiptService extends BaseService<Receipt> {
         manager,
       );
 
-      for (const item of savedReceipt.items) {
-        await this.ingredientService.adjustStock(
-          storeId,
+      for (const item of newReceiptItems) {
+        await this.stockService.increaseStock(
           item.ingredientId,
           item.quantity,
-          manager,
+          `Receipt ${savedReceipt.code} - ${item.ingredient.name} - ${item.quantity} ${item.ingredient.importUnit}(s) added to stock`,
         );
       }
 

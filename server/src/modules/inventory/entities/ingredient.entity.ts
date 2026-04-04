@@ -8,15 +8,16 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { Stock } from './stock.entity';
 
 @Entity('ingredients')
 @Unique('unique_ingredient_name_store', ['name', 'storeId'])
 @Unique('unique_ingredient_code_store', ['code', 'storeId'])
-@Check(`"stock_qty" >= 0`)
 export class Ingredient {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -52,8 +53,10 @@ export class Ingredient {
   })
   conversionRate: string;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, default: '0.00' })
-  stockQty: string;
+  @OneToOne(() => Stock, (stock) => stock.ingredient, {
+    cascade: true,
+  })
+  stock: Stock;
 
   @Column({ default: true })
   isActive: boolean;

@@ -6,6 +6,7 @@
     "dist",
     "**/*spec.ts",
     "src/modules/orders/**/*.ts",
-    "src/modules/menus/**/*.ts"
+    "src/modules/menus/**/*.ts",
+    "src/modules/items/**/*.ts"
   ]
 }

@@ -1,39 +1,49 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Category } from './category.entity';
 
 @Entity('products')
 export class Product {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    categoryId: string
+  @Column()
+  categoryId: string;
 
-    @ManyToOne(() => Category, (category) => category.products, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'categoryId' })
-    category: Category;
+  @ManyToOne(() => Category, (category) => category.products, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'categoryId' })
+  category: Category;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column({ nullable: true })
-    description?: string;
+  @Column({ nullable: true })
+  description?: string;
 
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    imageUrl: string;
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  imageUrl: string;
 
-    @Column()
-    displayOrder: number;
+  @Column()
+  displayOrder: number;
 
-    @Column({ type: 'varchar', length: 25 })
-    unit: string;
+  @Column({ type: 'varchar', length: 25 })
+  unit: string;
 
-    @Column({ default: true })
-    isActive: boolean;
+  @Column({ default: true })
+  isActive: boolean;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -1,7 +1,6 @@
 import { Store } from '@/modules/stores/entities/store.entity';
 import {
   BeforeInsert,
-  Check,
   Column,
   CreateDateColumn,
   Entity,

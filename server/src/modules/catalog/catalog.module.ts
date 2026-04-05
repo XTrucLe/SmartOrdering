@@ -14,9 +14,12 @@ import { ComboService } from './services/combo.service';
 import { ProductService } from './services/product.service';
 
 @Module({
-  imports: [StoresModule, TypeOrmModule.forFeature([Category, Combo, ComboItem, Product, Tag])],
+  imports: [
+    StoresModule,
+    TypeOrmModule.forFeature([Category, Combo, ComboItem, Product, Tag]),
+  ],
   controllers: [CategoryController, ComboController, ProductController],
   providers: [CategoryService, ComboService, ProductService],
   exports: [CategoryService, ComboService, ProductService],
 })
-export class CatalogModule { }
+export class CatalogModule {}

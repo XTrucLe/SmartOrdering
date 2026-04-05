@@ -1,8 +1,12 @@
-import { IsString, IsOptional, IsNotEmpty, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNotEmpty,
+  ValidateNested,
+} from 'class-validator';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { ProductDto } from './product.dto';
-
 
 export class CreateCategoryDto {
   @IsNotEmpty()
@@ -14,7 +18,7 @@ export class CreateCategoryDto {
   description?: string;
 }
 
-export class UpdateCategoryDto extends PartialType(CreateCategoryDto) { }
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}
 
 @Exclude()
 export class CategoryResponseDto {

@@ -4,12 +4,16 @@ import { IngredientResponseDto } from '../dtos/ingredient.dto';
 
 export class IngredientMapper {
   static toDto(ingredient: Ingredient): IngredientResponseDto {
-    return plainToInstance(IngredientResponseDto, {
-      ...ingredient,
-      stockQty: ingredient.stock.quantity,
-    }, {
-      excludeExtraneousValues: true,
-    });
+    return plainToInstance(
+      IngredientResponseDto,
+      {
+        ...ingredient,
+        stockQty: ingredient.stock.quantity,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 
   static toList(ingredients: Ingredient[]): IngredientResponseDto[] {

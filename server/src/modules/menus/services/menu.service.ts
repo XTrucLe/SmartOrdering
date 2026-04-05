@@ -4,8 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import { StoresService } from '../../stores/stores.service';
+import { Repository } from 'typeorm';
 import { CreateMenuDto } from '../dtos/menus/create-menu.dto';
 import { UpdateMenuDto } from '../dtos/menus/update-menu.dto';
 import { Menu } from '../entities/menu.entity';
@@ -14,97 +13,78 @@ import { Menu } from '../entities/menu.entity';
 export class MenuService {
   constructor(
     @InjectRepository(Menu)
-    private readonly menuRepository: Repository<Menu>,
-    private readonly storesService: StoresService,
-  ) {}
+    private readonly repo: Repository<Menu>,
+  ) { }
 
-  async create(storeId: string, createMenuDto: CreateMenuDto): Promise<Menu> {
-    const store = await this.storesService.getStoreById(storeId);
-    const menu = this.menuRepository.create({
-      ...createMenuDto,
-      store,
+  async create(storeId: string, dto: CreateMenuDto): Promise<Menu> {
+    const menu = this.repo.create({
+      ...dto,
+      storeId,
+      store: { id: storeId },
     });
-    return this.menuRepository.save(menu);
+
+    return this.repo.save(menu);
   }
 
-  async findAll(storeId: string, withRelations = false): Promise<Menu[]> {
-    const options: FindManyOptions<Menu> = {
-      where: { store: { id: storeId } },
+  async findAll(storeId: string): Promise<Menu[]> {
+    return this.repo.find({
+      where: { storeId },
       order: { createdAt: 'DESC' },
-    };
-
-    if (withRelations) {
-      options.relations = { menuSections: { menuItems: true } };
-      options.order = {
-        ...options.order,
-        menuSections: { displayOrder: 'ASC' },
-      };
-    }
-
-    return this.menuRepository.find(options);
+    });
   }
 
-  async findOne(
-    storeId: string,
-    menuId: string,
-    withRelations = false,
-  ): Promise<Menu> {
-    const menu = await this.findMenuByStore(storeId, menuId, withRelations);
+  async findOne(storeId: string, menuId: string): Promise<Menu> {
+    const menu = await this.repo.findOne({
+      where: { id: menuId, store: { id: storeId } },
+    });
+
     if (!menu) {
-      throw new NotFoundException(`Menu with ID "${menuId}" not found`);
+      throw new NotFoundException(`Menu "${menuId}" not found`);
     }
+
     return menu;
   }
 
   async update(
     storeId: string,
     menuId: string,
-    updateMenuDto: UpdateMenuDto,
+    dto: UpdateMenuDto,
   ): Promise<Menu> {
     const menu = await this.findOne(storeId, menuId);
-    const updatedMenu = this.menuRepository.merge(menu, updateMenuDto);
-    return this.menuRepository.save(updatedMenu);
+
+    const updated = this.repo.merge(menu, dto);
+
+    return this.repo.save(updated);
   }
 
   async remove(storeId: string, menuId: string): Promise<void> {
     await this.findOne(storeId, menuId);
-    await this.menuRepository.delete(menuId);
+    await this.repo.delete(menuId);
   }
 
-  async updateStatus(
+  async activate(storeId: string, menuId: string): Promise<Menu> {
+    return this.updateStatus(storeId, menuId, true);
+  }
+
+  async deactivate(storeId: string, menuId: string): Promise<Menu> {
+    return this.updateStatus(storeId, menuId, false);
+  }
+
+  private async updateStatus(
     storeId: string,
     menuId: string,
     isActive: boolean,
   ): Promise<Menu> {
     const menu = await this.findOne(storeId, menuId);
+
     if (menu.isActive === isActive) {
       throw new ConflictException(
-        `Menu is already ${isActive ? 'active' : 'inactive'}.`,
+        `Menu already ${isActive ? 'active' : 'inactive'}`,
       );
     }
+
     menu.isActive = isActive;
-    return this.menuRepository.save(menu);
-  }
 
-  private async findMenuByStore(
-    storeId: string,
-    menuId: string,
-    withRelations: boolean,
-  ): Promise<Menu | null> {
-    const options: FindOneOptions<Menu> = {
-      where: { id: menuId, store: { id: storeId } },
-    };
-
-    if (withRelations) {
-      options.relations = { menuSections: { menuItems: { item: true } } };
-      options.order = {
-        menuSections: {
-          displayOrder: 'ASC',
-          menuItems: { displayOrder: 'ASC' },
-        },
-      };
-    }
-
-    return this.menuRepository.findOne(options);
+    return this.repo.save(menu);
   }
 }

@@ -26,7 +26,7 @@ import { StoreManager } from '@/modules/stores/decorators/store-role-group.decor
 @Controller('categories')
 @UseGuards(JwtGuard, StoreRoleGuard)
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) { }
+  constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
   @StoreManager()

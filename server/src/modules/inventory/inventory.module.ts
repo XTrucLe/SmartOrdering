@@ -13,9 +13,17 @@ import { StockLog } from './entities/stock-log.entity';
 import { StockLogService } from './services/stock-log.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Ingredient, Stock, Receipt, ReceiptItem, StockLog])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Ingredient,
+      Stock,
+      Receipt,
+      ReceiptItem,
+      StockLog,
+    ]),
+  ],
   controllers: [IngredientController, ReceiptController],
   providers: [IngredientService, ReceiptService, StockService, StockLogService],
   exports: [IngredientService, ReceiptService, StockService, StockLogService],
 })
-export class InventoryModule { }
+export class InventoryModule {}

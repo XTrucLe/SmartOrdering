@@ -14,16 +14,17 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
-  ) { }
+  ) {}
 
   async create(storeId: string, dto: CreateCategoryDto): Promise<Category> {
-
     const existingCategory = await this.categoryRepository.findOne({
       where: { name: dto.name, storeId },
     });
 
     if (existingCategory) {
-      throw new ConflictException(`Category with name ${dto.name} already exists.`);
+      throw new ConflictException(
+        `Category with name ${dto.name} already exists.`,
+      );
     }
 
     const newCategory = this.categoryRepository.create({
@@ -60,7 +61,10 @@ export class CategoryService {
     });
   }
 
-  async getCategoryWithProducts(storeId: string, categoryId: string): Promise<Category> {
+  async getCategoryWithProducts(
+    storeId: string,
+    categoryId: string,
+  ): Promise<Category> {
     const category = await this.categoryRepository.findOne({
       where: { id: categoryId, storeId },
       relations: ['products'],
@@ -104,10 +108,16 @@ export class CategoryService {
     return this.toggleActive(storeId, id, 'enable');
   }
 
-  private async toggleActive(storeId: string, id: string, action: 'enable' | 'disable'): Promise<Category> {
+  private async toggleActive(
+    storeId: string,
+    id: string,
+    action: 'enable' | 'disable',
+  ): Promise<Category> {
     const category = await this.getCategoryById(storeId, id);
     if (action === 'disable' && !category.isActive) {
-      throw new ConflictException(`Category with ID ${id} is already disabled.`);
+      throw new ConflictException(
+        `Category with ID ${id} is already disabled.`,
+      );
     }
 
     if (action === 'enable' && category.isActive) {
@@ -119,9 +129,10 @@ export class CategoryService {
   }
 
   private async getDisplayOrder(storeId: string): Promise<number> {
-    const maxOrder = await this.categoryRepository.count({
-      where: { storeId },
-    }) ?? 0;
+    const maxOrder =
+      (await this.categoryRepository.count({
+        where: { storeId },
+      })) ?? 0;
     return maxOrder + 1;
   }
 }

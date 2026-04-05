@@ -10,21 +10,16 @@ import { CurrentStore } from '@/modules/stores/decorators/current-store.decorato
 @Controller('tags')
 @UseGuards(JwtGuard, StoreRoleGuard)
 export class TagController {
-    constructor(
-        private readonly tagService: TagService
-    ) { }
+  constructor(private readonly tagService: TagService) {}
 
-    @Post()
-    @StoreOwner()
-    async createTag(
-        @CurrentStore() store: StoreInfo,
-        @Body() dto: CreateTagDto,
-    ) {
-        return this.tagService.createTag(store.id, dto);
-    }
+  @Post()
+  @StoreOwner()
+  async createTag(@CurrentStore() store: StoreInfo, @Body() dto: CreateTagDto) {
+    return this.tagService.createTag(store.id, dto);
+  }
 
-    @Get()
-    async getAllTags() {
-        return this.tagService.getTags();
-    }
+  @Get()
+  async getAllTags() {
+    return this.tagService.getTags();
+  }
 }

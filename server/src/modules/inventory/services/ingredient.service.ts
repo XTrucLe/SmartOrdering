@@ -20,7 +20,7 @@ export class IngredientService {
     private readonly ingredientRepository: Repository<Ingredient>,
     private readonly StockService: StockService,
     private readonly dataSource: DataSource,
-  ) { }
+  ) {}
 
   async create(storeId: string, dto: CreateIngredientDto): Promise<Ingredient> {
     const existingIngredient = await this.findByName(storeId, dto.name);

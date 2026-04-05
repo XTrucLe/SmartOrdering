@@ -24,7 +24,7 @@ import { StoreManager } from '@/modules/stores/decorators/store-role-group.decor
 @Controller('ingredients')
 @UseGuards(JwtGuard, StoreRoleGuard)
 export class IngredientController {
-  constructor(private readonly ingredientService: IngredientService) { }
+  constructor(private readonly ingredientService: IngredientService) {}
 
   @Post()
   @StoreManager()
@@ -68,7 +68,6 @@ export class IngredientController {
     );
     return IngredientMapper.toDto(ingredient);
   }
-
 
   @Put(':id')
   @StoreManager()

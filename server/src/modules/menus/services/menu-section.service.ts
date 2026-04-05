@@ -12,7 +12,7 @@ export class MenuSectionService {
     @InjectRepository(MenuSection)
     private readonly repo: Repository<MenuSection>,
     private readonly menuService: MenuService,
-  ) { }
+  ) {}
 
   async create(
     storeId: string,
@@ -34,10 +34,7 @@ export class MenuSectionService {
     return this.repo.save(section);
   }
 
-  async findAllByMenu(
-    storeId: string,
-    menuId: string,
-  ): Promise<MenuSection[]> {
+  async findAllByMenu(storeId: string, menuId: string): Promise<MenuSection[]> {
     await this.menuService.findOne(storeId, menuId);
 
     return this.repo.find({

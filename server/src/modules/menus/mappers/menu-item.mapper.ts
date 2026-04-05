@@ -4,10 +4,12 @@ import { MenuItem } from '../entities/menu-item.entity';
 
 export class MenuItemMapper {
   static toResponseDto(menuItem: MenuItem): MenuItemResponseDto {
-    return plainToInstance(MenuItemResponseDto, menuItem, { excludeExtraneousValues: true });
+    return plainToInstance(MenuItemResponseDto, menuItem, {
+      excludeExtraneousValues: true,
+    });
   }
 
   static toResponseDtoList(menuItems: MenuItem[]): MenuItemResponseDto[] {
-    return menuItems.map(item => this.toResponseDto(item));
+    return menuItems.map((item) => this.toResponseDto(item));
   }
 }

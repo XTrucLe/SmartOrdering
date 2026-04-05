@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Gender } from '../constants/profile.constant';
-import { Account } from '@/modules/accounts/entities/account.entity';
+import { Account } from './account.entity';
 
 @Entity('profiles')
 export class Profile {

@@ -14,7 +14,7 @@ import {
   UpdateIngredientDto,
   IngredientResponseDto,
 } from '../dtos/ingredient.dto';
-import { JwtGuard } from '../../auth/guards/jwt.guard';
+import { JwtGuard } from '../../identity/guards/jwt.guard';
 import { StoreRoleGuard } from '../../stores/guards/store-role.guard';
 import { CurrentStore } from '../../stores/decorators/current-store.decorator';
 import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';

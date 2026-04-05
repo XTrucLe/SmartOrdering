@@ -7,7 +7,7 @@ import {
   Index,
 } from 'typeorm';
 import { Store } from './store.entity';
-import { Account } from '@/modules/accounts/entities/account.entity';
+import { Account } from '@/modules/identity/entities/account.entity';
 import { StoreRole } from '../constants/store-role.constant';
 
 @Entity('store_members')

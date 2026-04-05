@@ -4,10 +4,14 @@ import { MenuSection } from '../entities/menu-section.entity';
 
 export class MenuSectionMapper {
   static toResponseDto(menuSection: MenuSection): MenuSectionResponseDto {
-    return plainToInstance(MenuSectionResponseDto, menuSection, { excludeExtraneousValues: true });
+    return plainToInstance(MenuSectionResponseDto, menuSection, {
+      excludeExtraneousValues: true,
+    });
   }
 
-  static toResponseDtoList(menuSections: MenuSection[]): MenuSectionResponseDto[] {
+  static toResponseDtoList(
+    menuSections: MenuSection[],
+  ): MenuSectionResponseDto[] {
     return menuSections.map((section) => this.toResponseDto(section));
   }
 }

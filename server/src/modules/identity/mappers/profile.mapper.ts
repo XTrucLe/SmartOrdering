@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
-import { Profile } from './entities/profile.entity';
-import { ProfileResponseDto } from './dtos/profile-response.dto';
+import { Profile } from '../entities/profile.entity';
+import { ProfileResponseDto } from '../dtos/profile.dto';
 
 export function mapToProfileDto(profile: Profile): ProfileResponseDto {
   const profileDto = plainToInstance(

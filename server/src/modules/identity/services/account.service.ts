@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { Account } from './entities/account.entity';
-import { CreateAccountDto } from './dtos/account.dto';
-import { Role } from './constants/role.constant';
-import { ProfileService } from '../profiles/profile.service';
+import { Account } from '../entities/account.entity';
+import { CreateAccountDto } from '../dtos/account.dto';
+import { Role } from '../constants/role.constant';
+import { ProfileService } from './profile.service';
 import { BaseService } from '@/common/services/base.service';
 
 @Injectable()

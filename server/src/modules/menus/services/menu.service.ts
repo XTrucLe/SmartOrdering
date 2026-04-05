@@ -14,7 +14,7 @@ export class MenuService {
   constructor(
     @InjectRepository(Menu)
     private readonly repo: Repository<Menu>,
-  ) { }
+  ) {}
 
   async create(storeId: string, dto: CreateMenuDto): Promise<Menu> {
     const menu = this.repo.create({

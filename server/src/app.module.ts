@@ -5,14 +5,12 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AccountModule } from './modules/accounts/account.module';
-import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { NotificationModule } from './modules/notifications/notification.module';
-import { ProfileModule } from './modules/profiles/profile.module';
 import { StoresModule } from './modules/stores/store.module';
 import { MenusModule } from './modules/menus/menus.module';
+import { IdentityModule } from './modules/identity/identity.module';
 
 @Module({
   imports: [
@@ -38,13 +36,11 @@ import { MenusModule } from './modules/menus/menus.module';
         synchronize: true,
       }),
     }),
-    AccountModule,
-    AuthModule,
     CatalogModule,
+    IdentityModule,
     InventoryModule,
     MenusModule,
     NotificationModule,
-    ProfileModule,
     StoresModule,
   ],
   controllers: [AppController],

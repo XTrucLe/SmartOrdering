@@ -9,7 +9,7 @@ import { Store } from '../entities/store.entity';
 import { CreateStoreDto } from '../dtos/stores/create-store.dto';
 import { UpdateStoreDto } from '../dtos/stores/update-store.dto';
 import { Pages } from '@/common/interfaces/page.interface';
-import { Account } from '@/modules/accounts/entities/account.entity';
+import { Account } from '@/modules/identity/entities/account.entity';
 import { BaseService } from '@/common/services/base.service';
 
 @Injectable()

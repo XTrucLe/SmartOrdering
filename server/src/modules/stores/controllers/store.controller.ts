@@ -15,10 +15,10 @@ import { isUUID } from 'class-validator';
 import { StoreResponseDto } from '../dtos/stores/store.response.dto';
 import { mapToStoreDto, mapToStoreDtos } from '../mappers/store.mapper';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
-import { JwtPayload } from '@/modules/auth/dtos/auth.dto';
+import { JwtPayload } from '@/modules/identity/dtos/auth.dto';
 import { Pages } from '@/common/interfaces/page.interface';
 import { StoreRoleGuard } from '../guards/store-role.guard';
-import { JwtGuard } from './../../auth/guards/jwt.guard';
+import { JwtGuard } from '../../identity/guards/jwt.guard';
 import { CurrentStore } from '../decorators/current-store.decorator';
 import { StoreInfo } from '../dtos/stores/store-info.dto';
 import {

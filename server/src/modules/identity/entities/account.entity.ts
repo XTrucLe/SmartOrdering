@@ -8,7 +8,7 @@ import {
   DeleteDateColumn,
   Index,
 } from 'typeorm';
-import { Profile } from '../../profiles/entities/profile.entity';
+import { Profile } from './profile.entity';
 import { Role } from '../constants/role.constant';
 
 @Entity('accounts')

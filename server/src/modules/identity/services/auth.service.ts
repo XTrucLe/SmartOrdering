@@ -7,16 +7,14 @@ import {
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource } from 'typeorm';
-import { AccountService } from '../accounts/account.service';
-import { ProfileService } from '../profiles/profile.service';
-import { Account } from '../accounts/entities/account.entity';
-import { AuthResponseDto, JwtPayload } from './dtos/auth.dto';
-import { LoginDto } from './dtos/login.dto';
-import { ChangePasswordDto } from './dtos/password.dto';
-import { OwnerRegisterDto } from './dtos/register.dto';
-import { StoresService } from '../stores/services/stores.service';
-import { StoreMemberService } from '../stores/services/store-member.service';
-import { StoreInfo } from '../stores/dtos/stores/store-info.dto';
+import { AuthResponseDto, JwtPayload, LoginDto } from '../dtos/auth.dto';
+import { StoresService } from '../../stores/services/stores.service';
+import { StoreMemberService } from '../../stores/services/store-member.service';
+import { StoreInfo } from '../../stores/dtos/stores/store-info.dto';
+import { AccountService } from './account.service';
+import { ProfileService } from './profile.service';
+import { Account } from '../entities/account.entity';
+import { ChangePasswordDto, OwnerRegisterDto } from '../dtos/account.dto';
 
 @Injectable()
 export class AuthService {

@@ -15,7 +15,7 @@ import { CreateMenuDto } from '../dtos/menus/create-menu.dto';
 import { UpdateMenuDto } from '../dtos/menus/update-menu.dto';
 import { MenuResponseDto } from '../dtos/menus/menu.response.dto';
 import { MenuMapper } from '../mappers/menu.mapper';
-import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
 import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
 import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
@@ -24,7 +24,7 @@ import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
 @Controller('menus')
 @UseGuards(JwtGuard, StoreRoleGuard)
 export class MenuController {
-  constructor(private readonly menuService: MenuService) { }
+  constructor(private readonly menuService: MenuService) {}
 
   @Post()
   @StoreManager()
@@ -37,12 +37,8 @@ export class MenuController {
   }
 
   @Get()
-  async findAll(
-    @CurrentStore() store: StoreInfo,
-  ): Promise<MenuResponseDto[]> {
-    const menus = await this.menuService.findAll(
-      store.id,
-    );
+  async findAll(@CurrentStore() store: StoreInfo): Promise<MenuResponseDto[]> {
+    const menus = await this.menuService.findAll(store.id);
     return MenuMapper.toResponseDtoList(menus);
   }
 
@@ -51,10 +47,7 @@ export class MenuController {
     @CurrentStore() store: StoreInfo,
     @Param('menuId') menuId: string,
   ): Promise<MenuResponseDto> {
-    const menu = await this.menuService.findOne(
-      store.id,
-      menuId,
-    );
+    const menu = await this.menuService.findOne(store.id, menuId);
     return MenuMapper.toResponseDto(menu);
   }
 

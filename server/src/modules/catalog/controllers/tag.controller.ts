@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { TagService } from '../services/tag.service';
-import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
 import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
 import { StoreOwner } from '@/modules/stores/decorators/store-role-group.decorator';

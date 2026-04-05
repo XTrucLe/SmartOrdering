@@ -4,13 +4,11 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { Profile } from './entities/profile.entity';
+import { Profile } from '../entities/profile.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { CreateProfileDto } from './dtos/create-profile.dto';
-import { UpdateProfileDto } from './dtos/update-profile.dto';
-import { Account } from '../accounts/entities/account.entity';
-
+import { Account } from '../entities/account.entity';
+import { CreateProfileDto, UpdateProfileDto } from '../dtos/profile.dto';
 @Injectable()
 export class ProfileService {
   constructor(

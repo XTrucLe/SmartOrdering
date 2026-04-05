@@ -17,7 +17,7 @@ export class MenuItemService {
     private readonly repo: Repository<MenuItem>,
     private readonly sectionService: MenuSectionService,
     private readonly productService: ProductService,
-  ) { }
+  ) {}
 
   async create(
     storeId: string,

@@ -19,7 +19,7 @@ import {
 import { MenuItemResponseDto } from '../dtos/menu-items/menu-item.response.dto';
 import { MenuItemMapper } from '../mappers/menu-item.mapper';
 import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
-import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
 import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
 import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
@@ -27,7 +27,7 @@ import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
 @UseGuards(JwtGuard, StoreRoleGuard)
 @Controller()
 export class MenuItemController {
-  constructor(private readonly service: MenuItemService) { }
+  constructor(private readonly service: MenuItemService) {}
 
   @Post('menu-sections/:sectionId/menu-items')
   @StoreManager()

@@ -1,4 +1,4 @@
-import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
 import {
   Body,

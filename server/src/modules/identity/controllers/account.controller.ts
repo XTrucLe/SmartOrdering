@@ -6,10 +6,10 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import { AccountService } from './account.service';
-import { Role } from './constants/role.constant';
-import { Roles } from '../auth/decorators/role.decorator';
-import { JwtGuard } from '../auth/guards/jwt.guard';
+import { JwtGuard } from '../guards/jwt.guard';
+import { AccountService } from '../services/account.service';
+import { Roles } from '../decorators/role.decorator';
+import { Role } from '../constants/role.constant';
 
 @Controller('accounts')
 @UseGuards(JwtGuard)

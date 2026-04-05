@@ -12,7 +12,7 @@ import {
 import { ZonesService } from '../services/zone.service';
 import { CreateZoneDto, UpdateZoneDto } from '../dtos/zones/zone.dto';
 import { Zone } from '../entities/zone.entity';
-import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '../guards/store-role.guard';
 import { StoreManager } from '../decorators/store-role-group.decorator';
 import { CurrentStore } from '../decorators/current-store.decorator';

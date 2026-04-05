@@ -9,7 +9,7 @@ import {
   JoinColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { Account } from '@/modules/accounts/entities/account.entity';
+import { Account } from '@/modules/identity/entities/account.entity';
 
 @Entity('stores')
 export class Store {

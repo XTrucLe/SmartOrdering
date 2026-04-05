@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { StoreInfo } from '../dtos/stores/store-info.dto';
 import { Request } from 'express';
-import { JwtPayload } from '@/modules/auth/dtos/auth.dto';
+import { JwtPayload } from '@/modules/identity/dtos/auth.dto';
 
 export const CurrentStore = createParamDecorator(
   (data: StoreInfo, ctx: ExecutionContext) => {

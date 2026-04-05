@@ -1,12 +1,12 @@
 import { Body, Controller, Param, Get, UseGuards, Patch } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ProfileService } from './profile.service';
-import { UpdateProfileDto } from './dtos/update-profile.dto';
-import { mapToProfileDto } from './profile.mapper';
-import { Roles } from '../auth/decorators/role.decorator';
-import { Role } from '../accounts/constants/role.constant';
-import { JwtPayload } from '../auth/dtos/auth.dto';
+import { mapToProfileDto } from '../mappers/profile.mapper';
+import { Roles } from '../decorators/role.decorator';
+import { JwtPayload } from '../dtos/auth.dto';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { ProfileService } from '../services/profile.service';
+import { Role } from '../constants/role.constant';
+import { UpdateProfileDto } from '../dtos/profile.dto';
 
 @Controller('profiles')
 @UseGuards(AuthGuard('jwt'))

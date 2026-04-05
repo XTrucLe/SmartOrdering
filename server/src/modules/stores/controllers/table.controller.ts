@@ -17,7 +17,7 @@ import {
   UpdateTableDto,
 } from '../dtos/tables/table.dto';
 import { Table } from '../entities/table.entity';
-import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '../guards/store-role.guard';
 import { CurrentStore } from '../decorators/current-store.decorator';
 import { StoreInfo } from '../dtos/stores/store-info.dto';

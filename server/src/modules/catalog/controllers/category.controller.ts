@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { CurrentStore } from '../../stores/decorators/current-store.decorator';
 import { StoreInfo } from '../../stores/dtos/stores/store-info.dto';
 import { StoreRoleGuard } from '../../stores/guards/store-role.guard';

@@ -16,7 +16,7 @@ import {
   mapToStoreMemberDto,
   mapToStoreMemberDtos,
 } from '../mappers/store-member.mapper';
-import { JwtGuard } from '@/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '../guards/store-role.guard';
 import { CurrentStore } from '../decorators/current-store.decorator';
 import { StoreInfo } from '../dtos/stores/store-info.dto';

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
-import { JwtPayload } from '@/modules/auth/dtos/auth.dto';
+import { JwtPayload } from '@/modules/identity/dtos/auth.dto';
 import { STORE_ROLE_KEY } from '../decorators/store-role.decorator';
 import { StoreRole } from '../constants/store-role.constant';
 

@@ -24,6 +24,13 @@ async function bootstrap() {
     }
   );
 
+  app.enableCors(
+    {
+      origin: process.env.ORIGIN?.split(','),
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    }
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({

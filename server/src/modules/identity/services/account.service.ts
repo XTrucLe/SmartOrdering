@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -7,7 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Account } from '../entities/account.entity';
-import { CreateAccountDto } from '../dtos/account.dto';
+import { CreateAccountDto, CreateCustomerDto } from '../dtos/account.dto';
 import { Role } from '../constants/role.constant';
 import { ProfileService } from './profile.service';
 import { BaseService } from '@/common/services/base.service';
@@ -72,11 +73,33 @@ export class AccountService extends BaseService<Account> {
   }
 
   async createCustomer(
-    dto: CreateAccountDto,
+    dto: CreateCustomerDto,
     manager?: EntityManager,
   ): Promise<Account> {
-    return this.createAccount(dto, Role.USER, manager);
+    const existingAccount = await this.findByPhoneNumber(dto.phoneNumber, manager);
+
+    if (existingAccount) {
+      throw new ConflictException('Account with this phone number already exists.');
+    }
+
+    const repo = this.getRepo(manager);
+
+    const account = repo.create({
+      phoneNumber: dto.phoneNumber,
+      role: Role.CUSTOMER,
+      isActive: true,
+    });
+
+    account.profile = await this.profileService.create(dto.profile, account, manager);
+
+    try {
+      return await repo.save(account);
+    } catch (err) {
+      this.handleDbError(err);
+    }
+
   }
+
 
   private async createAccount(
     dto: CreateAccountDto,
@@ -96,12 +119,21 @@ export class AccountService extends BaseService<Account> {
 
     try {
       savedAccount = await repo.save(account);
+      savedAccount.profile = await this.profileService.create(dto.profile, savedAccount, manager);
     } catch (err) {
       this.handleDbError(err);
     }
-    await this.profileService.create(dto.profile, savedAccount, manager);
 
     return savedAccount;
+  }
+
+  async getOrNewCustomer(dto: CreateCustomerDto, manager?: EntityManager): Promise<Account> {
+    const existingAccount = await this.findByPhoneNumber(dto.phoneNumber, manager);
+    if (existingAccount) {
+      return existingAccount;
+    }
+
+    return this.createCustomer(dto, manager);
   }
 
   async updatePassword(

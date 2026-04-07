@@ -11,24 +11,30 @@ import {
 import { CreateProfileDto } from './profile.dto';
 import { CreateStoreDto } from '@/modules/stores/dtos/stores/create-store.dto';
 
-@Exclude()
 export class CreateAccountDto {
-  @Expose()
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @Expose()
   @IsString()
   @IsNotEmpty()
   password: string;
 
-  @Expose()
   @IsOptional()
   @IsPhoneNumber('VN')
   phoneNumber?: string;
 
-  @Expose()
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => CreateProfileDto)
+  profile: CreateProfileDto;
+}
+
+export class CreateCustomerDto {
+  @IsPhoneNumber('VN')
+  @IsNotEmpty()
+  phoneNumber: string;
+
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => CreateProfileDto)

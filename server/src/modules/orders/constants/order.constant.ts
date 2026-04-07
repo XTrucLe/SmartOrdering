@@ -7,15 +7,6 @@ export enum OrderStatus {
   CANCELLED = 'CANCELLED',
 }
 
-export enum CancelReason {
-  CUSTOMER_REQUEST = 'CUSTOMER_REQUEST',
-  CUSTOMER_NO_SHOW = 'CUSTOMER_NO_SHOW',
-  OUT_OF_STOCK = 'OUT_OF_STOCK',
-  KITCHEN_ERROR = 'KITCHEN_ERROR',
-  DELIVERY_FAILED = 'DELIVERY_FAILED',
-  STORE_CLOSED = 'STORE_CLOSED',
-}
-
 export enum PaymentStatus {
   PENDING = 'PENDING',
   PAID = 'PAID',
@@ -28,7 +19,3 @@ export enum DeliveryMethod {
   TAKEAWAY = 'TAKEAWAY',
   DELIVERY = 'DELIVERY',
 }
-
-export const DEFAULT_DELIVERY_FEE = 15000;
-
-export const DEFAULT_TAX_RATE = 0.1;

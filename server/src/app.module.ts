@@ -11,6 +11,7 @@ import { NotificationModule } from './modules/notifications/notification.module'
 import { StoresModule } from './modules/stores/store.module';
 import { MenusModule } from './modules/menus/menus.module';
 import { IdentityModule } from './modules/identity/identity.module';
+import { OrdersModule } from './modules/orders/order.module';
 
 @Module({
   imports: [
@@ -30,7 +31,6 @@ import { IdentityModule } from './modules/identity/identity.module';
 
         entities: [
           __dirname + '/modules/**/*.entity{.ts,.js}',
-          '!' + __dirname + '/modules/orders/**/*.entity{.ts,.js}',
         ],
         autoLoadEntities: false,
         synchronize: true,
@@ -41,9 +41,10 @@ import { IdentityModule } from './modules/identity/identity.module';
     InventoryModule,
     MenusModule,
     NotificationModule,
+    OrdersModule,
     StoresModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

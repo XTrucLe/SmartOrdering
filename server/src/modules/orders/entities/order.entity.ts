@@ -4,56 +4,71 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  OneToOne,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
   Index,
-  Check,
 } from 'typeorm';
 import { Store } from '../../stores/entities/store.entity';
+import { OrderItem } from './order-item.entity';
 import {
   OrderStatus,
   PaymentStatus,
   DeliveryMethod,
-  CancelReason,
 } from '../constants/order.constant';
-import { OrderItem } from './order-item.entity';
+import { decimalTransformer } from '@/common/utils/decimal.transformer';
+import { Delivery } from './delivery.entity';
 import { Table } from '@/modules/stores/entities/table.entity';
 
 @Entity('orders')
 @Index(['storeId', 'createdAt'])
 @Index(['storeId', 'status'])
+@Index(['storeId', 'paymentStatus'])
 export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Index({ unique: true })
-  @Column({ name: 'order_code', length: 12 })
+  @Column({ length: 20 })
   orderCode: string;
 
-  @Index()
-  @Column({ name: 'store_id' })
+  @Column()
   storeId: string;
 
   @ManyToOne(() => Store)
   @JoinColumn({ name: 'store_id' })
   store: Store;
 
-  @Index()
-  @Column({ name: 'table_id', nullable: true })
+  @OneToMany(() => OrderItem, (item) => item.order, {
+    cascade: ['insert'],
+  })
+  orderItems: OrderItem[];
+
+  @OneToOne(() => Delivery, (delivery) => delivery.order, {
+    cascade: ['insert'],
+    nullable: true,
+  })
+  delivery?: Delivery;
+
+  @Column({ nullable: true })
   tableId?: string;
 
   @ManyToOne(() => Table, { nullable: true })
   @JoinColumn({ name: 'table_id' })
   table?: Table;
 
-  @Column({ name: 'table_name', nullable: true }) //Snapshot, không cần query table khi hiển thị order
+  @Column({ nullable: true })
   tableName?: string;
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
-    cascade: true,
-  })
-  orderItems: OrderItem[];
+  @Column({ nullable: true })
+  customerId?: string;
+
+  @Column({ nullable: true })
+  customerName?: string;
+
+  @Column({ nullable: true })
+  customerPhone?: string;
 
   @Column({
     type: 'enum',
@@ -76,27 +91,45 @@ export class Order {
   })
   deliveryMethod: DeliveryMethod;
 
+  @Column({
+    nullable: true,
+  })
+  cancelReason?: string;
+
+  @Column('decimal', {
+    precision: 12,
+    scale: 2,
+    default: 0,
+    transformer: decimalTransformer,
+  })
+  subtotal: number;
+
+  @Column('decimal', {
+    precision: 12,
+    scale: 2,
+    default: 0,
+    transformer: decimalTransformer,
+  })
+  discountTotal: number;
+
+  @Column('decimal', {
+    precision: 12,
+    scale: 2,
+    default: 0,
+    transformer: decimalTransformer,
+  })
+  taxTotal: number;
+
+  @Column('decimal', {
+    precision: 12,
+    scale: 2,
+    default: 0,
+    transformer: decimalTransformer,
+  })
+  grandTotal: number;
+
   @Column('text', { nullable: true })
-  notes?: string;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  subTotal: number;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  discountAmount: number;
-
-  @Check(`"tax_rate" >= 0 AND "tax_rate" <= 0.5`)
-  @Column('decimal', { precision: 5, scale: 4, default: 0 })
-  taxRate: number;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  deliveryFee: number;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  totalPrice: number;
-
-  @Column({ type: 'enum', enum: CancelReason, nullable: true })
-  cancelReason?: CancelReason;
+  note?: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

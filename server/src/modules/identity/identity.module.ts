@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { forwardRef, Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account } from './entities/account.entity';
 import { Profile } from './entities/profile.entity';
@@ -11,6 +11,7 @@ import { ProfileService } from './services/profile.service';
 import { StoresModule } from '../stores/store.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [AuthController, AccountController, ProfileController],
-  providers: [AuthService, AccountService, ProfileService],
-  exports: [AuthService, AccountService, ProfileService],
+  providers: [AuthService, AccountService, ProfileService, JwtStrategy],
+  exports: [AuthService, AccountService, ProfileService, JwtStrategy],
 })
-export class IdentityModule {}
+export class IdentityModule { }

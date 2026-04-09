@@ -17,8 +17,8 @@ import { OrderPricingService } from './services/order-pricing.service';
     MenusModule,
     IdentityModule,
   ],
-  controllers: [OrderController,],
+  controllers: [OrderController],
   providers: [OrderService, OrderValidateService, OrderPricingService],
-  exports: [OrderService,],
+  exports: [OrderService],
 })
-export class OrdersModule { }
+export class OrdersModule {}

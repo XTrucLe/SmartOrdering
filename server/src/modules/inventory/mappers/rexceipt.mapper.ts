@@ -1,10 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { Receipt } from '../entities/receipt.entity';
 import { ReceiptItem } from '../entities/receipt-item.entity';
-import {
-  ReceiptResponseDto,
-  ReceiptItemResponseDto,
-} from '../dtos/receipt.dto';
+import { ReceiptResponseDto, ReceiptItemResponseDto } from '../dtos/receipt.dto';
 
 export class ReceiptMapper {
   static toDto(receipt: Receipt): ReceiptResponseDto {

@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
@@ -19,14 +15,9 @@ export class ProductService {
   ) {}
 
   async create(storeId: string, dto: CreateProductDto): Promise<Product> {
-    const category = await this.categoryService.getCategoryWithProducts(
-      storeId,
-      dto.categoryId,
-    );
+    const category = await this.categoryService.getCategoryWithProducts(storeId, dto.categoryId);
     if (!category) {
-      throw new NotFoundException(
-        `Category with ID ${dto.categoryId} not found.`,
-      );
+      throw new NotFoundException(`Category with ID ${dto.categoryId} not found.`);
     }
 
     const newProduct = this.productRepository.create({
@@ -43,10 +34,7 @@ export class ProductService {
     }
   }
 
-  async findProduct(
-    storeId: string,
-    productId: string,
-  ): Promise<Product | null> {
+  async findProduct(storeId: string, productId: string): Promise<Product | null> {
     return this.productRepository.findOne({
       where: { id: productId, category: { store: { id: storeId } } },
       relations: ['category'],
@@ -69,21 +57,14 @@ export class ProductService {
     return product;
   }
 
-  async getProductsByCategory(
-    storeId: string,
-    categoryId: string,
-  ): Promise<Product[]> {
+  async getProductsByCategory(storeId: string, categoryId: string): Promise<Product[]> {
     return this.productRepository.find({
       where: { category: { id: categoryId, store: { id: storeId } } },
       order: { displayOrder: 'ASC' },
     });
   }
 
-  async update(
-    storeId: string,
-    productId: string,
-    dto: UpdateProductDto,
-  ): Promise<Product> {
+  async update(storeId: string, productId: string, dto: UpdateProductDto): Promise<Product> {
     const product = await this.findProduct(storeId, productId);
 
     if (!product) {
@@ -100,11 +81,7 @@ export class ProductService {
     await this.productRepository.remove(product);
   }
 
-  async reorder(
-    storeId: string,
-    categoryId: string,
-    orderedIds: string[],
-  ): Promise<void> {
+  async reorder(storeId: string, categoryId: string, orderedIds: string[]): Promise<void> {
     const products = await this.getProductsByCategory(storeId, categoryId);
     const productMap = new Map(products.map((p) => [p.id, p]));
 
@@ -125,22 +102,14 @@ export class ProductService {
     return this.toggleActive(storeId, productId, 'inactive');
   }
 
-  private async toggleActive(
-    storeId: string,
-    productId: string,
-    action: string,
-  ): Promise<Product> {
+  private async toggleActive(storeId: string, productId: string, action: string): Promise<Product> {
     const product = await this.getProductById(storeId, productId);
     if (action === 'active' && product.isActive) {
-      throw new ConflictException(
-        `Product with ID ${productId} is already active.`,
-      );
+      throw new ConflictException(`Product with ID ${productId} is already active.`);
     }
 
     if (action === 'inactive' && !product.isActive) {
-      throw new ConflictException(
-        `Product with ID ${productId} is already inactive.`,
-      );
+      throw new ConflictException(`Product with ID ${productId} is already inactive.`);
     }
 
     product.isActive = !product.isActive;

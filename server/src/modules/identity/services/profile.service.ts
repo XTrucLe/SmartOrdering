@@ -1,29 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { Profile } from '../entities/profile.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Account } from '../entities/account.entity';
 import { CreateProfileDto, UpdateProfileDto } from '../dtos/profile.dto';
+
 @Injectable()
 export class ProfileService {
   constructor(
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
-  ) {}
+  ) { }
 
   async create(
     profile: CreateProfileDto,
     account?: Account,
     manager?: EntityManager,
   ): Promise<Profile> {
-    const repo = manager
-      ? manager.getRepository(Profile)
-      : this.profileRepository;
+    const repo = manager ? manager.getRepository(Profile) : this.profileRepository;
 
     const newProfile = repo.create(profile);
 
@@ -34,13 +28,6 @@ export class ProfileService {
     try {
       return await repo.save(newProfile);
     } catch (error) {
-      const isDulicatePhone =
-        error.code === '23505' ||
-        error.code === 'ER_DUP_ENTRY' ||
-        error.errno === 1062;
-      if (isDulicatePhone) {
-        throw new ConflictException('Phone number already exists');
-      }
       throw new ConflictException('Failed to create profile');
     }
   }

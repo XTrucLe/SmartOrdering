@@ -1,15 +1,8 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, DataSource } from 'typeorm';
 import { Ingredient } from '../entities/ingredient.entity';
-import {
-  CreateIngredientDto,
-  UpdateIngredientDto,
-} from '../dtos/ingredient.dto';
+import { CreateIngredientDto, UpdateIngredientDto } from '../dtos/ingredient.dto';
 import { handleError } from '@/common/utils/handle-error';
 import { StockService } from './stock.service';
 
@@ -26,9 +19,7 @@ export class IngredientService {
     const existingIngredient = await this.findByName(storeId, dto.name);
 
     if (existingIngredient) {
-      throw new ConflictException(
-        `Ingredient with name ${dto.name} already exists.`,
-      );
+      throw new ConflictException(`Ingredient with name ${dto.name} already exists.`);
     }
 
     const newIngredient = this.ingredientRepository.create({
@@ -84,10 +75,7 @@ export class IngredientService {
     return ingredient;
   }
 
-  async getListIngredientsByIds(
-    storeId: string,
-    ids: string[],
-  ): Promise<Ingredient[]> {
+  async getListIngredientsByIds(storeId: string, ids: string[]): Promise<Ingredient[]> {
     if (!ids.length) return [];
 
     const uniqueIds = [...new Set(ids)];
@@ -109,19 +97,14 @@ export class IngredientService {
       const notFoundIds = uniqueIds.filter((id) => !foundSet.has(id));
 
       throw new NotFoundException(
-        `Ingredients with IDs ${notFoundIds.join(
-          ', ',
-        )} not found in store ${storeId}.`,
+        `Ingredients with IDs ${notFoundIds.join(', ')} not found in store ${storeId}.`,
       );
     }
 
     return ingredients;
   }
 
-  async getIngredientByCode(
-    storeId: string,
-    code: string,
-  ): Promise<Ingredient> {
+  async getIngredientByCode(storeId: string, code: string): Promise<Ingredient> {
     const ingredient = await this.findByCode(storeId, code);
     if (!ingredient) {
       throw new NotFoundException(`Ingredient with code ${code} not found.`);
@@ -129,11 +112,7 @@ export class IngredientService {
     return ingredient;
   }
 
-  async update(
-    storeId: string,
-    id: string,
-    dto: UpdateIngredientDto,
-  ): Promise<Ingredient> {
+  async update(storeId: string, id: string, dto: UpdateIngredientDto): Promise<Ingredient> {
     const ingredient = await this.getIngredientById(storeId, id);
     Object.assign(ingredient, dto);
     return this.ingredientRepository.save(ingredient);

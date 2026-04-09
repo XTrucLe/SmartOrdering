@@ -9,9 +9,7 @@ export class MenuSectionMapper {
     });
   }
 
-  static toResponseDtoList(
-    menuSections: MenuSection[],
-  ): MenuSectionResponseDto[] {
+  static toResponseDtoList(menuSections: MenuSection[]): MenuSectionResponseDto[] {
     return menuSections.map((section) => this.toResponseDto(section));
   }
 }

@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Zone } from '../entities/zone.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -48,11 +44,7 @@ export class ZonesService {
     return this.zoneRepository.findOneBy({ id, storeId });
   }
 
-  async updateZone(
-    storeId: string,
-    id: string,
-    dto: UpdateZoneDto,
-  ): Promise<Zone> {
+  async updateZone(storeId: string, id: string, dto: UpdateZoneDto): Promise<Zone> {
     const zone = await this.getZoneById(storeId, id);
 
     Object.assign(zone, dto);
@@ -63,9 +55,7 @@ export class ZonesService {
     const zones = await this.getZonesInStore(storeId);
 
     if (zones.length !== orderedIds.length) {
-      throw new BadRequestException(
-        'Invalid zone order provided or missing zones',
-      );
+      throw new BadRequestException('Invalid zone order provided or missing zones');
     }
 
     const zonesMap = new Map(zones.map((z) => [z.id, z]));

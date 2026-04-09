@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { ZonesService } from '../services/zone.service';
 import { CreateZoneDto, UpdateZoneDto } from '../dtos/zones/zone.dto';
 import { Zone } from '../entities/zone.entity';
@@ -25,10 +15,7 @@ export class ZoneController {
 
   @Post()
   @StoreManager()
-  async createZone(
-    @CurrentStore() store: StoreInfo,
-    @Body() dto: CreateZoneDto,
-  ): Promise<Zone> {
+  async createZone(@CurrentStore() store: StoreInfo, @Body() dto: CreateZoneDto): Promise<Zone> {
     return this.zonesService.createZone(store.id, dto);
   }
 

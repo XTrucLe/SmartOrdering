@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../entities/category.entity';
@@ -22,9 +18,7 @@ export class CategoryService {
     });
 
     if (existingCategory) {
-      throw new ConflictException(
-        `Category with name ${dto.name} already exists.`,
-      );
+      throw new ConflictException(`Category with name ${dto.name} already exists.`);
     }
 
     const newCategory = this.categoryRepository.create({
@@ -61,10 +55,7 @@ export class CategoryService {
     });
   }
 
-  async getCategoryWithProducts(
-    storeId: string,
-    categoryId: string,
-  ): Promise<Category> {
+  async getCategoryWithProducts(storeId: string, categoryId: string): Promise<Category> {
     const category = await this.categoryRepository.findOne({
       where: { id: categoryId, storeId },
       relations: ['products'],
@@ -85,11 +76,7 @@ export class CategoryService {
     });
   }
 
-  async updateCategory(
-    storeId: string,
-    id: string,
-    dto: UpdateCategoryDto,
-  ): Promise<Category> {
+  async updateCategory(storeId: string, id: string, dto: UpdateCategoryDto): Promise<Category> {
     const category = await this.getCategoryById(storeId, id);
     Object.assign(category, dto);
     return this.categoryRepository.save(category);
@@ -115,9 +102,7 @@ export class CategoryService {
   ): Promise<Category> {
     const category = await this.getCategoryById(storeId, id);
     if (action === 'disable' && !category.isActive) {
-      throw new ConflictException(
-        `Category with ID ${id} is already disabled.`,
-      );
+      throw new ConflictException(`Category with ID ${id} is already disabled.`);
     }
 
     if (action === 'enable' && category.isActive) {

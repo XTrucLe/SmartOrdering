@@ -9,8 +9,6 @@ export function mapToOrderItemDto(orderItem: OrderItem): OrderItemResponseDto {
   return orderItemDto;
 }
 
-export function mapToOrderItemDtos(
-  orderItems: OrderItem[],
-): OrderItemResponseDto[] {
+export function mapToOrderItemDtos(orderItems: OrderItem[]): OrderItemResponseDto[] {
   return orderItems.map((item) => mapToOrderItemDto(item));
 }

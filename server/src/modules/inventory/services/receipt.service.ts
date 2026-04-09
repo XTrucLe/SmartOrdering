@@ -3,11 +3,7 @@ import { DataSource, EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Receipt } from '../entities/receipt.entity';
 import { ReceiptItem } from '../entities/receipt-item.entity';
-import {
-  CreateReceiptDto,
-  ReceiptItemDto,
-  UpdateReceiptDto,
-} from '../dtos/receipt.dto';
+import { CreateReceiptDto, ReceiptItemDto, UpdateReceiptDto } from '../dtos/receipt.dto';
 import { IngredientService } from './ingredient.service';
 import { Pages } from '@/common/interfaces/page.interface';
 import { BaseService } from '@/common/services/base.service';
@@ -25,10 +21,7 @@ export class ReceiptService extends BaseService<Receipt> {
     super(repository, Receipt);
   }
 
-  async createReceipt(
-    storeId: string,
-    createDto: CreateReceiptDto,
-  ): Promise<Receipt> {
+  async createReceipt(storeId: string, createDto: CreateReceiptDto): Promise<Receipt> {
     const receiptCode = await this.generateReceiptCode(storeId);
 
     const { items, ...receiptData } = createDto;
@@ -39,10 +32,7 @@ export class ReceiptService extends BaseService<Receipt> {
         storeId,
         store: { id: storeId },
         code: receiptCode,
-        totalCost: items.reduce(
-          (total, item) => total + item.quantity * item.unitCost,
-          0,
-        ),
+        totalCost: items.reduce((total, item) => total + item.quantity * item.unitCost, 0),
       });
 
       const savedReceipt = await manager.save(Receipt, receipt);
@@ -97,11 +87,7 @@ export class ReceiptService extends BaseService<Receipt> {
     return this.paginate({ storeId, createdAt: date }, page, limit);
   }
 
-  async update(
-    storeId: string,
-    id: string,
-    updateDto: UpdateReceiptDto,
-  ): Promise<Receipt | null> {
+  async update(storeId: string, id: string, updateDto: UpdateReceiptDto): Promise<Receipt | null> {
     const receipt = await this.findOne(storeId, id);
     if (!receipt) {
       return null;
@@ -131,9 +117,7 @@ export class ReceiptService extends BaseService<Receipt> {
     const receiptItems = items.map((item) => {
       const ingredient = ingredientMap.get(item.ingredientId);
       if (!ingredient) {
-        throw new NotFoundException(
-          `Ingredient ${item.ingredientId} not found`,
-        );
+        throw new NotFoundException(`Ingredient ${item.ingredientId} not found`);
       }
 
       return manager.create(ReceiptItem, {

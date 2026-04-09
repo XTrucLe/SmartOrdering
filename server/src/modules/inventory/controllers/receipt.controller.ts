@@ -26,9 +26,7 @@ export class ReceiptController {
 
   @Get()
   @StoreManager()
-  async getReceipts(
-    @CurrentStore() store: StoreInfo,
-  ): Promise<Pages<ReceiptResponseDto>> {
+  async getReceipts(@CurrentStore() store: StoreInfo): Promise<Pages<ReceiptResponseDto>> {
     const receipts = await this.receiptService.getReceipts(store.id);
     return {
       data: ReceiptMapper.toList(receipts.data),

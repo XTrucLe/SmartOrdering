@@ -11,11 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TableService } from '../services/table.service';
-import {
-  CreateTableDto,
-  TableGroupByZoneDto,
-  UpdateTableDto,
-} from '../dtos/tables/table.dto';
+import { CreateTableDto, TableGroupByZoneDto, UpdateTableDto } from '../dtos/tables/table.dto';
 import { Table } from '../entities/table.entity';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '../guards/store-role.guard';
@@ -32,10 +28,7 @@ export class TableController {
 
   @Post()
   @StoreManager()
-  async createTable(
-    @CurrentStore() store: StoreInfo,
-    @Body() dto: CreateTableDto,
-  ): Promise<Table> {
+  async createTable(@CurrentStore() store: StoreInfo, @Body() dto: CreateTableDto): Promise<Table> {
     return this.tableService.createTable(store.id, dto);
   }
 
@@ -56,10 +49,7 @@ export class TableController {
   }
 
   @Get(':id')
-  async getTableById(
-    @CurrentStore() store: StoreInfo,
-    @Param('id') id: string,
-  ): Promise<Table> {
+  async getTableById(@CurrentStore() store: StoreInfo, @Param('id') id: string): Promise<Table> {
     return this.tableService.getTableById(store.id, id);
   }
 
@@ -75,10 +65,7 @@ export class TableController {
 
   @Delete(':id')
   @StoreManager()
-  async deleteTable(
-    @CurrentStore() store: StoreInfo,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async deleteTable(@CurrentStore() store: StoreInfo, @Param('id') id: string): Promise<void> {
     return this.tableService.deleteTable(store.id, id);
   }
 

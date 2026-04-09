@@ -1,23 +1,9 @@
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { ProductService } from '../services/product.service';
 import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
-import {
-  CreateProductDto,
-  ProductDto,
-  UpdateProductDto,
-} from '../dtos/product.dto';
+import { CreateProductDto, ProductDto, UpdateProductDto } from '../dtos/product.dto';
 import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
 import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
 import { ProductMapper } from '../mappers/product.mapper';
@@ -62,10 +48,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  async deleteProduct(
-    @CurrentStore() store: StoreInfo,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async deleteProduct(@CurrentStore() store: StoreInfo, @Param('id') id: string): Promise<void> {
     await this.productService.delete(store.id, id);
   }
 

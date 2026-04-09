@@ -1,5 +1,4 @@
 import { Controller, Post, Body, HttpCode, UseGuards } from '@nestjs/common';
-
 import { AuthResponseDto, JwtPayload, LoginDto } from '../dtos/auth.dto';
 import { OwnerRegisterDto } from '../dtos/account.dto';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
@@ -8,7 +7,7 @@ import { AuthService } from '../services/auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
   @HttpCode(200)

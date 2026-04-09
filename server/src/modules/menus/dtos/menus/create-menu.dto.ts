@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsEnum,
-  IsOptional,
-  IsNotEmpty,
-  IsNumber,
-  IsBoolean,
-} from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsNotEmpty, IsNumber, IsBoolean } from 'class-validator';
 import { MenuType } from '../../constants/menus.constant';
 
 export class CreateMenuDto {

@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Patch,
-  Param,
-  Body,
-  UseGuards,
-  Query,
-} from '@nestjs/common';
+import { Controller, Post, Get, Patch, Param, Body, UseGuards, Query } from '@nestjs/common';
 import { OrderService } from '../services/order.service';
 import { CreateOrderDto, OrderFilterDto, OrderResponseDto } from '../dtos/order.dto';
 import { mapToOrderDto, mapToOrderDtos } from '../mappers/order.mapper';
@@ -20,7 +11,7 @@ import { StoreManager, StoreStaff } from '@/modules/stores/decorators/store-role
 @Controller('orders')
 @UseGuards(JwtGuard, StoreRoleGuard)
 export class OrderController {
-  constructor(private readonly orderService: OrderService) { }
+  constructor(private readonly orderService: OrderService) {}
 
   @Post()
   async create(
@@ -35,7 +26,7 @@ export class OrderController {
   @StoreManager()
   async findAll(
     @CurrentStore('id') storeId: string,
-    @Query() filter: OrderFilterDto
+    @Query() filter: OrderFilterDto,
   ): Promise<Pages<OrderResponseDto>> {
     const orders = await this.orderService.findAllByStore(storeId, filter);
     return { ...orders, data: mapToOrderDtos(orders.data) };
@@ -43,45 +34,35 @@ export class OrderController {
 
   @Get(':orderId')
   @StoreStaff()
-  async findOne(
-    @Param('orderId') orderId: string,
-  ): Promise<OrderResponseDto> {
+  async findOne(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
     const order = await this.orderService.findOne(orderId);
     return mapToOrderDto(order);
   }
 
   @Patch(':orderId/confirm')
   @StoreStaff()
-  async confirm(
-    @Param('orderId') orderId: string,
-  ): Promise<OrderResponseDto> {
+  async confirm(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
     const confirmedOrder = await this.orderService.confirm(orderId);
     return mapToOrderDto(confirmedOrder);
   }
 
   @Patch(':orderId/prepare')
   @StoreStaff()
-  async prepare(
-    @Param('orderId') orderId: string,
-  ): Promise<OrderResponseDto> {
+  async prepare(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
     const preparedOrder = await this.orderService.prepare(orderId);
     return mapToOrderDto(preparedOrder);
   }
 
   @Patch(':orderId/ready')
   @StoreStaff()
-  async ready(
-    @Param('orderId') orderId: string,
-  ): Promise<OrderResponseDto> {
+  async ready(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
     const readyOrder = await this.orderService.ready(orderId);
     return mapToOrderDto(readyOrder);
   }
 
   @Patch(':orderId/complete')
   @StoreStaff()
-  async complete(
-    @Param('orderId') orderId: string,
-  ): Promise<OrderResponseDto> {
+  async complete(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
     const completedOrder = await this.orderService.complete(orderId);
     return mapToOrderDto(completedOrder);
   }

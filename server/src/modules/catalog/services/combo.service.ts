@@ -20,10 +20,7 @@ export class ComboService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async createCombo(
-    storeId: string,
-    createComboDto: CreateComboDto,
-  ): Promise<Combo> {
+  async createCombo(storeId: string, createComboDto: CreateComboDto): Promise<Combo> {
     const { comboItems, ...comboData } = createComboDto;
 
     return await this.dataSource.transaction(async (manager) => {
@@ -33,10 +30,7 @@ export class ComboService {
       if (comboItems && comboItems.length > 0) {
         const itemsToSave = await Promise.all(
           comboItems.map(async (item) => {
-            const product = await this.productService.getProductById(
-              storeId,
-              item.productId,
-            );
+            const product = await this.productService.getProductById(storeId, item.productId);
 
             return manager.create(ComboItem, {
               ...item,
@@ -70,17 +64,12 @@ export class ComboService {
     });
 
     if (!combo) {
-      throw new NotFoundException(
-        `Combo ${comboId} not found in store ${storeId}`,
-      );
+      throw new NotFoundException(`Combo ${comboId} not found in store ${storeId}`);
     }
     return combo;
   }
 
-  async checkComboAvailability(
-    storeId: string,
-    comboId: string,
-  ): Promise<boolean> {
+  async checkComboAvailability(storeId: string, comboId: string): Promise<boolean> {
     const combo = await this.findOne(storeId, comboId);
     return combo.isValidNow();
   }
@@ -103,10 +92,7 @@ export class ComboService {
 
         const newItems = await Promise.all(
           comboItems.map(async (item) => {
-            const product = await this.productService.getProductById(
-              storeId,
-              item.productId,
-            );
+            const product = await this.productService.getProductById(storeId, item.productId);
             return manager.create(ComboItem, {
               ...item,
               productId: product.id,
@@ -124,11 +110,7 @@ export class ComboService {
     });
   }
 
-  async handlePurchase(
-    storeId: string,
-    comboId: string,
-    quantity: number,
-  ): Promise<void> {
+  async handlePurchase(storeId: string, comboId: string, quantity: number): Promise<void> {
     if (quantity <= 0) {
       throw new BadRequestException('Quantity must be greater than zero.');
     }
@@ -136,9 +118,7 @@ export class ComboService {
     const combo = await this.findOne(storeId, comboId);
 
     if (combo.isSoldOut()) {
-      throw new UnprocessableEntityException(
-        `Combo is sold out and cannot be purchased.`,
-      );
+      throw new UnprocessableEntityException(`Combo is sold out and cannot be purchased.`);
     }
 
     await this.dataSource.transaction(async (manager) => {
@@ -148,15 +128,11 @@ export class ComboService {
       });
 
       if (!currentCombo) {
-        throw new NotFoundException(
-          `Combo ${comboId} not found in store ${storeId}`,
-        );
+        throw new NotFoundException(`Combo ${comboId} not found in store ${storeId}`);
       }
 
       if (currentCombo.isSoldOut()) {
-        throw new UnprocessableEntityException(
-          `Combo is sold out and cannot be purchased.`,
-        );
+        throw new UnprocessableEntityException(`Combo is sold out and cannot be purchased.`);
       }
 
       const result = await manager
@@ -168,10 +144,7 @@ export class ComboService {
             `CASE WHEN quantity_limit != -1 AND sold_qty + ${quantity} >= quantity_limit THEN false ELSE is_active END`,
         })
         .where('id = :id', { id: combo.id })
-        .andWhere(
-          'quantity_limit = -1 OR sold_qty + :quantity <= quantity_limit',
-          { quantity },
-        )
+        .andWhere('quantity_limit = -1 OR sold_qty + :quantity <= quantity_limit', { quantity })
         .execute();
 
       if (result.affected === 0) {

@@ -14,15 +14,10 @@ export class MenuSectionService {
     private readonly menuService: MenuService,
   ) {}
 
-  async create(
-    storeId: string,
-    menuId: string,
-    dto: CreateMenuSectionDto,
-  ): Promise<MenuSection> {
+  async create(storeId: string, menuId: string, dto: CreateMenuSectionDto): Promise<MenuSection> {
     const menu = await this.menuService.findOne(storeId, menuId);
 
-    const displayOrder =
-      dto.displayOrder ?? (await this.getNextDisplayOrder(menuId));
+    const displayOrder = dto.displayOrder ?? (await this.getNextDisplayOrder(menuId));
 
     const section = this.repo.create({
       ...dto,
@@ -75,11 +70,7 @@ export class MenuSectionService {
     await this.repo.remove(section);
   }
 
-  async updateOrder(
-    storeId: string,
-    menuId: string,
-    orderedIds: string[],
-  ): Promise<void> {
+  async updateOrder(storeId: string, menuId: string, orderedIds: string[]): Promise<void> {
     await this.menuService.findOne(storeId, menuId);
 
     const sections = await this.repo.find({

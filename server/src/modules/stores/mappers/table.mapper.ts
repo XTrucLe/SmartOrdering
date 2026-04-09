@@ -1,9 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { Table } from '../entities/table.entity';
-import {
-  TableGroupByZoneDto,
-  TableResponseDto,
-} from '../dtos/tables/table.dto';
+import { TableGroupByZoneDto, TableResponseDto } from '../dtos/tables/table.dto';
 
 export const toTableDto = (table: Table): TableResponseDto => {
   return plainToInstance(TableResponseDto, table, {
@@ -11,9 +8,7 @@ export const toTableDto = (table: Table): TableResponseDto => {
   });
 };
 
-export const mapToTableGroupByZones = (
-  tables: Table[],
-): TableGroupByZoneDto[] => {
+export const mapToTableGroupByZones = (tables: Table[]): TableGroupByZoneDto[] => {
   const zoneMap: Record<string, TableGroupByZoneDto> = {};
   tables.forEach((table) => {
     const zoneId = table.zone.id;

@@ -13,11 +13,7 @@ import { MenuItemService } from './services/menu-item.service';
 import { StoresModule } from '../stores/store.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Menu, MenuSection, MenuItem]),
-    CatalogModule,
-    StoresModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Menu, MenuSection, MenuItem]), CatalogModule, StoresModule],
   controllers: [MenuController, MenuSectionController, MenuItemController],
   providers: [MenuService, MenuSectionService, MenuItemService],
   exports: [MenuService, MenuSectionService, MenuItemService],

@@ -29,11 +29,16 @@ import { OrdersModule } from './modules/orders/order.module';
 
         namingStrategy: new SnakeNamingStrategy(),
 
-        entities: [
-          __dirname + '/modules/**/*.entity{.ts,.js}',
-        ],
+        entities: [__dirname + '/modules/**/*.entity{.ts,.js}'],
         autoLoadEntities: false,
-        synchronize: true,
+        synchronize: config.get('NODE_ENV') === 'development',
+
+        ssl:
+          config.get('NODE_ENV') === 'production'
+            ? {
+                rejectUnauthorized: false,
+              }
+            : false,
       }),
     }),
     CatalogModule,
@@ -47,4 +52,4 @@ import { OrdersModule } from './modules/orders/order.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

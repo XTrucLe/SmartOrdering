@@ -85,10 +85,7 @@ export class MenuController {
   @Delete(':menuId')
   @StoreManager()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(
-    @CurrentStore() store: StoreInfo,
-    @Param('menuId') menuId: string,
-  ): Promise<void> {
+  async remove(@CurrentStore() store: StoreInfo, @Param('menuId') menuId: string): Promise<void> {
     await this.menuService.remove(store.id, menuId);
   }
 }

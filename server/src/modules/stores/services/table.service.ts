@@ -10,10 +10,7 @@ import { Table } from '../entities/table.entity';
 import { CreateTableDto, UpdateTableDto } from '../dtos/tables/table.dto';
 import { ZonesService } from './zone.service';
 import { randomInt } from 'crypto';
-import {
-  TableStatus,
-  ValidTableStatusTransitions,
-} from '../constants/table.constant';
+import { TableStatus, ValidTableStatusTransitions } from '../constants/table.constant';
 
 @Injectable()
 export class TableService {
@@ -39,11 +36,7 @@ export class TableService {
 
         return await this.tableRepository.save(table);
       } catch (error) {
-        if (
-          error instanceof Error &&
-          'code' in error &&
-          error.code === '23505'
-        ) {
+        if (error instanceof Error && 'code' in error && error.code === '23505') {
           continue;
         }
         throw error;
@@ -54,22 +47,14 @@ export class TableService {
     throw new InternalServerErrorException('Failed to generate unique code');
   }
 
-  async updateTable(
-    storeId: string,
-    tableId: string,
-    dto: UpdateTableDto,
-  ): Promise<Table> {
+  async updateTable(storeId: string, tableId: string, dto: UpdateTableDto): Promise<Table> {
     const table = await this.getTableById(storeId, tableId);
 
     Object.assign(table, dto);
     return this.tableRepository.save(table);
   }
 
-  async changeTableStatus(
-    storeId: string,
-    tableId: string,
-    status: TableStatus,
-  ): Promise<Table> {
+  async changeTableStatus(storeId: string, tableId: string, status: TableStatus): Promise<Table> {
     const table = await this.getTableById(storeId, tableId);
     if (table.status === status)
       throw new BadRequestException('Table is already in the desired status');
@@ -123,17 +108,11 @@ export class TableService {
     });
   }
 
-  async reorderTables(
-    storeId: string,
-    zoneId: string,
-    orderedIds: string[],
-  ): Promise<Table[]> {
+  async reorderTables(storeId: string, zoneId: string, orderedIds: string[]): Promise<Table[]> {
     const tables = await this.getTablesInZone(storeId, zoneId);
 
     if (tables.length !== orderedIds.length) {
-      throw new BadRequestException(
-        'Invalid table order provided or missing tables',
-      );
+      throw new BadRequestException('Invalid table order provided or missing tables');
     }
 
     const tablesMap = new Map(tables.map((t) => [t.id, t]));
@@ -170,15 +149,10 @@ export class TableService {
   }
 
   private generateCode(length = 8): string {
-    return Array.from({ length }, () =>
-      randomInt(0, 36).toString(36).toUpperCase(),
-    ).join('');
+    return Array.from({ length }, () => randomInt(0, 36).toString(36).toUpperCase()).join('');
   }
 
-  private async countTablesInZone(
-    storeId: string,
-    zoneId: string,
-  ): Promise<number> {
+  private async countTablesInZone(storeId: string, zoneId: string): Promise<number> {
     return this.tableRepository.count({
       where: { zoneId, storeId },
     });

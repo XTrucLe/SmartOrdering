@@ -1,10 +1,7 @@
 import { IsNotEmpty, IsEnum, ValidateNested } from 'class-validator';
 import { StoreRole } from '../../constants/store-role.constant';
 import { Exclude, Expose, Type } from 'class-transformer';
-import {
-  AccountResponseDto,
-  CreateAccountDto,
-} from '@/modules/identity/dtos/account.dto';
+import { AccountResponseDto, CreateAccountDto } from '@/modules/identity/dtos/account.dto';
 import { ProfileSummaryDto } from '@/modules/identity/dtos/profile.dto';
 
 export class CreateStoreMemberDto {

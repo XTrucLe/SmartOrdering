@@ -12,13 +12,8 @@ export class ComboController {
 
   @Post()
   @StoreManager()
-  async createCombo(
-    @CurrentStore() storeId: StoreInfo,
-    @Body() createComboDto: CreateComboDto,
-  ) {
-    return ComboMapper.toComboDto(
-      await this.comboService.createCombo(storeId.id, createComboDto),
-    );
+  async createCombo(@CurrentStore() storeId: StoreInfo, @Body() createComboDto: CreateComboDto) {
+    return ComboMapper.toComboDto(await this.comboService.createCombo(storeId.id, createComboDto));
   }
 
   @Get()
@@ -31,17 +26,12 @@ export class ComboController {
     @CurrentStore() store: StoreInfo,
     @Param('id') comboId: string,
   ): Promise<ComboDto> {
-    return ComboMapper.toComboDto(
-      await this.comboService.findOne(store.id, comboId),
-    );
+    return ComboMapper.toComboDto(await this.comboService.findOne(store.id, comboId));
   }
 
   @Delete(':id')
   @StoreManager()
-  async deleteCombo(
-    @CurrentStore() store: StoreInfo,
-    @Param('id') comboId: string,
-  ) {
+  async deleteCombo(@CurrentStore() store: StoreInfo, @Param('id') comboId: string) {
     await this.comboService.deleteCombo(store.id, comboId);
     return { message: 'Combo deleted successfully' };
   }

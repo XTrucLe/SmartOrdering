@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { Store } from '../entities/store.entity';
@@ -63,16 +59,8 @@ export class StoresService extends BaseService<Store> {
     return this.paginate({ isActive: true }, page, limit);
   }
 
-  async getMyStores(
-    accountId: string,
-    page = 1,
-    limit = 10,
-  ): Promise<Pages<Store>> {
-    return this.paginate(
-      { account: { id: accountId } as Account, isActive: true },
-      page,
-      limit,
-    );
+  async getMyStores(accountId: string, page = 1, limit = 10): Promise<Pages<Store>> {
+    return this.paginate({ account: { id: accountId } as Account, isActive: true }, page, limit);
   }
 
   async updateStore(id: string, dto: UpdateStoreDto): Promise<Store> {
@@ -92,10 +80,7 @@ export class StoresService extends BaseService<Store> {
     await this.getRepo().softDelete(id);
   }
 
-  private async saveOrThrowConflict(
-    store: Store,
-    repo: Repository<Store>,
-  ): Promise<Store> {
+  private async saveOrThrowConflict(store: Store, repo: Repository<Store>): Promise<Store> {
     try {
       return await repo.save(store);
     } catch (err: any) {
@@ -106,10 +91,7 @@ export class StoresService extends BaseService<Store> {
     }
   }
 
-  private async generateUniqueSlug(
-    name: string,
-    repo: Repository<Store>,
-  ): Promise<string> {
+  private async generateUniqueSlug(name: string, repo: Repository<Store>): Promise<string> {
     const baseSlug = this.slugify(name);
     let slug = baseSlug;
     let counter = 0;
@@ -122,10 +104,7 @@ export class StoresService extends BaseService<Store> {
     return slug;
   }
 
-  private async validateCustomSlug(
-    slug: string,
-    repo: Repository<Store>,
-  ): Promise<string> {
+  private async validateCustomSlug(slug: string, repo: Repository<Store>): Promise<string> {
     const normalized = this.slugify(slug);
 
     const exists = await repo.exist({ where: { slug: normalized } });

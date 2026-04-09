@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-  Check,
-} from 'typeorm';
+import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn, Check } from 'typeorm';
 import { Ingredient } from './ingredient.entity';
 
 @Entity('stocks')

@@ -3,10 +3,7 @@ import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MenuItem } from '../entities/menu-item.entity';
 import { CreateMenuItemDto } from '../dtos/menu-items/create-menu-item.dto';
-import {
-  UpdateMenuItemDto,
-  UpdateMenuItemOrderDto,
-} from '../dtos/menu-items/update-menu-item.dto';
+import { UpdateMenuItemDto, UpdateMenuItemOrderDto } from '../dtos/menu-items/update-menu-item.dto';
 import { MenuSectionService } from './menu-section.service';
 import { ProductService } from '@/modules/catalog/services/product.service';
 
@@ -19,20 +16,12 @@ export class MenuItemService {
     private readonly productService: ProductService,
   ) {}
 
-  async create(
-    storeId: string,
-    sectionId: string,
-    dto: CreateMenuItemDto,
-  ): Promise<MenuItem> {
+  async create(storeId: string, sectionId: string, dto: CreateMenuItemDto): Promise<MenuItem> {
     const section = await this.sectionService.findOne(storeId, sectionId);
 
-    const product = await this.productService.getProductById(
-      storeId,
-      dto.productId,
-    );
+    const product = await this.productService.getProductById(storeId, dto.productId);
 
-    const displayOrder =
-      dto.displayOrder ?? (await this.getNextDisplayOrder(sectionId));
+    const displayOrder = dto.displayOrder ?? (await this.getNextDisplayOrder(sectionId));
 
     const menuItem = this.repo.create({
       sectionId,
@@ -47,10 +36,7 @@ export class MenuItemService {
     return this.repo.save(menuItem);
   }
 
-  async findAllBySection(
-    storeId: string,
-    sectionId: string,
-  ): Promise<MenuItem[]> {
+  async findAllBySection(storeId: string, sectionId: string): Promise<MenuItem[]> {
     await this.sectionService.findOne(storeId, sectionId);
 
     return this.repo.find({
@@ -76,11 +62,7 @@ export class MenuItemService {
     return item;
   }
 
-  async update(
-    storeId: string,
-    itemId: string,
-    dto: UpdateMenuItemDto,
-  ): Promise<MenuItem> {
+  async update(storeId: string, itemId: string, dto: UpdateMenuItemDto): Promise<MenuItem> {
     const item = await this.findOne(storeId, itemId);
 
     const updated = this.repo.merge(item, dto);

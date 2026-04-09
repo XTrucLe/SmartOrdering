@@ -1,14 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { Profile } from '../entities/profile.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Account } from '../entities/account.entity';
 import { CreateProfileDto, UpdateProfileDto } from '../dtos/profile.dto';
+
 @Injectable()
 export class ProfileService {
   constructor(
@@ -21,9 +17,7 @@ export class ProfileService {
     account?: Account,
     manager?: EntityManager,
   ): Promise<Profile> {
-    const repo = manager
-      ? manager.getRepository(Profile)
-      : this.profileRepository;
+    const repo = manager ? manager.getRepository(Profile) : this.profileRepository;
 
     const newProfile = repo.create(profile);
 

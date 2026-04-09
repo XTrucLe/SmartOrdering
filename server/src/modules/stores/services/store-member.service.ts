@@ -57,10 +57,7 @@ export class StoreMemberService extends BaseService<StoreMember> {
     await this.getRepo().remove(member);
   }
 
-  async findMemberOrFail(
-    storeId: string,
-    userId: string,
-  ): Promise<StoreMember> {
+  async findMemberOrFail(storeId: string, userId: string): Promise<StoreMember> {
     const member = await this.getRepo().findOneBy({
       store: { id: storeId },
       account: { id: userId },
@@ -77,9 +74,7 @@ export class StoreMemberService extends BaseService<StoreMember> {
       order: { account: { profile: { firstName: 'ASC' } } },
     });
 
-    return members.sort(
-      (a, b) => RoleHierarchy[a.role] - RoleHierarchy[b.role],
-    );
+    return members.sort((a, b) => RoleHierarchy[a.role] - RoleHierarchy[b.role]);
   }
 
   async findStoresByAccount(accountId: string) {
@@ -130,9 +125,7 @@ export class StoreMemberService extends BaseService<StoreMember> {
       return await repo.save(member);
     } catch (err) {
       if (err instanceof Error && 'code' in err && err?.code === '23505') {
-        throw new UnprocessableEntityException(
-          'User is already a member of this store.',
-        );
+        throw new UnprocessableEntityException('User is already a member of this store.');
       }
       throw err;
     }

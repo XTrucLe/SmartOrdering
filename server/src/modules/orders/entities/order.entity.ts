@@ -12,11 +12,7 @@ import {
 } from 'typeorm';
 import { Store } from '../../stores/entities/store.entity';
 import { OrderItem } from './order-item.entity';
-import {
-  OrderStatus,
-  PaymentStatus,
-  DeliveryMethod,
-} from '../constants/order.constant';
+import { OrderStatus, PaymentStatus, DeliveryMethod } from '../constants/order.constant';
 import { decimalTransformer } from '@/common/utils/decimal.transformer';
 import { Delivery } from './delivery.entity';
 import { Table } from '@/modules/stores/entities/table.entity';

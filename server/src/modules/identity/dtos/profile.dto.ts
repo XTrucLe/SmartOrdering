@@ -1,12 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Exclude, Expose } from 'class-transformer';
-import {
-  IsDate,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Gender } from '../constants/profile.constant';
 
 @Exclude()

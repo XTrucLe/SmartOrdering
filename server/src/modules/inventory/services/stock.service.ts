@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Stock } from '../entities/stock.entity';
@@ -17,13 +13,8 @@ export class StockService {
     private readonly stockLogService: StockLogService,
   ) {}
 
-  async createStock(
-    ingredientId: string,
-    manager: EntityManager,
-  ): Promise<Stock> {
-    const newStock = manager
-      .getRepository(Stock)
-      .create({ ingredientId, quantity: 0 });
+  async createStock(ingredientId: string, manager: EntityManager): Promise<Stock> {
+    const newStock = manager.getRepository(Stock).create({ ingredientId, quantity: 0 });
     return manager.getRepository(Stock).save(newStock);
   }
 
@@ -42,22 +33,15 @@ export class StockService {
     });
   }
 
-  async increaseStock(
-    ingredientId: string,
-    quantity: number,
-    note?: string,
-  ): Promise<Stock> {
+  async increaseStock(ingredientId: string, quantity: number, note?: string): Promise<Stock> {
     if (quantity <= 0) {
-      throw new ConflictException(
-        'Quantity to increase must be greater than zero',
-      );
+      throw new ConflictException('Quantity to increase must be greater than zero');
     }
     const stock = await this.adjustStock(ingredientId, quantity);
     await this.stockLogService.createStockLog({
       ingredientId,
       ingredientName: stock.ingredient.name,
-      prevQty:
-        stock.quantity - quantity * parseFloat(stock.ingredient.conversionRate),
+      prevQty: stock.quantity - quantity * parseFloat(stock.ingredient.conversionRate),
       newQty: stock.quantity,
       delta: quantity,
       type: StockLogType.IN,
@@ -66,22 +50,15 @@ export class StockService {
     return stock;
   }
 
-  async decreaseStock(
-    ingredientId: string,
-    quantity: number,
-    note?: string,
-  ): Promise<Stock> {
+  async decreaseStock(ingredientId: string, quantity: number, note?: string): Promise<Stock> {
     if (quantity <= 0) {
-      throw new ConflictException(
-        'Quantity to decrease must be greater than zero',
-      );
+      throw new ConflictException('Quantity to decrease must be greater than zero');
     }
     const stock = await this.adjustStock(ingredientId, -quantity);
     await this.stockLogService.createStockLog({
       ingredientId,
       ingredientName: stock.ingredient.name,
-      prevQty:
-        stock.quantity + quantity * parseFloat(stock.ingredient.conversionRate),
+      prevQty: stock.quantity + quantity * parseFloat(stock.ingredient.conversionRate),
       newQty: stock.quantity,
       delta: -quantity,
       type: StockLogType.OUT,
@@ -90,10 +67,7 @@ export class StockService {
     return stock;
   }
 
-  private async adjustStock(
-    ingredientId: string,
-    delta: number,
-  ): Promise<Stock> {
+  private async adjustStock(ingredientId: string, delta: number): Promise<Stock> {
     const stockData = await this.stockRepository.findOne({
       where: { ingredient: { id: ingredientId } },
       relations: ['ingredient'],

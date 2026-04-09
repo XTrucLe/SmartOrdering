@@ -71,10 +71,7 @@ export class Ingredient {
   generateCode() {
     if (!this.code || this.code.trim() === '') {
       const timePart = Date.now().toString(36).slice(-4).toUpperCase();
-      const randomPath = Math.random()
-        .toString(36)
-        .substring(2, 6)
-        .toUpperCase();
+      const randomPath = Math.random().toString(36).substring(2, 6).toUpperCase();
       this.code = `ING-${timePart}${randomPath}`;
     }
   }

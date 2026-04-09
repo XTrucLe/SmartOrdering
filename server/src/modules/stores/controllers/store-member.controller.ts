@@ -1,29 +1,15 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Delete,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Delete, Param, UseGuards } from '@nestjs/common';
 import { StoreMemberService } from '../services/store-member.service';
 import {
   CreateStoreMemberDto,
   StoreMemberResponseDto,
 } from '../dtos/store-members/store-member.dto';
-import {
-  mapToStoreMemberDto,
-  mapToStoreMemberDtos,
-} from '../mappers/store-member.mapper';
+import { mapToStoreMemberDto, mapToStoreMemberDtos } from '../mappers/store-member.mapper';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '../guards/store-role.guard';
 import { CurrentStore } from '../decorators/current-store.decorator';
 import { StoreInfo } from '../dtos/stores/store-info.dto';
-import {
-  StoreManager,
-  StoreOwner,
-} from '../decorators/store-role-group.decorator';
+import { StoreManager, StoreOwner } from '../decorators/store-role-group.decorator';
 
 @Controller('/members')
 @UseGuards(JwtGuard, StoreRoleGuard)
@@ -36,10 +22,7 @@ export class StoreMemberController {
     @CurrentStore() store: StoreInfo,
     @Body() dto: CreateStoreMemberDto,
   ): Promise<StoreMemberResponseDto> {
-    const member = await this.storeMemberService.createManager(
-      store.id,
-      dto.account,
-    );
+    const member = await this.storeMemberService.createManager(store.id, dto.account);
     return mapToStoreMemberDto(member);
   }
 
@@ -49,18 +32,13 @@ export class StoreMemberController {
     @CurrentStore() store: StoreInfo,
     @Body() dto: CreateStoreMemberDto,
   ): Promise<StoreMemberResponseDto> {
-    const member = await this.storeMemberService.createStaff(
-      store.id,
-      dto.account,
-    );
+    const member = await this.storeMemberService.createStaff(store.id, dto.account);
     return mapToStoreMemberDto(member);
   }
 
   @Get()
   @StoreManager()
-  async listMembers(
-    @CurrentStore() store: StoreInfo,
-  ): Promise<StoreMemberResponseDto[]> {
+  async listMembers(@CurrentStore() store: StoreInfo): Promise<StoreMemberResponseDto[]> {
     const members = await this.storeMemberService.listStoreMembers(store.id);
     return mapToStoreMemberDtos(members);
   }
@@ -71,10 +49,7 @@ export class StoreMemberController {
     @CurrentStore() store: StoreInfo,
     @Param('userId') userId: string,
   ): Promise<StoreMemberResponseDto> {
-    const member = await this.storeMemberService.findMemberOrFail(
-      store.id,
-      userId,
-    );
+    const member = await this.storeMemberService.findMemberOrFail(store.id, userId);
     return mapToStoreMemberDto(member);
   }
 

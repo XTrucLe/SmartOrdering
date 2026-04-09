@@ -29,19 +29,13 @@ export class AccountService extends BaseService<Account> {
     return this.getRepo(manager).findOneBy({ id });
   }
 
-  async findByEmail(
-    email: string,
-    manager?: EntityManager,
-  ): Promise<Account | null> {
+  async findByEmail(email: string, manager?: EntityManager): Promise<Account | null> {
     return this.getRepo(manager).findOne({
       where: { email, isActive: true },
     });
   }
 
-  async findByPhoneNumber(
-    phoneNumber: string,
-    manager?: EntityManager,
-  ): Promise<Account | null> {
+  async findByPhoneNumber(phoneNumber: string, manager?: EntityManager): Promise<Account | null> {
     return this.getRepo(manager).findOne({
       where: { phoneNumber, isActive: true },
     });
@@ -67,17 +61,11 @@ export class AccountService extends BaseService<Account> {
     return account;
   }
 
-  async create(
-    dto: CreateAccountDto,
-    manager?: EntityManager,
-  ): Promise<Account> {
+  async create(dto: CreateAccountDto, manager?: EntityManager): Promise<Account> {
     return this.createAccount(dto, Role.USER, manager);
   }
 
-  async createCustomer(
-    dto: CreateCustomerDto,
-    manager?: EntityManager,
-  ): Promise<Account> {
+  async createCustomer(dto: CreateCustomerDto, manager?: EntityManager): Promise<Account> {
     const existingAccount = await this.findByPhoneNumber(dto.phoneNumber, manager);
 
     if (existingAccount) {
@@ -99,9 +87,7 @@ export class AccountService extends BaseService<Account> {
     } catch (err) {
       this.handleDbError(err);
     }
-
   }
-
 
   private async createAccount(
     dto: CreateAccountDto,
@@ -140,11 +126,7 @@ export class AccountService extends BaseService<Account> {
     return this.createCustomer(dto, manager);
   }
 
-  async updatePassword(
-    id: string,
-    newPassword: string,
-    manager?: EntityManager,
-  ): Promise<Account> {
+  async updatePassword(id: string, newPassword: string, manager?: EntityManager): Promise<Account> {
     const repo = this.getRepo(manager);
 
     const account = await this.getActiveById(id, manager);
@@ -170,9 +152,7 @@ export class AccountService extends BaseService<Account> {
     const account = await this.getById(id, manager);
 
     if (account.isActive === isActive) {
-      throw new BadRequestException(
-        `Account already ${isActive ? 'active' : 'inactive'}`,
-      );
+      throw new BadRequestException(`Account already ${isActive ? 'active' : 'inactive'}`);
     }
 
     account.isActive = isActive;

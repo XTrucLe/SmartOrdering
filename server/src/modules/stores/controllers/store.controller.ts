@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Param,
-  Post,
-  Put,
-  Delete,
-  Get,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, Delete, Get, UseGuards } from '@nestjs/common';
 import { StoresService } from '../services/stores.service';
 import { CreateStoreDto } from '../dtos/stores/create-store.dto';
 import { UpdateStoreDto } from '../dtos/stores/update-store.dto';
@@ -21,10 +12,7 @@ import { StoreRoleGuard } from '../guards/store-role.guard';
 import { JwtGuard } from '../../identity/guards/jwt.guard';
 import { CurrentStore } from '../decorators/current-store.decorator';
 import { StoreInfo } from '../dtos/stores/store-info.dto';
-import {
-  StoreManager,
-  StoreOwner,
-} from '../decorators/store-role-group.decorator';
+import { StoreManager, StoreOwner } from '../decorators/store-role-group.decorator';
 
 @Controller('stores')
 export class StoresController {
@@ -42,9 +30,7 @@ export class StoresController {
 
   @Get('my-stores')
   @UseGuards(JwtGuard)
-  async getMyStores(
-    @CurrentUser() user: JwtPayload,
-  ): Promise<Pages<StoreResponseDto>> {
+  async getMyStores(@CurrentUser() user: JwtPayload): Promise<Pages<StoreResponseDto>> {
     const stores = await this.storesService.getMyStores(user.sub);
     return mapToStoreDtos(stores);
   }

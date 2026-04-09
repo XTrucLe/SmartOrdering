@@ -1,7 +1,4 @@
-import {
-  InternalServerErrorException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 
 export const handleError = (error) => {
   if (error instanceof Error) {

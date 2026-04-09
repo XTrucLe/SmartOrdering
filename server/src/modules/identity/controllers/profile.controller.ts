@@ -28,10 +28,7 @@ export class ProfileController {
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateProfileDto: UpdateProfileDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
     const profile = await this.profileService.update(id, updateProfileDto);
     return mapToProfileDto(profile);
   }

@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateMenuDto } from '../dtos/menus/create-menu.dto';
@@ -45,11 +41,7 @@ export class MenuService {
     return menu;
   }
 
-  async update(
-    storeId: string,
-    menuId: string,
-    dto: UpdateMenuDto,
-  ): Promise<Menu> {
+  async update(storeId: string, menuId: string, dto: UpdateMenuDto): Promise<Menu> {
     const menu = await this.findOne(storeId, menuId);
 
     const updated = this.repo.merge(menu, dto);
@@ -70,17 +62,11 @@ export class MenuService {
     return this.updateStatus(storeId, menuId, false);
   }
 
-  private async updateStatus(
-    storeId: string,
-    menuId: string,
-    isActive: boolean,
-  ): Promise<Menu> {
+  private async updateStatus(storeId: string, menuId: string, isActive: boolean): Promise<Menu> {
     const menu = await this.findOne(storeId, menuId);
 
     if (menu.isActive === isActive) {
-      throw new ConflictException(
-        `Menu already ${isActive ? 'active' : 'inactive'}`,
-      );
+      throw new ConflictException(`Menu already ${isActive ? 'active' : 'inactive'}`);
     }
 
     menu.isActive = isActive;

@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  Check,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Check } from 'typeorm';
 import { Combo } from './combo.entity';
 
 @Entity('combo_items')

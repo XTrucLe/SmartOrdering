@@ -15,11 +15,7 @@ import { CurrentStore } from '../../stores/decorators/current-store.decorator';
 import { StoreInfo } from '../../stores/dtos/stores/store-info.dto';
 import { StoreRoleGuard } from '../../stores/guards/store-role.guard';
 import { CategoryService } from '../services/category.service';
-import {
-  CategoryResponseDto,
-  CreateCategoryDto,
-  UpdateCategoryDto,
-} from '../dtos/category.dto';
+import { CategoryResponseDto, CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
 import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
 
@@ -68,20 +64,13 @@ export class CategoryController {
     @Param('id') id: string,
     @Body() dto: UpdateCategoryDto,
   ): Promise<CategoryResponseDto> {
-    const category = await this.categoryService.updateCategory(
-      store.id,
-      id,
-      dto,
-    );
+    const category = await this.categoryService.updateCategory(store.id, id, dto);
     return CategoryMapper.toDto(category);
   }
 
   @Delete(':id')
   @StoreManager()
-  async deleteCategory(
-    @CurrentStore() store: StoreInfo,
-    @Param('id') id: string,
-  ) {
+  async deleteCategory(@CurrentStore() store: StoreInfo, @Param('id') id: string) {
     return this.categoryService.deleteCategory(store.id, id);
   }
 

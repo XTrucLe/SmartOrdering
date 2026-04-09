@@ -2,9 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import { StoreMember } from '../entities/store-member.entity';
 import { StoreMemberResponseDto } from '../dtos/store-members/store-member.dto';
 
-export function mapToStoreMemberDto(
-  storeMember: StoreMember,
-): StoreMemberResponseDto {
+export function mapToStoreMemberDto(storeMember: StoreMember): StoreMemberResponseDto {
   return plainToInstance(
     StoreMemberResponseDto,
     {
@@ -18,9 +16,7 @@ export function mapToStoreMemberDto(
   );
 }
 
-export function mapToStoreMemberDtos(
-  storeMembers: StoreMember[],
-): StoreMemberResponseDto[] {
+export function mapToStoreMemberDtos(storeMembers: StoreMember[]): StoreMemberResponseDto[] {
   return storeMembers.map((member) =>
     plainToInstance(
       StoreMemberResponseDto,

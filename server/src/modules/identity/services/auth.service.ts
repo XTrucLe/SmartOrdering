@@ -4,7 +4,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource } from 'typeorm';
 import { AuthResponseDto, JwtPayload, LoginDto } from '../dtos/auth.dto';
@@ -12,7 +11,6 @@ import { StoresService } from '../../stores/services/stores.service';
 import { StoreMemberService } from '../../stores/services/store-member.service';
 import { StoreInfo } from '../../stores/dtos/stores/store-info.dto';
 import { AccountService } from './account.service';
-import { ProfileService } from './profile.service';
 import { Account } from '../entities/account.entity';
 import { ChangePasswordDto, OwnerRegisterDto } from '../dtos/account.dto';
 import { PasswordService } from './password.service';
@@ -22,7 +20,6 @@ export class AuthService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly accountService: AccountService,
-    private readonly profileService: ProfileService,
     private readonly storeService: StoresService,
     private readonly storeMemberService: StoreMemberService,
     private readonly jwtService: JwtService,
@@ -34,10 +31,7 @@ export class AuthService {
     this.ensureAccountExists(account);
     this.ensurePasswordLogin(account);
 
-    const isMatch = await this.passwordService.comparePassword(
-      dto.password,
-      account.passwordHash!,
-    );
+    const isMatch = await this.passwordService.comparePassword(dto.password, account.passwordHash!);
 
     if (!isMatch) {
       throw new BadRequestException('Invalid email or password');
@@ -46,24 +40,18 @@ export class AuthService {
     return this.checkAccount(account);
   }
 
-  async loginWithStore(
-    accountId: string,
-    storeId: string,
-  ): Promise<AuthResponseDto> {
+  async loginWithStore(accountId: string, storeId: string): Promise<AuthResponseDto> {
     const account = await this.accountService.findById(accountId);
     this.ensureAccountExists(account);
 
-    const existingStores =
-      await this.storeMemberService.findStoresByAccount(accountId);
+    const existingStores = await this.storeMemberService.findStoresByAccount(accountId);
 
     if (!existingStores || existingStores.length === 0) {
       throw new BadRequestException('No store access found for this account');
     }
 
     if (existingStores.length >= 1 && existingStores[0].id !== storeId) {
-      throw new BadRequestException(
-        'Selected store does not match account access',
-      );
+      throw new BadRequestException('Selected store does not match account access');
     }
 
     return this.checkAccount(account, storeId);
@@ -72,23 +60,11 @@ export class AuthService {
   async register(dto: OwnerRegisterDto): Promise<void> {
     try {
       await this.dataSource.transaction(async (manager) => {
+        const account = await this.accountService.create({ ...dto }, manager);
 
-        const account = await this.accountService.create(
-          { ...dto },
-          manager,
-        );
+        const store = await this.storeService.createStore(account.id, dto.store, manager);
 
-        const store = await this.storeService.createStore(
-          account.id,
-          dto.store,
-          manager,
-        );
-
-        await this.storeMemberService.createOwner(
-          store.id,
-          account.id,
-          manager,
-        );
+        await this.storeMemberService.createOwner(store.id, account.id, manager);
 
         await this.accountService.deactivate(account.id, manager);
       });
@@ -115,10 +91,7 @@ export class AuthService {
 
     this.ensurePasswordLogin(account);
 
-    const isMatch = await this.passwordService.comparePassword(
-      oldPassword,
-      account.passwordHash!,
-    );
+    const isMatch = await this.passwordService.comparePassword(oldPassword, account.passwordHash!);
 
     if (!isMatch) {
       throw new BadRequestException('Invalid old password');
@@ -127,9 +100,7 @@ export class AuthService {
     await this.accountService.updatePassword(account.id, newPassword);
   }
 
-  private ensureAccountExists(
-    account: Account | null,
-  ): asserts account is Account {
+  private ensureAccountExists(account: Account | null): asserts account is Account {
     if (!account) {
       throw new BadRequestException('Account not found');
     }
@@ -141,13 +112,8 @@ export class AuthService {
     }
   }
 
-  private async checkAccount(
-    account: Account,
-    selectedStoreId?: string,
-  ): Promise<AuthResponseDto> {
-    const stores = await this.storeMemberService.findStoresByAccount(
-      account.id,
-    );
+  private async checkAccount(account: Account, selectedStoreId?: string): Promise<AuthResponseDto> {
+    const stores = await this.storeMemberService.findStoresByAccount(account.id);
 
     if (!stores || stores.length === 0) {
       return this.generateAuthResponse(account);
@@ -161,9 +127,7 @@ export class AuthService {
       const activeStore = stores.find((store) => store.id === selectedStoreId);
 
       if (!activeStore) {
-        throw new ForbiddenException(
-          'You do not have access to the selected store',
-        );
+        throw new ForbiddenException('You do not have access to the selected store');
       }
 
       return this.generateAuthResponse(account, undefined, activeStore);
@@ -177,10 +141,7 @@ export class AuthService {
     store?: StoreInfo[],
     activeStore?: StoreInfo,
   ): AuthResponseDto {
-    const username =
-      account.email ??
-      account.phoneNumber ??
-      `user_${account.id.substring(0, 8)}`;
+    const username = account.email ?? account.phoneNumber ?? `user_${account.id.substring(0, 8)}`;
 
     const payload: JwtPayload = {
       sub: account.id,

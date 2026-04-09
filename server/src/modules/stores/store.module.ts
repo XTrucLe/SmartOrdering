@@ -19,12 +19,7 @@ import { IdentityModule } from '../identity/identity.module';
     TypeOrmModule.forFeature([Store, Zone, Table, StoreMember]),
     forwardRef(() => IdentityModule),
   ],
-  controllers: [
-    StoresController,
-    StoreMemberController,
-    TableController,
-    ZoneController,
-  ],
+  controllers: [StoresController, StoreMemberController, TableController, ZoneController],
   providers: [StoresService, StoreMemberService, ZonesService, TableService],
   exports: [StoresService, StoreMemberService, ZonesService, TableService],
 })

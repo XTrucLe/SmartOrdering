@@ -1,9 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNotEmpty,
-  ValidateNested,
-} from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, ValidateNested } from 'class-validator';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { ProductDto } from './product.dto';

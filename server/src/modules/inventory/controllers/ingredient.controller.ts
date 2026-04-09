@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Get,
-  Put,
-  Delete,
-  UseGuards,
-  Param,
-} from '@nestjs/common';
+import { Body, Controller, Post, Get, Put, Delete, UseGuards, Param } from '@nestjs/common';
 import { IngredientService } from '../services/ingredient.service';
 import {
   CreateIngredientDto,
@@ -38,9 +29,7 @@ export class IngredientController {
 
   @Get()
   @StoreManager()
-  async getIngredients(
-    @CurrentStore() store: StoreInfo,
-  ): Promise<IngredientResponseDto[]> {
+  async getIngredients(@CurrentStore() store: StoreInfo): Promise<IngredientResponseDto[]> {
     const ingredients = await this.ingredientService.findAll(store.id);
     return IngredientMapper.toList(ingredients);
   }
@@ -50,10 +39,7 @@ export class IngredientController {
     @CurrentStore() store: StoreInfo,
     @Param('id') id: string,
   ): Promise<IngredientResponseDto> {
-    const ingredient = await this.ingredientService.getIngredientById(
-      store.id,
-      id,
-    );
+    const ingredient = await this.ingredientService.getIngredientById(store.id, id);
     return IngredientMapper.toDto(ingredient);
   }
 
@@ -62,10 +48,7 @@ export class IngredientController {
     @CurrentStore() store: StoreInfo,
     @Param('code') code: string,
   ): Promise<IngredientResponseDto> {
-    const ingredient = await this.ingredientService.getIngredientByCode(
-      store.id,
-      code,
-    );
+    const ingredient = await this.ingredientService.getIngredientByCode(store.id, code);
     return IngredientMapper.toDto(ingredient);
   }
 
@@ -82,10 +65,7 @@ export class IngredientController {
 
   @Delete(':id')
   @StoreManager()
-  async deleteIngredient(
-    @CurrentStore() store: StoreInfo,
-    @Param('id') id: string,
-  ) {
+  async deleteIngredient(@CurrentStore() store: StoreInfo, @Param('id') id: string) {
     return this.ingredientService.remove(store.id, id);
   }
 }

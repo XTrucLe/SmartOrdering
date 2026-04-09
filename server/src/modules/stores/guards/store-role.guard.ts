@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { JwtPayload } from '@/modules/identity/dtos/auth.dto';
@@ -16,10 +11,10 @@ export class StoreRoleGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const requiredRoles = this.reflector.getAllAndOverride<StoreRole[]>(
-      STORE_ROLE_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const requiredRoles = this.reflector.getAllAndOverride<StoreRole[]>(STORE_ROLE_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
     if (!requiredRoles) {
       return true; // No roles required, allow access
     }
@@ -36,17 +31,13 @@ export class StoreRoleGuard implements CanActivate {
     const storeRole = user.store.role;
 
     if (!storeRole) {
-      throw new ForbiddenException(
-        'You do not have permission to perform this action.',
-      );
+      throw new ForbiddenException('You do not have permission to perform this action.');
     }
 
     const hasPermission = requiredRoles.includes(storeRole);
 
     if (!hasPermission) {
-      throw new ForbiddenException(
-        'You do not have permission to perform this action.',
-      );
+      throw new ForbiddenException('You do not have permission to perform this action.');
     }
 
     return true;

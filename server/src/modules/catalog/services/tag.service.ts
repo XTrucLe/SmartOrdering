@@ -47,13 +47,9 @@ export class TagService {
       where: { name: In(names) },
     });
     const existingTagNames = existingTags.map((tag) => tag.name);
-    const missingTagNames = names.filter(
-      (name) => !existingTagNames.includes(name),
-    );
+    const missingTagNames = names.filter((name) => !existingTagNames.includes(name));
     if (missingTagNames.length > 0) {
-      throw new NotFoundException(
-        `Tag(s) with name(s) ${missingTagNames.join(', ')} not found.`,
-      );
+      throw new NotFoundException(`Tag(s) with name(s) ${missingTagNames.join(', ')} not found.`);
     }
   }
 }

@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader } from "@/components/ui/card";
+import { login } from "@/services/auth";
+import { goHome } from "@/configs/path";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,19 +33,11 @@ export default function LoginPage() {
     console.log(data);
 
     try {
-      // const res = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(data),
-      // });
+      const response = await login(data.email, data.password);
+      const { activeStore } = response;
+      console.log(response);
 
-      // const result = await res.json();
-
-      // if (!res.ok) {
-      //   return;
-      // }
-
-      router.replace(`/pho-88/`);
+      router.push(goHome(activeStore.role, activeStore.slug));
     } catch {
     } finally {
       setLoading(false);

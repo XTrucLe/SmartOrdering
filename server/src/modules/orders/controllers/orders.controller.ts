@@ -5,84 +5,94 @@ import {
   Patch,
   Param,
   Body,
-  ParseUUIDPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import { OrdersService } from '../services/orders.service';
-import { CreateOrderDto } from '../dtos/orders/create-order.dto';
-import { OrderResponseDto } from '../dtos/orders/order.response.dto';
+import { OrderService } from '../services/order.service';
+import { CreateOrderDto, OrderFilterDto, OrderResponseDto } from '../dtos/order.dto';
 import { mapToOrderDto, mapToOrderDtos } from '../mappers/order.mapper';
-import { CancelReason } from '../constants/order.constant';
-import { StoreGuard } from '../../stores/guards/store.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
+import { Pages } from '@/common/interfaces/page.interface';
+import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
+import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
+import { StoreManager, StoreStaff } from '@/modules/stores/decorators/store-role-group.decorator';
 
-@Controller('stores/:storeId/orders')
-@UseGuards(StoreGuard)
-export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+@Controller('orders')
+@UseGuards(JwtGuard, StoreRoleGuard)
+export class OrderController {
+  constructor(private readonly orderService: OrderService) { }
 
   @Post()
   async create(
-    @Param('storeId', ParseUUIDPipe) storeId: string,
+    @CurrentStore('id') storeId: string,
     @Body() dto: CreateOrderDto,
   ): Promise<OrderResponseDto> {
-    const order = await this.ordersService.create(storeId, dto);
+    const order = await this.orderService.create(storeId, dto);
     return mapToOrderDto(order);
   }
 
   @Get()
+  @StoreManager()
   async findAll(
-    @Param('storeId', ParseUUIDPipe) storeId: string,
-  ): Promise<OrderResponseDto[]> {
-    const orders = await this.ordersService.findAllByStore(storeId);
-    return mapToOrderDtos(orders);
+    @CurrentStore('id') storeId: string,
+    @Query() filter: OrderFilterDto
+  ): Promise<Pages<OrderResponseDto>> {
+    const orders = await this.orderService.findAllByStore(storeId, filter);
+    return { ...orders, data: mapToOrderDtos(orders.data) };
   }
 
   @Get(':orderId')
+  @StoreStaff()
   async findOne(
-    @Param('orderId', ParseUUIDPipe) orderId: string,
+    @Param('orderId') orderId: string,
   ): Promise<OrderResponseDto> {
-    const order = await this.ordersService.findOne(orderId);
+    const order = await this.orderService.findOne(orderId);
     return mapToOrderDto(order);
   }
 
   @Patch(':orderId/confirm')
+  @StoreStaff()
   async confirm(
-    @Param('orderId', ParseUUIDPipe) orderId: string,
+    @Param('orderId') orderId: string,
   ): Promise<OrderResponseDto> {
-    const confirmedOrder = await this.ordersService.confirm(orderId);
+    const confirmedOrder = await this.orderService.confirm(orderId);
     return mapToOrderDto(confirmedOrder);
   }
 
   @Patch(':orderId/prepare')
+  @StoreStaff()
   async prepare(
-    @Param('orderId', ParseUUIDPipe) orderId: string,
+    @Param('orderId') orderId: string,
   ): Promise<OrderResponseDto> {
-    const preparedOrder = await this.ordersService.prepare(orderId);
+    const preparedOrder = await this.orderService.prepare(orderId);
     return mapToOrderDto(preparedOrder);
   }
 
   @Patch(':orderId/ready')
+  @StoreStaff()
   async ready(
-    @Param('orderId', ParseUUIDPipe) orderId: string,
+    @Param('orderId') orderId: string,
   ): Promise<OrderResponseDto> {
-    const readyOrder = await this.ordersService.ready(orderId);
+    const readyOrder = await this.orderService.ready(orderId);
     return mapToOrderDto(readyOrder);
   }
 
   @Patch(':orderId/complete')
+  @StoreStaff()
   async complete(
-    @Param('orderId', ParseUUIDPipe) orderId: string,
+    @Param('orderId') orderId: string,
   ): Promise<OrderResponseDto> {
-    const completedOrder = await this.ordersService.complete(orderId);
+    const completedOrder = await this.orderService.complete(orderId);
     return mapToOrderDto(completedOrder);
   }
 
   @Patch(':orderId/cancel')
+  @StoreStaff()
   async cancel(
-    @Param('orderId', ParseUUIDPipe) orderId: string,
-    @Body('reason') reason: CancelReason,
+    @Param('orderId') orderId: string,
+    @Body('reason') reason: string,
   ): Promise<OrderResponseDto> {
-    const cancelledOrder = await this.ordersService.cancel(orderId, reason);
+    const cancelledOrder = await this.orderService.cancel(orderId, reason);
     return mapToOrderDto(cancelledOrder);
   }
 }

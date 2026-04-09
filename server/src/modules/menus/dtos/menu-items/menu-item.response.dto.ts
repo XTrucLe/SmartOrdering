@@ -1,23 +1,14 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
-import { MenuItem } from '../../entities/menu-item.entity';
+import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
 export class MenuItemResponseDto {
   @Expose() id: string;
-
-  @Expose()
-  @Transform(({ obj }: { obj: MenuItem }) => obj.item.name)
-  name: string;
-
-  @Expose()
-  @Transform(({ obj }: { obj: MenuItem }) => obj.item.description)
-  description?: string;
-
-  @Expose()
-  @Transform(({ obj }: { obj: MenuItem }) => obj.item.imageUrl)
-  imageUrl?: string;
-
+  @Expose() sectionId: string;
+  @Expose() productId: string;
+  @Expose() name: string;
+  @Expose() description?: string;
+  @Expose() imageUrl?: string;
   @Expose() price: number;
-  @Expose() available: boolean;
+  @Expose() isAvailable: boolean;
   @Expose() displayOrder: number;
 }

@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 export class CreateMenuItemDto {
   @IsString()
   @IsNotEmpty()
-  itemId: string;
+  productId: string;
 
   @IsNotEmpty()
   @IsNumber()

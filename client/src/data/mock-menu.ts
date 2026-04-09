@@ -1,4 +1,4 @@
-import { Menu } from "@/app/[store_slug]/(client)/_types/menu";
+import { Menu } from "@/types";
 
 export const MOCK_MENU: Menu = {
   id: "menu_01",
@@ -11,7 +11,7 @@ export const MOCK_MENU: Menu = {
       id: "sec_khaivi",
       name: "Khai Vị",
       displayOrder: 1,
-      products: [
+      items: [
         {
           id: "kv_01",
           name: "Gỏi Cuốn Tôm Thịt",
@@ -59,7 +59,7 @@ export const MOCK_MENU: Menu = {
       id: "sec_nuoc",
       name: "Phở & Bún",
       displayOrder: 2,
-      products: [
+      items: [
         {
           id: "nuoc_01",
           name: "Phở Bò Đặc Biệt",
@@ -99,7 +99,7 @@ export const MOCK_MENU: Menu = {
       id: "sec_com",
       name: "Cơm & Món Mặn",
       displayOrder: 3,
-      products: [
+      items: [
         {
           id: "com_01",
           name: "Cơm Tấm Sườn",
@@ -139,7 +139,7 @@ export const MOCK_MENU: Menu = {
       id: "sec_rau",
       name: "Rau & Canh",
       displayOrder: 4,
-      products: [
+      items: [
         {
           id: "rau_01",
           name: "Rau Muống Xào",
@@ -167,7 +167,7 @@ export const MOCK_MENU: Menu = {
       id: "sec_douong",
       name: "Đồ Uống",
       displayOrder: 5,
-      products: [
+      items: [
         {
           id: "drink_01",
           name: "Trà Đào Cam Sả",
@@ -215,7 +215,7 @@ export const MOCK_MENU: Menu = {
       id: "sec_trangmieng",
       name: "Tráng Miệng",
       displayOrder: 6,
-      products: [
+      items: [
         {
           id: "tm_01",
           name: "Bánh Flan",

@@ -5,6 +5,9 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  Index,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Menu } from './menu.entity';
 import { MenuItem } from './menu-item.entity';
@@ -13,6 +16,10 @@ import { MenuItem } from './menu-item.entity';
 export class MenuSection {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Index()
+  @Column({ name: 'menu_id' })
+  menuId: string;
 
   @ManyToOne(() => Menu, (menu) => menu.menuSections, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'menu_id' })
@@ -24,7 +31,7 @@ export class MenuSection {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @Column()
+  @Column({ default: true })
   isActive: boolean;
 
   @Column({ type: 'int', default: 0 })
@@ -32,4 +39,10 @@ export class MenuSection {
 
   @OneToMany(() => MenuItem, (menuItem) => menuItem.menuSection)
   menuItems: MenuItem[];
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }

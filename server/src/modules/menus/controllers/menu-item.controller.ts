@@ -8,90 +8,85 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { MenuItemService } from '../services/menu-item.service';
 import { CreateMenuItemDto } from '../dtos/menu-items/create-menu-item.dto';
-import { UpdateMenuItemDto } from '../dtos/menu-items/update-menu-item.dto';
-import { MenuItemResponseDto } from '../dtos/menu-items/menu-item.response.dto';
 import {
-  toMenuItemResponseDto,
-  toMenuItemResponseDtos,
-} from '../mappers/menu-item.mapper';
-import { UpdateMenuItemOrderDto } from '../dtos/menu-items/update-menu-item-order.dto';
+  UpdateMenuItemDto,
+  UpdateMenuItemOrderDto,
+} from '../dtos/menu-items/update-menu-item.dto';
+import { MenuItemResponseDto } from '../dtos/menu-items/menu-item.response.dto';
+import { MenuItemMapper } from '../mappers/menu-item.mapper';
+import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
+import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
+import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
+import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
+import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
 
-@Controller('stores/:storeId')
+@UseGuards(JwtGuard, StoreRoleGuard)
+@Controller()
 export class MenuItemController {
-  constructor(private readonly menuItemService: MenuItemService) {}
+  constructor(private readonly service: MenuItemService) {}
 
-  @Post('menu-sections/:sectionId/items')
+  @Post('menu-sections/:sectionId/menu-items')
+  @StoreManager()
   async create(
-    @Param('storeId') storeId: string,
+    @CurrentStore() { id: storeId }: StoreInfo,
     @Param('sectionId') sectionId: string,
-    @Body() createMenuItemDto: CreateMenuItemDto,
+    @Body() dto: CreateMenuItemDto,
   ): Promise<MenuItemResponseDto> {
-    const menuItem = await this.menuItemService.create(
-      storeId,
-      sectionId,
-      createMenuItemDto,
-    );
-    return toMenuItemResponseDto(menuItem);
+    const item = await this.service.create(storeId, sectionId, dto);
+    return MenuItemMapper.toResponseDto(item);
   }
 
-  @Get('menu-sections/:sectionId/items')
+  @Get('menu-sections/:sectionId/menu-items')
   async findAll(
-    @Param('storeId') storeId: string,
+    @CurrentStore() { id: storeId }: StoreInfo,
     @Param('sectionId') sectionId: string,
   ): Promise<MenuItemResponseDto[]> {
-    const menuItems = await this.menuItemService.findAllBySection(
-      storeId,
-      sectionId,
-    );
-    return toMenuItemResponseDtos(menuItems);
+    const items = await this.service.findAllBySection(storeId, sectionId);
+    return MenuItemMapper.toResponseDtoList(items);
   }
 
-  @Patch('menu-sections/:sectionId/items/order')
+  @Patch('menu-sections/:sectionId/menu-items/reorder')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateOrder(
-    @Param('storeId') storeId: string,
+  @StoreManager()
+  async reorder(
+    @CurrentStore() { id: storeId }: StoreInfo,
     @Param('sectionId') sectionId: string,
-    @Body() updateOrderDto: UpdateMenuItemOrderDto,
+    @Body() dto: UpdateMenuItemOrderDto,
   ): Promise<void> {
-    await this.menuItemService.updateOrder(
-      storeId,
-      sectionId,
-      updateOrderDto.itemIds,
-    );
+    await this.service.updateOrder(storeId, sectionId, dto);
   }
 
   @Get('menu-items/:itemId')
   async findOne(
-    @Param('storeId') storeId: string,
+    @CurrentStore() { id: storeId }: StoreInfo,
     @Param('itemId') itemId: string,
   ): Promise<MenuItemResponseDto> {
-    const menuItem = await this.menuItemService.findOne(storeId, itemId);
-    return toMenuItemResponseDto(menuItem);
+    const item = await this.service.findOne(storeId, itemId);
+    return MenuItemMapper.toResponseDto(item);
   }
 
   @Patch('menu-items/:itemId')
+  @StoreManager()
   async update(
-    @Param('storeId') storeId: string,
+    @CurrentStore() { id: storeId }: StoreInfo,
     @Param('itemId') itemId: string,
-    @Body() updateMenuItemDto: UpdateMenuItemDto,
+    @Body() dto: UpdateMenuItemDto,
   ): Promise<MenuItemResponseDto> {
-    const menuItem = await this.menuItemService.update(
-      storeId,
-      itemId,
-      updateMenuItemDto,
-    );
-    return toMenuItemResponseDto(menuItem);
+    const item = await this.service.update(storeId, itemId, dto);
+    return MenuItemMapper.toResponseDto(item);
   }
 
   @Delete('menu-items/:itemId')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @StoreManager()
   async remove(
-    @Param('storeId') storeId: string,
+    @CurrentStore() { id: storeId }: StoreInfo,
     @Param('itemId') itemId: string,
   ): Promise<void> {
-    await this.menuItemService.remove(storeId, itemId);
+    await this.service.remove(storeId, itemId);
   }
 }

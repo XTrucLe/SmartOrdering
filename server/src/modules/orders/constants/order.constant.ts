@@ -1,24 +1,17 @@
 export enum OrderStatus {
   PENDING = 'PENDING',
-  CONFIRM = 'CONFIRM',
+  CONFIRMED = 'CONFIRMED',
   PREPARING = 'PREPARING',
   READY = 'READY',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
 }
 
-export enum CancelReason {
-  CUSTOMER_REQUEST = 'CUSTOMER_REQUEST',
-  CUSTOMER_NO_SHOW = 'CUSTOMER_NO_SHOW',
-  OUT_OF_STOCK = 'OUT_OF_STOCK',
-  KITCHEN_ERROR = 'KITCHEN_ERROR',
-  DELIVERY_FAILED = 'DELIVERY_FAILED',
-}
-
 export enum PaymentStatus {
   PENDING = 'PENDING',
   PAID = 'PAID',
   FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
 }
 
 export enum DeliveryMethod {
@@ -26,5 +19,3 @@ export enum DeliveryMethod {
   TAKEAWAY = 'TAKEAWAY',
   DELIVERY = 'DELIVERY',
 }
-
-export const DELIVERY_FEE_AMOUNT = 15000;

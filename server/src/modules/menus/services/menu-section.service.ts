@@ -10,112 +10,105 @@ import { MenuService } from './menu.service';
 export class MenuSectionService {
   constructor(
     @InjectRepository(MenuSection)
-    private readonly menuSectionRepository: Repository<MenuSection>,
+    private readonly repo: Repository<MenuSection>,
     private readonly menuService: MenuService,
   ) {}
 
   async create(
     storeId: string,
     menuId: string,
-    createMenuSectionDto: CreateMenuSectionDto,
+    dto: CreateMenuSectionDto,
   ): Promise<MenuSection> {
     const menu = await this.menuService.findOne(storeId, menuId);
 
     const displayOrder =
-      createMenuSectionDto.displayOrder ??
-      (await this.getNextDisplayOrder(menuId));
+      dto.displayOrder ?? (await this.getNextDisplayOrder(menuId));
 
-    const menuSection = this.menuSectionRepository.create({
-      ...createMenuSectionDto,
-      displayOrder,
+    const section = this.repo.create({
+      ...dto,
+      menuId,
       menu,
+      displayOrder,
     });
 
-    return this.menuSectionRepository.save(menuSection);
+    return this.repo.save(section);
   }
 
   async findAllByMenu(storeId: string, menuId: string): Promise<MenuSection[]> {
     await this.menuService.findOne(storeId, menuId);
 
-    return this.menuSectionRepository.find({
-      where: {
-        menu: { id: menuId },
-      },
-      order: {
-        displayOrder: 'ASC',
-      },
+    return this.repo.find({
+      where: { menuId },
+      order: { displayOrder: 'ASC' },
     });
   }
 
   async findOne(storeId: string, sectionId: string): Promise<MenuSection> {
-    const menuSection = await this.menuSectionRepository.findOne({
+    const section = await this.repo.findOne({
       where: {
         id: sectionId,
         menu: { store: { id: storeId } },
       },
     });
 
-    if (!menuSection) {
-      throw new NotFoundException(
-        `Menu Section with ID "${sectionId}" not found`,
-      );
+    if (!section) {
+      throw new NotFoundException(`MenuSection "${sectionId}" not found`);
     }
 
-    return menuSection;
+    return section;
   }
 
   async update(
     storeId: string,
     sectionId: string,
-    updateMenuSectionDto: UpdateMenuSectionDto,
+    dto: UpdateMenuSectionDto,
   ): Promise<MenuSection> {
-    const menuSection = await this.findOne(storeId, sectionId);
+    const section = await this.findOne(storeId, sectionId);
 
-    const updatedSection = this.menuSectionRepository.merge(
-      menuSection,
-      updateMenuSectionDto,
-    );
+    const updated = this.repo.merge(section, dto);
 
-    return this.menuSectionRepository.save(updatedSection);
+    return this.repo.save(updated);
   }
 
   async remove(storeId: string, sectionId: string): Promise<void> {
-    const menuSection = await this.findOne(storeId, sectionId);
-    await this.menuSectionRepository.remove(menuSection);
+    const section = await this.findOne(storeId, sectionId);
+    await this.repo.remove(section);
   }
 
   async updateOrder(
     storeId: string,
     menuId: string,
-    orderedSectionIds: string[],
+    orderedIds: string[],
   ): Promise<void> {
     await this.menuService.findOne(storeId, menuId);
 
-    const menuSections = await this.menuSectionRepository.find({
+    const sections = await this.repo.find({
       where: {
-        id: In(orderedSectionIds),
-        menu: { id: menuId },
+        id: In(orderedIds),
+        menuId,
       },
     });
 
-    if (menuSections.length !== orderedSectionIds.length) {
-      throw new NotFoundException('One or more section IDs are invalid.');
+    if (sections.length !== orderedIds.length) {
+      throw new NotFoundException('Invalid sectionIds');
     }
 
-    const updatedSections = menuSections.map((section) => {
-      const newOrder = orderedSectionIds.indexOf(section.id);
-      return { ...section, displayOrder: newOrder };
-    });
+    const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
 
-    await this.menuSectionRepository.save(updatedSections);
+    const updated = sections.map((section) => ({
+      ...section,
+      displayOrder: orderMap.get(section.id)!,
+    }));
+
+    await this.repo.save(updated);
   }
 
   private async getNextDisplayOrder(menuId: string): Promise<number> {
-    const lastSection = await this.menuSectionRepository.findOne({
-      where: { menu: { id: menuId } },
+    const last = await this.repo.findOne({
+      where: { menuId },
       order: { displayOrder: 'DESC' },
     });
 
-    return lastSection ? lastSection.displayOrder + 1 : 0;
+    return last ? last.displayOrder + 1 : 0;
   }
 }

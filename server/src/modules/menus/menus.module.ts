@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Menu } from './entities/menu.entity';
-import { CategoriesModule } from '../categories/category.module';
-import { ItemsModule } from '../items/items.module';
+import { CatalogModule } from '../catalog/catalog.module';
 import { MenuSection } from './entities/menu-section.entity';
 import { MenuItem } from './entities/menu-item.entity';
 import { MenuController } from './controllers/menu.controller';
@@ -16,8 +15,7 @@ import { StoresModule } from '../stores/store.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Menu, MenuSection, MenuItem]),
-    CategoriesModule,
-    ItemsModule,
+    CatalogModule,
     StoresModule,
   ],
   controllers: [MenuController, MenuSectionController, MenuItemController],

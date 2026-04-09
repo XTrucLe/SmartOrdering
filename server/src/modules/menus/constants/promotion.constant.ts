@@ -1,0 +1,6 @@
+export enum PromotionType {
+  DISCOUNT = 'DISCOUNT',
+  BUY_ONE_GET_ONE = 'BUY_ONE_GET_ONE',
+  FREE_SHIPPING = 'FREE_SHIPPING',
+  FLASH_SALE = 'FLASH_SALE',
+}

@@ -3,125 +3,132 @@ import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MenuItem } from '../entities/menu-item.entity';
 import { CreateMenuItemDto } from '../dtos/menu-items/create-menu-item.dto';
-import { UpdateMenuItemDto } from '../dtos/menu-items/update-menu-item.dto';
+import {
+  UpdateMenuItemDto,
+  UpdateMenuItemOrderDto,
+} from '../dtos/menu-items/update-menu-item.dto';
 import { MenuSectionService } from './menu-section.service';
-import { ItemsService } from '../../items/items.service';
+import { ProductService } from '@/modules/catalog/services/product.service';
 
 @Injectable()
 export class MenuItemService {
   constructor(
     @InjectRepository(MenuItem)
-    private readonly menuItemRepository: Repository<MenuItem>,
-    private readonly menuSectionService: MenuSectionService,
-    private readonly itemsService: ItemsService,
+    private readonly repo: Repository<MenuItem>,
+    private readonly sectionService: MenuSectionService,
+    private readonly productService: ProductService,
   ) {}
 
   async create(
     storeId: string,
     sectionId: string,
-    createMenuItemDto: CreateMenuItemDto,
+    dto: CreateMenuItemDto,
   ): Promise<MenuItem> {
-    const { itemId } = createMenuItemDto;
+    const section = await this.sectionService.findOne(storeId, sectionId);
 
-    const menuSection = await this.menuSectionService.findOne(
+    const product = await this.productService.getProductById(
       storeId,
-      sectionId,
+      dto.productId,
     );
 
-    const item = await this.itemsService.getItemById(itemId);
-
     const displayOrder =
-      createMenuItemDto.displayOrder ??
-      (await this.getNextDisplayOrder(sectionId));
+      dto.displayOrder ?? (await this.getNextDisplayOrder(sectionId));
 
-    const menuItem = this.menuItemRepository.create({
-      ...createMenuItemDto,
+    const menuItem = this.repo.create({
+      sectionId,
+      menuSection: section,
+
+      product,
+      name: product.name,
       displayOrder,
-      menuSection,
-      item,
+      ...dto,
     });
-    return this.menuItemRepository.save(menuItem);
+
+    return this.repo.save(menuItem);
   }
 
   async findAllBySection(
     storeId: string,
     sectionId: string,
   ): Promise<MenuItem[]> {
-    await this.menuSectionService.findOne(storeId, sectionId);
+    await this.sectionService.findOne(storeId, sectionId);
 
-    return this.menuItemRepository.find({
-      where: { menuSection: { id: sectionId } },
-      relations: { item: true },
+    return this.repo.find({
+      where: { sectionId },
+      relations: ['product'],
       order: { displayOrder: 'ASC' },
     });
   }
 
   async findOne(storeId: string, itemId: string): Promise<MenuItem> {
-    const menuItem = await this.menuItemRepository.findOne({
+    const item = await this.repo.findOne({
       where: {
         id: itemId,
         menuSection: { menu: { store: { id: storeId } } },
       },
-      relations: { item: true },
+      relations: ['product'],
     });
 
-    if (!menuItem) {
-      throw new NotFoundException(`Menu Item with ID "${itemId}" not found`);
+    if (!item) {
+      throw new NotFoundException(`MenuItem "${itemId}" not found`);
     }
 
-    return menuItem;
+    return item;
   }
 
   async update(
     storeId: string,
     itemId: string,
-    updateMenuItemDto: UpdateMenuItemDto,
+    dto: UpdateMenuItemDto,
   ): Promise<MenuItem> {
-    const menuItem = await this.findOne(storeId, itemId);
-    const updatedMenuItem = this.menuItemRepository.merge(
-      menuItem,
-      updateMenuItemDto,
-    );
-    return this.menuItemRepository.save(updatedMenuItem);
+    const item = await this.findOne(storeId, itemId);
+
+    const updated = this.repo.merge(item, dto);
+
+    return this.repo.save(updated);
   }
 
   async remove(storeId: string, itemId: string): Promise<void> {
-    const menuItem = await this.findOne(storeId, itemId);
-    await this.menuItemRepository.remove(menuItem);
+    const item = await this.findOne(storeId, itemId);
+    await this.repo.remove(item);
   }
 
   async updateOrder(
     storeId: string,
     sectionId: string,
-    orderedItemIds: string[],
+    dto: UpdateMenuItemOrderDto,
   ): Promise<void> {
-    await this.menuSectionService.findOne(storeId, sectionId);
+    const { itemIds } = dto;
 
-    const menuItems = await this.menuItemRepository.find({
+    await this.sectionService.findOne(storeId, sectionId);
+
+    const items = await this.repo.find({
       where: {
-        id: In(orderedItemIds),
-        menuSection: { id: sectionId },
+        id: In(itemIds),
+        sectionId,
       },
     });
 
-    if (menuItems.length !== orderedItemIds.length) {
-      throw new NotFoundException('One or more item IDs are invalid.');
+    if (items.length !== itemIds.length) {
+      throw new NotFoundException('Invalid itemIds');
     }
 
-    const updatedItems = menuItems.map((item) => {
-      const newOrder = orderedItemIds.indexOf(item.id);
-      return { ...item, displayOrder: newOrder };
-    });
+    const orderMap = new Map(itemIds.map((id, index) => [id, index]));
 
-    await this.menuItemRepository.save(updatedItems);
+    const updated = items.map((item) => ({
+      ...item,
+      displayOrder: orderMap.get(item.id)!,
+    }));
+
+    await this.repo.save(updated);
   }
 
-  private async getNextDisplayOrder(menuSectionId: string): Promise<number> {
-    const lastItem = await this.menuItemRepository.findOne({
-      where: { menuSection: { id: menuSectionId } },
+  private async getNextDisplayOrder(sectionId: string): Promise<number> {
+    const last = await this.repo.findOne({
+      where: { sectionId },
       order: { displayOrder: 'DESC' },
     });
 
-    return lastItem ? lastItem.displayOrder + 1 : 0;
+    return last ? last.displayOrder + 1 : 0;
   }
 }

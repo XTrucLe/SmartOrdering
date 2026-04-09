@@ -1,14 +1,17 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CatalogModule } from './modules/catalog/catalog.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { NotificationModule } from './modules/notifications/notification.module';
 import { StoresModule } from './modules/stores/store.module';
-import { ItemsModule } from './modules/items/items.module';
-import { CommonModule } from './common/common.module';
-import { OrdersModule } from './modules/orders/order.module';
-import { CategoriesModule } from './modules/categories/category.module';
 import { MenusModule } from './modules/menus/menus.module';
+import { IdentityModule } from './modules/identity/identity.module';
+import { OrdersModule } from './modules/orders/order.module';
 
 @Module({
   imports: [
@@ -23,18 +26,25 @@ import { MenusModule } from './modules/menus/menus.module';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+
+        namingStrategy: new SnakeNamingStrategy(),
+
+        entities: [
+          __dirname + '/modules/**/*.entity{.ts,.js}',
+        ],
+        autoLoadEntities: false,
         synchronize: true,
       }),
     }),
-    CommonModule,
-    StoresModule,
-    CategoriesModule,
-    ItemsModule,
-    OrdersModule,
+    CatalogModule,
+    IdentityModule,
+    InventoryModule,
     MenusModule,
+    NotificationModule,
+    OrdersModule,
+    StoresModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

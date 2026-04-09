@@ -12,6 +12,7 @@ import { StoresModule } from '../stores/store.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
+import { PasswordService } from './services/password.service';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { JwtStrategy } from './jwt.strategy';
     }),
   ],
   controllers: [AuthController, AccountController, ProfileController],
-  providers: [AuthService, AccountService, ProfileService, JwtStrategy],
+  providers: [AuthService, AccountService, ProfileService, PasswordService, JwtStrategy],
   exports: [AuthService, AccountService, ProfileService, JwtStrategy],
 })
 export class IdentityModule { }

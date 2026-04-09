@@ -14,7 +14,7 @@ export class ProfileService {
   constructor(
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
-  ) {}
+  ) { }
 
   async create(
     profile: CreateProfileDto,
@@ -34,13 +34,6 @@ export class ProfileService {
     try {
       return await repo.save(newProfile);
     } catch (error) {
-      const isDulicatePhone =
-        error.code === '23505' ||
-        error.code === 'ER_DUP_ENTRY' ||
-        error.errno === 1062;
-      if (isDulicatePhone) {
-        throw new ConflictException('Phone number already exists');
-      }
       throw new ConflictException('Failed to create profile');
     }
   }

@@ -12,6 +12,7 @@ import { CreateAccountDto, CreateCustomerDto } from '../dtos/account.dto';
 import { Role } from '../constants/role.constant';
 import { ProfileService } from './profile.service';
 import { BaseService } from '@/common/services/base.service';
+import { PasswordService } from './password.service';
 
 @Injectable()
 export class AccountService extends BaseService<Account> {
@@ -19,6 +20,7 @@ export class AccountService extends BaseService<Account> {
     @InjectRepository(Account)
     repository: Repository<Account>,
     private readonly profileService: ProfileService,
+    private readonly passwordService: PasswordService,
   ) {
     super(repository, Account);
   }
@@ -69,7 +71,7 @@ export class AccountService extends BaseService<Account> {
     dto: CreateAccountDto,
     manager?: EntityManager,
   ): Promise<Account> {
-    return this.createAccount(dto, undefined, manager);
+    return this.createAccount(dto, Role.USER, manager);
   }
 
   async createCustomer(
@@ -108,10 +110,12 @@ export class AccountService extends BaseService<Account> {
   ): Promise<Account> {
     const repo = this.getRepo(manager);
 
+    const hassedPassword = await this.passwordService.hashPassword(dto.password);
+
     const account = repo.create({
       email: dto.email,
       phoneNumber: dto.phoneNumber,
-      passwordHash: dto.password,
+      passwordHash: hassedPassword,
       ...(role && { role }),
     });
 
@@ -138,24 +142,31 @@ export class AccountService extends BaseService<Account> {
 
   async updatePassword(
     id: string,
-    newPasswordHash: string,
+    newPassword: string,
     manager?: EntityManager,
   ): Promise<Account> {
     const repo = this.getRepo(manager);
 
     const account = await this.getActiveById(id, manager);
-    account.passwordHash = newPasswordHash;
+    account.passwordHash = await this.passwordService.hashPassword(newPassword);
 
     return repo.save(account);
   }
 
-  async toggleActive(
+  async activate(id: string, manager?: EntityManager): Promise<boolean> {
+    return this.updateActiveStatus(id, true, manager);
+  }
+
+  async deactivate(id: string, manager?: EntityManager): Promise<boolean> {
+    return this.updateActiveStatus(id, false, manager);
+  }
+
+  private async updateActiveStatus(
     id: string,
     isActive: boolean,
     manager?: EntityManager,
   ): Promise<boolean> {
     const repo = this.getRepo(manager);
-
     const account = await this.getById(id, manager);
 
     if (account.isActive === isActive) {

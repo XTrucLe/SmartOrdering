@@ -15,6 +15,7 @@ import { AccountService } from './account.service';
 import { ProfileService } from './profile.service';
 import { Account } from '../entities/account.entity';
 import { ChangePasswordDto, OwnerRegisterDto } from '../dtos/account.dto';
+import { PasswordService } from './password.service';
 
 @Injectable()
 export class AuthService {
@@ -25,14 +26,15 @@ export class AuthService {
     private readonly storeService: StoresService,
     private readonly storeMemberService: StoreMemberService,
     private readonly jwtService: JwtService,
-  ) {}
+    readonly passwordService: PasswordService,
+  ) { }
 
   async login(dto: LoginDto): Promise<AuthResponseDto> {
     const account = await this.accountService.findByEmail(dto.email);
     this.ensureAccountExists(account);
     this.ensurePasswordLogin(account);
 
-    const isMatch = await this.comparePassword(
+    const isMatch = await this.passwordService.comparePassword(
       dto.password,
       account.passwordHash!,
     );
@@ -70,14 +72,11 @@ export class AuthService {
   async register(dto: OwnerRegisterDto): Promise<void> {
     try {
       await this.dataSource.transaction(async (manager) => {
-        const hashedPassword = await this.hashPassword(dto.password);
 
         const account = await this.accountService.create(
-          { ...dto, password: hashedPassword },
+          { ...dto },
           manager,
         );
-
-        await this.profileService.create(dto.profile, account, manager);
 
         const store = await this.storeService.createStore(
           account.id,
@@ -90,6 +89,8 @@ export class AuthService {
           account.id,
           manager,
         );
+
+        await this.accountService.deactivate(account.id, manager);
       });
     } catch (error) {
       if (error instanceof Error && 'code' in error && error.code === '23505') {
@@ -114,7 +115,7 @@ export class AuthService {
 
     this.ensurePasswordLogin(account);
 
-    const isMatch = await this.comparePassword(
+    const isMatch = await this.passwordService.comparePassword(
       oldPassword,
       account.passwordHash!,
     );
@@ -123,8 +124,7 @@ export class AuthService {
       throw new BadRequestException('Invalid old password');
     }
 
-    const hashed = await this.hashPassword(newPassword);
-    await this.accountService.updatePassword(account.id, hashed);
+    await this.accountService.updatePassword(account.id, newPassword);
   }
 
   private ensureAccountExists(
@@ -199,16 +199,5 @@ export class AuthService {
       store: store,
       activeStore: activeStore,
     };
-  }
-
-  private async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 12);
-  }
-
-  private async comparePassword(
-    password: string,
-    hash: string,
-  ): Promise<boolean> {
-    return bcrypt.compare(password, hash);
   }
 }

@@ -115,7 +115,7 @@ export function MenuNav({
         "flex flex-col overflow-y-auto custom-scrollbar transition-all duration-300 z-10",
         !isEmbedded
           ? "w-full h-full"
-          : "w-24 md:w-56 h-screen border-r shadow-sm sticky",
+          : "w-24 md:w-48 h-screen border-r shadow-sm sticky",
       )}
       style={!isEmbedded ? { top: `${offset}px` } : undefined}
     >

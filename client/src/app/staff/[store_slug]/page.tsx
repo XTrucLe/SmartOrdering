@@ -6,5 +6,5 @@ export default async function StaffPage({
   params: { store_slug: string };
 }) {
   const { store_slug } = await params;
-  redirect(`${store_slug}/order`);
+  redirect(`${store_slug}/pos`);
 }

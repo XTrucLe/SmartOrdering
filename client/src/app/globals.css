@@ -201,3 +201,19 @@
     }
   }
 }
+
+[data-sonner-toast] {
+  color: var(--color-success-foreground) !important;
+}
+[data-sonner-toast][data-type="success"] {
+  background: #16a34a !important  ;
+}
+[data-sonner-toast][data-type="warning"] {
+  background: #ffc107 !important;
+}
+[data-sonner-toast][data-type="info"] {
+  background: #0ea5e9 !important;
+}
+[data-sonner-toast][data-type="error"] {
+  background: #dc2626 !important;
+}

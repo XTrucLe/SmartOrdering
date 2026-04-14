@@ -9,8 +9,10 @@ interface StaffHeaderProps {
 function StaffHeader({ children, query, setQuery }: StaffHeaderProps) {
   return (
     <header className="sticky top-0 flex h-16 items-center justify-between border-b border-border bg-sidebar px-6 ">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-bold text-primary">POS System</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-xl font-bold text-primary md:w-48 h-full">
+          POS System
+        </h1>
         {children}
       </div>
       <div className="flex flex-1 justify-center px-10">
@@ -29,7 +31,7 @@ function StaffHeader({ children, query, setQuery }: StaffHeaderProps) {
           <p className="text-xs text-muted-foreground">Ca sáng</p>
         </div>
 
-        <div className="h-10 w-10 rounded-full bg-muted" />
+        <div className="h-10 w-10 rounded-full border border-border bg-muted" />
       </div>
     </header>
   );

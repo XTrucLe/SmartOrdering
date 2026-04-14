@@ -1,34 +1,51 @@
 import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface StateProps<T> {
   key: string;
   defaultValue: T;
-  prase: (val: string | null) => T;
+  parse: (val: string | null) => T;
   serialize: (val: T) => string | null;
+  debounceMs?: number;
 }
 
 export function useQueryState<T>({
   key,
   defaultValue,
-  prase,
+  parse,
   serialize,
+  debounceMs = 300,
 }: StateProps<T>) {
-  const param = useSearchParams();
+  const params = useSearchParams();
   const router = useRouter();
 
-  const val = prase(param.get(key)) ?? defaultValue;
+  const initial = parse(params.get(key)) ?? defaultValue;
 
-  const setVal = (newVal: T) => {
-    const newParams = new URLSearchParams(param);
-    const serialized = serialize(newVal);
+  const [val, setVal] = useState<T>(initial);
 
-    if (serialized === null || serialized === "") newParams.delete(key);
+  const updateUrl = (value: T, mode: "push" | "replace") => {
+    const newParams = new URLSearchParams(params);
+    const serialized = serialize(value);
+
+    if (!serialized) newParams.delete(key);
     else newParams.set(key, serialized);
 
-    router.push(`?${newParams.toString()}`, {
-      scroll: false,
-    });
+    const url = `?${newParams.toString()}`;
+
+    router[mode](url, { scroll: false });
   };
 
-  return [val, setVal] as const;
+  useEffect(() => {
+    const t = setTimeout(() => {
+      updateUrl(val, "replace");
+    }, debounceMs);
+
+    return () => clearTimeout(t);
+  }, [val]);
+
+  const onEnter = () => {
+    updateUrl(val, "push");
+  };
+
+  return [val, setVal, onEnter] as const;
 }

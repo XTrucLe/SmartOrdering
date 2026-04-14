@@ -26,21 +26,32 @@ export default function OrderPage() {
     },
   );
 
+  const handleSelect = (id: string) => {
+    const element = document.getElementById(id);
+
+    if (element && scrollRef.current) {
+      const scrollTop = element.offsetTop - scrollRef.current.offsetTop - 40;
+      scrollRef.current.scrollTo({ top: scrollTop, behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-background">
       <div className="flex flex-1 overflow-hidden">
         <MenuNav
           sections={sections}
           activeId={activeId}
+          onSelect={handleSelect}
           variant="vertical"
           isEmbedded
         />
 
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto px-4 pb-20 custom-scrollbar"
+          className="flex-1 overflow-y-auto p-4  custom-scrollbar"
         >
           <Catalog sections={sections} onAdd={addItem} />
+          <div className="h-[40vh]" />
         </div>
 
         <aside className="flex w-96 flex-col border-l border-border bg-background">

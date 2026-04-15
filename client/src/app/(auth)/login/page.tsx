@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader } from "@/components/ui/card";
-import { login } from "@/services/auth";
 import { goHome } from "@/configs/path";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 
@@ -32,15 +31,15 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
-    try {
-      const response = await login(data.email, data.password);
-      const { activeStore } = response;
-      router.push(goHome(activeStore.role, activeStore.slug));
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   const response = await login(data.email, data.password);
+    //   const { activeStore } = response;
+    //   router.push(goHome(activeStore.role, activeStore.slug));
+    // } catch (error) {
+    //   console.error(error);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   return (

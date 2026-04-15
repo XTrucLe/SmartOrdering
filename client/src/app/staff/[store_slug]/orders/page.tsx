@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState, useCallback } from "react";
-import OrdersList from "@/components/orders/OrdersList";
+import OrdersList from "@/features/order/components/OrdersList";
 import { mockOrders } from "@/data/mock-order";
-import OrderDetail from "@/components/orders/OrderDetail";
+import OrderDetail from "@/features/order/components/Detail";
 import { ORDER_STATUS } from "@/types";
 import { SegmentControl } from "@/components/common/SegmentControl";
 

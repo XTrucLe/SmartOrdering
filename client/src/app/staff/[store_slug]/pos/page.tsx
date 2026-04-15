@@ -1,9 +1,9 @@
 "use client";
 
 import { ToggleButton } from "@/components/common/ToggleButton";
-import { Catalog } from "@/components/menu/Catalog";
-import { MenuNav } from "@/components/menu/MenuNav";
-import OrderPanel from "@/components/orders/OrderPanel";
+import { Catalog } from "@/features/menu/components/Catalog";
+import { MenuNav } from "@/features/menu/components/Navigation";
+import OrderPanel from "@/features/order/components/Panel";
 import { MOCK_MENU } from "@/data/mock-menu";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 import { useOrderStore } from "@/stores/order.store";

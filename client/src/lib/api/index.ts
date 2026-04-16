@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { toast } from 'sonner';
+import { endpoints } from './endpoint';
 
 const apiClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -28,13 +28,6 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status >= 400 && error.response.status < 500) {
-            toast.error(fallbackMesssage[error.response.status] || 'Đã xảy ra lỗi, vui lòng thử lại sau');
-        } else if (error.response && error.response.status >= 500) {
-            toast.error(fallbackMesssage[error.response.status] || 'Lỗi máy chủ nội bộ, vui lòng thử lại sau');
-        } else {
-            toast.error('Không thể kết nối đến máy chủ, vui lòng kiểm tra kết nối mạng của bạn');
-        }
         return Promise.reject(error);
     }
 );
@@ -51,4 +44,4 @@ const fallbackMesssage: Record<number, string> = {
     503: 'Dịch vụ không khả dụng, vui lòng thử lại sau',
 }
 
-export default apiClient;
+export { apiClient, endpoints };

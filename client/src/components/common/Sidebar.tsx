@@ -1,156 +1,188 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
+import React, { memo, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { ChevronRight, Command } from "lucide-react"; // Đổi sang ChevronRight để xoay mượt hơn
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export type ItemsSidebar = {
+interface SidebarItemData {
+  value: string;
   label: string;
-  href: string;
-  icon?: React.ReactNode;
-  sub_items?: ItemsSidebar[];
+  icon: React.ReactNode;
+  tooltip?: string;
+  badge?: number | string;
+  danger?: boolean;
+}
+
+interface SidebarProps {
+  logo?: React.ReactNode;
+  items: SidebarItemData[];
+  activeId: string;
+  onSelect: (id: string) => void;
+  isCollapsed?: boolean;
+  footer?: SidebarItemData[];
+  className?: string;
+}
+
+export const Sidebar = memo(
+  ({
+    logo,
+    items,
+    activeId,
+    onSelect,
+    isCollapsed = false,
+    footer,
+    className,
+  }: SidebarProps) => {
+    const activeIndex = items.findIndex((item) => item.value === activeId);
+
+    const indicatorTop = useMemo(() => {
+      const ITEM_HEIGHT = 44;
+      const GAP = 4;
+      const NAV_PADDING_TOP = 16;
+
+      if (activeIndex !== -1) {
+        return NAV_PADDING_TOP + activeIndex * (ITEM_HEIGHT + GAP);
+      }
+
+      return 0;
+    }, [activeIndex]);
+
+    return (
+      <TooltipProvider delayDuration={0}>
+        <aside
+          className={cn(
+            "flex flex-col h-full bg-card/40 border-r transition-[width] duration-200",
+            isCollapsed ? "w-20" : "w-64",
+            className,
+          )}
+        >
+          {logo && (
+            <div
+              className={cn(
+                "h-16 flex items-center border-b px-6",
+                isCollapsed ? "justify-center px-0" : "justify-start",
+              )}
+            >
+              {logo}
+            </div>
+          )}
+
+          <div className="relative flex-1 flex flex-col overflow-hidden">
+            <AnimatePresence>
+              <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-none">
+                {items.map((item) => (
+                  <SidebarItem
+                    key={item.value}
+                    item={item}
+                    isActive={item.value === activeId}
+                    isCollapsed={isCollapsed}
+                    onClick={() => onSelect(item.value)}
+                  />
+                ))}
+
+                {activeIndex !== -1 && (
+                  <motion.div
+                    layoutId="sidebar-indicator"
+                    className="absolute left-0 w-1 bg-primary rounded-r-full z-20"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, top: indicatorTop, height: 44 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </nav>
+            </AnimatePresence>
+
+            {footer && (
+              <div className="p-3 border-t space-y-1">
+                {footer.map((item) => (
+                  <SidebarItem
+                    key={item.value}
+                    item={item}
+                    isActive={item.value === activeId}
+                    isCollapsed={isCollapsed}
+                    onClick={() => onSelect(item.value)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </aside>
+      </TooltipProvider>
+    );
+  },
+);
+
+const SidebarItem = ({
+  item,
+  isActive,
+  isCollapsed,
+  onClick,
+}: {
+  item: SidebarItemData;
+  isActive: boolean;
+  isCollapsed: boolean;
+  onClick: () => void;
+}) => {
+  const { icon, label, tooltip, badge, danger } = item;
+
+  const content = (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => e.key === "Enter" && onClick()}
+      className={cn(
+        "group relative flex items-center h-11 rounded-lg cursor-pointer select-none transition-colors",
+        isActive
+          ? "bg-primary text-primary-foreground font-semibold"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        isCollapsed ? "justify-center px-0" : "px-2 gap-3",
+      )}
+    >
+      <div className="flex items-center justify-center shrink-0">{icon}</div>
+
+      {!isCollapsed && (
+        <span
+          className={cn(
+            "truncate tracking-tight",
+            danger && "text-destructive",
+          )}
+        >
+          {label}
+        </span>
+      )}
+
+      {badge !== undefined && !isCollapsed && (
+        <span className="ml-auto bg-foreground text-background text-[10px] font-bold px-1.5 py-0.5 rounded">
+          {badge}
+        </span>
+      )}
+    </div>
+  );
+
+  if (isCollapsed || tooltip) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{content}</TooltipTrigger>
+        <TooltipContent
+          side="right"
+          sideOffset={10}
+          className="font-bold border-border"
+        >
+          {tooltip || label}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return content;
 };
 
-export function SidebarCustom({ items = [] }: { items?: ItemsSidebar[] }) {
-  const pathname = usePathname();
-  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-
-  const toggleMenu = (label: string) => {
-    setOpenMenus((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
-
-  return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Command className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Acme Inc</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    Enterprise
-                  </span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Staff Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  pathname.startsWith(item.href + "/");
-
-                const isOpen =
-                  openMenus[item.label] || (item.sub_items && isActive);
-
-                return (
-                  <SidebarMenuItem key={item.label} className="text-md">
-                    {item.sub_items ? (
-                      /* PARENT ITEM WITH SUBMENU */
-                      <SidebarMenuButton
-                        onClick={() => toggleMenu(item.label)}
-                        tooltip={item.label}
-                        isActive={isActive}
-                        className="group/collapsible w-full justify-between"
-                      >
-                        {/* Wrapper để icon và text nằm bên trái */}
-                        <div className="flex items-center gap-2">
-                          {item.icon && (
-                            <span className="size-4">{item.icon}</span>
-                          )}
-                          <span className="font-medium">{item.label}</span>
-                        </div>
-
-                        {/* Chevron Animation: Xoay 90 độ khi mở */}
-                        <ChevronRight
-                          className={cn(
-                            "ml-auto size-4 transition-transform duration-200 text-muted-foreground",
-                            isOpen && "rotate-90 text-foreground",
-                          )}
-                        />
-                      </SidebarMenuButton>
-                    ) : (
-                      /* SINGLE ITEM */
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={item.label}
-                      >
-                        <Link href={item.href} className="font-medium">
-                          {item.icon && (
-                            <span className="size-4">{item.icon}</span>
-                          )}
-                          <span>{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    )}
-
-                    {/* SUB ITEMS */}
-                    {item.sub_items && isOpen && (
-                      <SidebarMenuSub>
-                        {item.sub_items.map((sub) => {
-                          const isSubActive = pathname === sub.href;
-                          return (
-                            <SidebarMenuSubItem key={sub.label}>
-                              <SidebarMenuButton
-                                asChild
-                                isActive={isSubActive}
-                                size="sm" // Sub item nhỏ hơn một chút
-                              >
-                                <Link href={sub.href}>
-                                  {sub.icon && (
-                                    <span className="size-4 opacity-70">
-                                      {sub.icon}
-                                    </span>
-                                  )}
-                                  <span
-                                    className={cn(
-                                      // Nếu không active thì màu nhạt hơn để tạo phân cấp
-                                      !isSubActive && "text-muted-foreground",
-                                    )}
-                                  >
-                                    {sub.label}
-                                  </span>
-                                </Link>
-                              </SidebarMenuButton>
-                            </SidebarMenuSubItem>
-                          );
-                        })}
-                      </SidebarMenuSub>
-                    )}
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
-  );
-}
+Sidebar.displayName = "Sidebar";
+SidebarItem.displayName = "SidebarItem";

@@ -1,86 +1,145 @@
 "use client";
 
 import { useMemo } from "react";
-import { useQueryState } from "@/hooks/useQueryParam";
-import StaffHeader from "@/components/layouts/StaffHeader";
-import { ShoppingCart, Clock, History } from "lucide-react";
-import { TopBar } from "@/components/common/ModeSwitch";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { Mode } from "@/types/ui/ModeSwitch.type";
+import { usePathname, useRouter, useParams } from "next/navigation";
+import {
+  History,
+  Bell,
+  UtensilsCrossed,
+  Package,
+  Settings,
+  Grid2X2,
+  LogOut,
+} from "lucide-react";
+import { site_config } from "@/configs/site";
+import { Sidebar } from "@/components/common/Sidebar";
 
-type TabMode = "pos" | "orders" | "history";
-
-const MODES: Mode[] = [
+const SIDEBAR_ITEMS = [
   {
     value: "pos",
-    label: "POS",
-    icon: <ShoppingCart size={16} />,
+    label: "Bán hàng",
+    icon: <Grid2X2 size={20} />,
+    tooltip: "Bán hàng",
   },
   {
     value: "orders",
-    label: "Orders",
-    icon: <Clock size={16} />,
+    label: "Đơn hàng",
+    icon: <Package size={20} />,
+    tooltip: "Tiến độ",
+    badge: 5,
   },
   {
     value: "history",
-    label: "History",
-    icon: <History size={16} />,
+    label: "Lịch sử",
+    icon: <History size={20} />,
+    tooltip: "Nhật ký",
   },
 ];
 
-export const StaffLayout = ({ children }: { children: React.ReactNode }) => {
+const SIDEBAR_FOOTER = [
+  { value: "settings", label: "Cài đặt", icon: <Settings size={20} /> },
+  {
+    value: "logout",
+    label: "Đăng xuất",
+    icon: <LogOut size={20} color="var(--error)" />,
+    danger: true,
+  },
+];
+
+export default function StaffLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
-  const params = useParams();
   const pathname = usePathname();
+  const params = useParams();
+  const storeSlug = params.store_slug;
 
-  const storeSlug = Array.isArray(params.store_slug)
-    ? params.store_slug[0]
-    : params.store_slug;
-
-  const tabMode = useMemo<TabMode>(() => {
-    if (pathname.includes("orders")) return "orders";
-    if (pathname.includes("history")) return "history";
-    return "pos";
+  const activeMode = useMemo(() => {
+    const segments = pathname.split("/");
+    return segments[segments.length - 1] || "pos";
   }, [pathname]);
 
-  const [query, setQuery] = useQueryState({
-    key: "q",
-    defaultValue: "",
-    parse: (v) => v,
-    serialize: (v) => v,
-  });
-
-  const handleChangeMode = (mode: Mode) => {
-    const search = new URLSearchParams();
-
-    if (query) {
-      search.set("q", query);
+  const handleChangeMode = (id: string) => {
+    if (id === "logout") {
+      alert(
+        "Chức năng này chưa được triển khai. Vui lòng chờ bản cập nhật tiếp theo!",
+      );
+      return;
     }
+    router.replace(`/staff/${storeSlug}/${id}`);
+  };
 
-    const nextUrl = `/staff/${storeSlug}/${mode.value}${
-      search.toString() ? `?${search.toString()}` : ""
-    }`;
-
-    router.replace(nextUrl);
+  const handleGoHome = () => {
+    router.replace(`/staff/${storeSlug}/pos`);
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="flex flex-1 flex-col min-h-0">
-        <StaffHeader query={query ?? ""} setQuery={setQuery}>
-          <div className="ml-4 mt-2">
-            <TopBar
-              modes={MODES}
-              activeMode={tabMode}
-              onChangeMode={handleChangeMode}
-            />
+    <div className="flex h-screen flex-col bg-background text-foreground">
+      <header className="z-50 border-b bg-popover h-16 shrink-0 shadow-inner">
+        <div className="flex h-full items-center justify-between px-6">
+          <div className="flex items-center gap-6 ">
+            <div
+              className="flex items-center gap-3 cursor-pointer select-none group"
+              onClick={handleGoHome}
+            >
+              <div className="h-11 w-11 rounded-lg bg-primary flex items-center justify-center text-primary-foreground transition-transform group-active:scale-95">
+                <UtensilsCrossed size={22} strokeWidth={2.5} />
+              </div>
+              <div className="hidden md:block">
+                <h1 className="font-black leading-none text-sm tracking-tight uppercase">
+                  POS System
+                </h1>
+                <p className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-wider">
+                  v{site_config.version} • {storeSlug}
+                </p>
+              </div>
+            </div>
           </div>
-        </StaffHeader>
 
-        <main className="flex-1 overflow-auto">{children}</main>
+          <div className="flex items-center gap-4">
+            <button className="h-10 w-10 flex items-center justify-center text-muted-foreground hover:bg-muted rounded-xl transition-colors relative border">
+              <Bell size={20} />
+              <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-destructive border-2 border-background" />
+            </button>
+
+            <div className="h-6 w-px bg-border mx-2" />
+
+            <div className="flex items-center gap-3 pl-2">
+              <div className="flex-col items-end hidden sm:flex">
+                <p className="text-xs font-black uppercase tracking-tight">
+                  Nhân viên A
+                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                  <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">
+                    Trong ca
+                  </p>
+                </div>
+              </div>
+              <div className="h-10 w-10 rounded-xl bg-muted border-2 border-border flex items-center justify-center font-black text-sm text-foreground">
+                A
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        <Sidebar
+          items={SIDEBAR_ITEMS}
+          activeId={activeMode}
+          isCollapsed={true}
+          onSelect={handleChangeMode}
+          footer={SIDEBAR_FOOTER}
+          className="shadow-xl"
+        />
+
+        <main className="flex-1 min-h-0 h-full overflow-hidden">
+          <div className="h-full w-full">{children}</div>
+        </main>
       </div>
     </div>
   );
-};
-
-export default StaffLayout;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { usePathname, useRouter, useParams } from "next/navigation";
 import {
   History,
@@ -13,6 +13,15 @@ import {
 } from "lucide-react";
 import { site_config } from "@/configs/site";
 import { Sidebar } from "@/components/common/Sidebar";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import ShiftButton from "@/components/common/ShiftButton";
 
 const SIDEBAR_ITEMS = [
   {
@@ -55,6 +64,7 @@ export default function StaffLayout({
   const pathname = usePathname();
   const params = useParams();
   const storeSlug = params.store_slug;
+  const [modal, setModal] = useState(false);
 
   const activeMode = useMemo(() => {
     const segments = pathname.split("/");
@@ -63,16 +73,14 @@ export default function StaffLayout({
 
   const handleChangeMode = (id: string) => {
     if (id === "logout") {
-      alert(
-        "Chức năng này chưa được triển khai. Vui lòng chờ bản cập nhật tiếp theo!",
-      );
+      setModal(true);
       return;
     }
     router.replace(`/staff/${storeSlug}/${id}`);
   };
 
   const handleGoHome = () => {
-    router.replace(`/staff/${storeSlug}/pos`);
+    router.replace(`/staff/${storeSlug}/p os`);
   };
 
   return (
@@ -99,6 +107,7 @@ export default function StaffLayout({
           </div>
 
           <div className="flex items-center gap-4">
+            <ShiftButton />
             <button className="h-10 w-10 flex items-center justify-center text-muted-foreground hover:bg-muted rounded-xl transition-colors relative border">
               <Bell size={20} />
               <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-destructive border-2 border-background" />
@@ -140,6 +149,31 @@ export default function StaffLayout({
           <div className="h-full w-full">{children}</div>
         </main>
       </div>
+      <Dialog open={modal} onOpenChange={setModal}>
+        <DialogContent className="z-9999">
+          <DialogHeader>
+            <DialogTitle>Đăng xuất</DialogTitle>
+          </DialogHeader>
+
+          <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={() => setModal(false)}>
+              Hủy
+            </Button>
+
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setModal(false);
+                router.replace("/login");
+              }}
+            >
+              Xác nhận
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

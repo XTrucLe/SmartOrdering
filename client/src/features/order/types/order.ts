@@ -4,7 +4,7 @@ import {
   DeliveryMethod,
   OrderStatus,
   PaymentStatus,
-} from "./type";
+} from "../constants/order.constant";
 
 export type Order = {
   id: string;

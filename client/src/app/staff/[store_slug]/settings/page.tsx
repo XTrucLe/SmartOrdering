@@ -1,7 +1,12 @@
-import React from "react";
+import { Separator } from "@/components/ui/separator";
 
-function page() {
-  return <div>page</div>;
+function SettingsPage() {
+  return (
+    <div className="space-y-2 p-4 md:p-6">
+      <h2 className="text-2xl font-bold tracking-tight">Cài đặt</h2>
+      <Separator />
+    </div>
+  );
 }
 
-export default page;
+export default SettingsPage;

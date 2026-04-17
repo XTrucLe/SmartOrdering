@@ -121,7 +121,7 @@
   --processing: oklch(0.6 0.15 220);
   --processing-foreground: oklch(0.98 0.01 85);
 
-  --pending: oklch(0.7 0.17 100);
+  --pending: oklch(80% 0.12 85);
   --pending-foreground: oklch(0.129 0.042 264.695);
 }
 

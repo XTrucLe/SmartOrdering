@@ -1,3 +1,3 @@
 export * from './currency';
-export * from './date';
+export * from './date-time';
 export * from './number';

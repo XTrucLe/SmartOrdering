@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useMemo } from "react";
+import React, { memo, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -9,6 +9,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ChevronDown } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface SidebarItemData {
   value: string;
@@ -17,6 +19,7 @@ interface SidebarItemData {
   tooltip?: string;
   badge?: number | string;
   danger?: boolean;
+  children?: SidebarItemData[];
 }
 
 interface SidebarProps {
@@ -39,25 +42,11 @@ export const Sidebar = memo(
     footer,
     className,
   }: SidebarProps) => {
-    const activeIndex = items.findIndex((item) => item.value === activeId);
-
-    const indicatorTop = useMemo(() => {
-      const ITEM_HEIGHT = 44;
-      const GAP = 4;
-      const NAV_PADDING_TOP = 16;
-
-      if (activeIndex !== -1) {
-        return NAV_PADDING_TOP + activeIndex * (ITEM_HEIGHT + GAP);
-      }
-
-      return 0;
-    }, [activeIndex]);
-
     return (
       <TooltipProvider delayDuration={0}>
         <aside
           className={cn(
-            "flex flex-col h-full bg-card/40 border-r transition-[width] duration-200",
+            "flex flex-col h-full bg-card/40 border-r transition-[width] duration-300",
             isCollapsed ? "w-20" : "w-64",
             className,
           )}
@@ -65,7 +54,7 @@ export const Sidebar = memo(
           {logo && (
             <div
               className={cn(
-                "h-16 flex items-center border-b px-6",
+                "container h-16 flex items-center border-b px-6",
                 isCollapsed ? "justify-center px-0" : "justify-start",
               )}
             >
@@ -73,30 +62,18 @@ export const Sidebar = memo(
             </div>
           )}
 
-          <div className="relative flex-1 flex flex-col overflow-hidden">
-            <AnimatePresence>
-              <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-none">
-                {items.map((item) => (
-                  <SidebarItem
-                    key={item.value}
-                    item={item}
-                    isActive={item.value === activeId}
-                    isCollapsed={isCollapsed}
-                    onClick={() => onSelect(item.value)}
-                  />
-                ))}
-
-                {activeIndex !== -1 && (
-                  <motion.div
-                    layoutId="sidebar-indicator"
-                    className="absolute left-0 w-1 bg-primary rounded-r-full z-20"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1, top: indicatorTop, height: 44 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-              </nav>
-            </AnimatePresence>
+          <div className="relative flex-1 flex flex-col overflow-hidden w-full">
+            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto no-scrollbar">
+              {items.map((item) => (
+                <SidebarItem
+                  key={item.value}
+                  item={item}
+                  activeId={activeId}
+                  isCollapsed={isCollapsed}
+                  onClick={onSelect}
+                />
+              ))}
+            </nav>
 
             {footer && (
               <div className="p-3 border-t space-y-1">
@@ -104,9 +81,9 @@ export const Sidebar = memo(
                   <SidebarItem
                     key={item.value}
                     item={item}
-                    isActive={item.value === activeId}
+                    activeId={activeId}
                     isCollapsed={isCollapsed}
-                    onClick={() => onSelect(item.value)}
+                    onClick={onSelect}
                   />
                 ))}
               </div>
@@ -120,69 +97,159 @@ export const Sidebar = memo(
 
 const SidebarItem = ({
   item,
-  isActive,
+  activeId,
   isCollapsed,
   onClick,
+  isChild = false,
 }: {
   item: SidebarItemData;
-  isActive: boolean;
+  activeId: string;
   isCollapsed: boolean;
-  onClick: () => void;
+  onClick: (v: string) => void;
+  isChild?: boolean;
 }) => {
-  const { icon, label, tooltip, badge, danger } = item;
+  const { icon, label, tooltip, danger, children, value } = item;
 
-  const content = (
+  const [open, setOpen] = useState(false);
+  const [showPopover, setShowPopover] = useState(false);
+
+  const hasChildren = !!children?.length;
+
+  const isActive = activeId.includes(value);
+
+  useEffect(() => {
+    if (!isActive) setOpen(false);
+  }, [isActive]);
+
+  const handleToggle = () => {
+    if (hasChildren && !isCollapsed) setOpen((v) => !v);
+    !isActive &&
+      onClick(`${value}${hasChildren ? `/${children[0].value}` : ""}`);
+  };
+
+  const baseItem = (
     <div
       role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => e.key === "Enter" && onClick()}
+      onClick={handleToggle}
       className={cn(
-        "group relative flex items-center h-11 rounded-lg cursor-pointer select-none transition-colors",
+        "group relative flex items-center h-10 rounded-md cursor-pointer select-none transition-all duration-200",
+        isCollapsed ? "justify-center px-0" : "px-3 gap-3",
         isActive
-          ? "bg-primary text-primary-foreground font-semibold"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
-        isCollapsed ? "justify-center px-0" : "px-2 gap-3",
+          ? "bg-primary/10 text-primary font-medium"
+          : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+        isChild && !isCollapsed && "h-9 text-sm pl-2",
       )}
     >
-      <div className="flex items-center justify-center shrink-0">{icon}</div>
+      {isActive && (
+        <motion.div
+          layoutId="sidebar-active-indicator"
+          className={cn(
+            "absolute -left-2.5 top-0  w-1 rounded-full bg-primary",
+            isChild ? "h-9" : "h-10",
+          )}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ type: "spring", stiffness: 350, damping: 30 }}
+        />
+      )}
+
+      <div className="flex items-center justify-center shrink-0 w-5">
+        {icon}
+      </div>
 
       {!isCollapsed && (
-        <span
-          className={cn(
-            "truncate tracking-tight",
-            danger && "text-destructive",
-          )}
-        >
+        <span className={cn("truncate", danger && "text-destructive")}>
           {label}
         </span>
       )}
 
-      {badge !== undefined && !isCollapsed && (
-        <span className="ml-auto bg-foreground text-background text-[10px] font-bold px-1.5 py-0.5 rounded">
-          {badge}
-        </span>
+      {!isCollapsed && hasChildren && (
+        <ChevronDown
+          size={14}
+          className={cn(
+            "ml-auto transition-transform duration-200",
+            open && "rotate-180",
+          )}
+        />
       )}
     </div>
   );
 
-  if (isCollapsed || tooltip) {
+  const tooltipWrap = (node: React.ReactNode) => {
+    if (!isCollapsed && !tooltip) return node;
+
+    if (isCollapsed && hasChildren) {
+      return (
+        <Popover open={showPopover} onOpenChange={setShowPopover}>
+          <PopoverTrigger asChild>{node}</PopoverTrigger>
+          <PopoverContent
+            side="right"
+            sideOffset={10}
+            align="start"
+            className="w-48"
+          >
+            <div className="flex flex-col">
+              {children?.map((child) => (
+                <div
+                  key={child.value}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted cursor-pointer",
+                    activeId.endsWith(child.value) &&
+                      "bg-primary/10 text-primary font-medium",
+                  )}
+                  onClick={() => {
+                    onClick(`${value}/${child.value}`);
+                    setShowPopover(false);
+                  }}
+                >
+                  {child?.icon}
+                  <span className="truncate">{child.label}</span>
+                </div>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+      );
+    }
+
     return (
       <Tooltip>
-        <TooltipTrigger asChild>{content}</TooltipTrigger>
-        <TooltipContent
-          side="right"
-          sideOffset={10}
-          className="font-bold border-border"
-        >
+        <TooltipTrigger asChild>{node}</TooltipTrigger>
+        <TooltipContent side="right" sideOffset={10}>
           {tooltip || label}
         </TooltipContent>
       </Tooltip>
     );
-  }
+  };
 
-  return content;
+  return (
+    <div className="w-full">
+      {tooltipWrap(baseItem)}
+
+      <AnimatePresence initial={false}>
+        {hasChildren && open && !isCollapsed && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="mt-1 ml-2 pl-2 border-l border-muted-foreground/50 space-y-1">
+              {children.map((child) => (
+                <SidebarItem
+                  key={child.value}
+                  item={child}
+                  activeId={activeId}
+                  isCollapsed={isCollapsed}
+                  onClick={(childPath) => onClick(`${value}/${childPath}`)}
+                  isChild={true}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };
-
-Sidebar.displayName = "Sidebar";
-SidebarItem.displayName = "SidebarItem";

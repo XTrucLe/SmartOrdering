@@ -56,7 +56,7 @@ function ThemePlayground() {
   }, [config]);
 
   return (
-    <div className="min-h-0 p-2 md:p-6 font-sans bg-zinc-50/50">
+    <div className="min-h-0 p-2 font-sans bg-zinc-50/50">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-4 flex flex-col bg-card rounded-2xl shadow-sm border overflow-hidden h-fit">
           <div className="p-6 border-b flex justify-between items-start">

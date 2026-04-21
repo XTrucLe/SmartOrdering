@@ -1,4 +1,4 @@
-import { Order } from "@/types";
+import { Order } from "@/features/order/types";
 
 export const mockOrders: Order[] = [
   {
@@ -12,7 +12,7 @@ export const mockOrders: Order[] = [
     subTotal: 194000,
     deliveryFee: 0,
     totalPrice: 194000,
-    createdAt: "2026-03-17T12:10:00Z",
+    createdAt: "2026-04-17T13:28:00Z",
     orderItems: [
       {
         id: "i1",
@@ -49,12 +49,12 @@ export const mockOrders: Order[] = [
     storeId: "s1",
     customerName: "Trần Thị B",
     deliveryMethod: "DELIVERY",
-    status: "CONFIRMED",
+    status: "PROCESSING",
     paymentStatus: "PAID",
     subTotal: 437000,
     deliveryFee: 30000,
     totalPrice: 467000,
-    createdAt: "2026-03-17T12:05:00Z",
+    createdAt: "2026-04-17T13:25:00Z",
     orderItems: [
       {
         id: "drink_02",
@@ -110,7 +110,7 @@ export const mockOrders: Order[] = [
     subTotal: 225000,
     deliveryFee: 0,
     totalPrice: 225000,
-    createdAt: "2026-03-17T11:50:00Z",
+    createdAt: "2026-04-17T13:22:00Z",
     orderItems: [
       {
         id: "i6",
@@ -153,7 +153,7 @@ export const mockOrders: Order[] = [
     subTotal: 165000,
     deliveryFee: 0,
     totalPrice: 165000,
-    createdAt: "2026-03-17T11:40:00Z",
+    createdAt: "2026-04-17T13:20:00Z",
     orderItems: [
       {
         id: "i7",
@@ -188,7 +188,7 @@ export const mockOrders: Order[] = [
     subTotal: 445000,
     deliveryFee: 20000,
     totalPrice: 465000,
-    createdAt: "2026-03-17T12:15:00Z",
+    createdAt: "2026-04-17T13:18:00Z",
     orderItems: [
       {
         id: "i8",
@@ -233,12 +233,12 @@ export const mockOrders: Order[] = [
     customerName: "Đặng Văn F",
     table: "Bàn 6",
     deliveryMethod: "DINE_IN",
-    status: "CONFIRMED",
+    status: "PROCESSING",
     paymentStatus: "PENDING",
     subTotal: 390000,
     deliveryFee: 0,
     totalPrice: 390000,
-    createdAt: "2026-03-17T12:20:00Z",
+    createdAt: "2026-04-17T13:15:00Z",
     orderItems: [
       {
         id: "i10",
@@ -280,7 +280,7 @@ export const mockOrders: Order[] = [
     subTotal: 260000,
     deliveryFee: 25000,
     totalPrice: 285000,
-    createdAt: "2026-03-17T12:25:00Z",
+    createdAt: "2026-04-17T13:12:00Z",
     orderItems: [
       {
         id: "i11",
@@ -323,7 +323,7 @@ export const mockOrders: Order[] = [
     subTotal: 180000,
     deliveryFee: 0,
     totalPrice: 180000,
-    createdAt: "2026-03-17T12:30:00Z",
+    createdAt: "2026-04-17T13:10:00Z",
     orderItems: [
       {
         id: "i12",
@@ -353,12 +353,12 @@ export const mockOrders: Order[] = [
     storeId: "s1",
     customerName: "Hồ Thị I",
     deliveryMethod: "TAKEAWAY",
-    status: "CONFIRMED",
+    status: "PROCESSING",
     paymentStatus: "PAID",
     subTotal: 290000,
     deliveryFee: 0,
     totalPrice: 290000,
-    createdAt: "2026-03-17T12:35:00Z",
+    createdAt: "2026-04-17T13:08:00Z",
     orderItems: [
       {
         id: "i13",
@@ -393,7 +393,7 @@ export const mockOrders: Order[] = [
     subTotal: 410000,
     deliveryFee: 28000,
     totalPrice: 438000,
-    createdAt: "2026-03-17T12:40:00Z",
+    createdAt: "2026-04-17T13:05:00Z",
     orderItems: [
       {
         id: "nuoc_01",
@@ -436,7 +436,7 @@ export const mockOrders: Order[] = [
     subTotal: 255000,
     deliveryFee: 0,
     totalPrice: 255000,
-    createdAt: "2026-03-17T12:42:00Z",
+    createdAt: "2026-04-17T13:02:00Z",
     orderItems: [
       {
         id: "com_03",
@@ -480,12 +480,12 @@ export const mockOrders: Order[] = [
     storeId: "s1",
     customerName: "Mai Thị M",
     deliveryMethod: "TAKEAWAY",
-    status: "CONFIRMED",
+    status: "PROCESSING",
     paymentStatus: "PAID",
     subTotal: 475000,
     deliveryFee: 0,
     totalPrice: 475000,
-    createdAt: "2026-03-17T12:45:00Z",
+    createdAt: "2026-04-17T12:58:00Z",
     orderItems: [
       {
         id: "nuoc_03",
@@ -520,7 +520,7 @@ export const mockOrders: Order[] = [
     subTotal: 391000,
     deliveryFee: 35000,
     totalPrice: 426000,
-    createdAt: "2026-03-17T12:50:00Z",
+    createdAt: "2026-04-17T12:55:00Z",
     orderItems: [
       {
         id: "com_02",
@@ -556,7 +556,7 @@ export const mockOrders: Order[] = [
     subTotal: 180000,
     deliveryFee: 0,
     totalPrice: 180000,
-    createdAt: "2026-03-17T12:55:00Z",
+    createdAt: "2026-04-17T12:50:00Z",
     orderItems: [
       {
         id: "drink_03",
@@ -598,7 +598,7 @@ export const mockOrders: Order[] = [
     subTotal: 435000,
     deliveryFee: 0,
     totalPrice: 435000,
-    createdAt: "2026-03-17T13:00:00Z",
+    createdAt: "2026-04-17T12:48:00Z",
     orderItems: [
       {
         id: "nuoc_01",
@@ -621,12 +621,12 @@ export const mockOrders: Order[] = [
     storeId: "s1",
     customerName: "Đỗ Thị R",
     deliveryMethod: "DELIVERY",
-    status: "CONFIRMED",
+    status: "PROCESSING",
     paymentStatus: "PENDING",
     subTotal: 490000,
     deliveryFee: 22000,
     totalPrice: 512000,
-    createdAt: "2026-03-17T13:02:00Z",
+    createdAt: "2026-04-17T12:45:00Z",
     orderItems: [
       {
         id: "com_01",
@@ -676,7 +676,7 @@ export const mockOrders: Order[] = [
     subTotal: 250000,
     deliveryFee: 0,
     totalPrice: 250000,
-    createdAt: "2026-03-17T13:05:00Z",
+    createdAt: "2026-04-17T12:40:00Z",
     orderItems: [
       {
         id: "drink_02",
@@ -704,7 +704,7 @@ export const mockOrders: Order[] = [
     subTotal: 330000,
     deliveryFee: 0,
     totalPrice: 330000,
-    createdAt: "2026-03-17T13:10:00Z",
+    createdAt: "2026-04-17T12:35:00Z",
     orderItems: [
       {
         id: "kv_04",
@@ -746,7 +746,7 @@ export const mockOrders: Order[] = [
     subTotal: 470000,
     deliveryFee: 30000,
     totalPrice: 500000,
-    createdAt: "2026-03-17T13:12:00Z",
+    createdAt: "2026-04-17T12:30:00Z",
     orderItems: [
       {
         id: "com_03",
@@ -784,12 +784,12 @@ export const mockOrders: Order[] = [
     customerName: "Đinh Thị V",
     table: "Bàn 7",
     deliveryMethod: "DINE_IN",
-    status: "CONFIRMED",
+    status: "PROCESSING",
     paymentStatus: "PENDING",
     subTotal: 413000,
     deliveryFee: 0,
     totalPrice: 413000,
-    createdAt: "2026-03-17T13:15:00Z",
+    createdAt: "2026-04-17T12:25:00Z",
     orderItems: [
       {
         id: "nuoc_01",

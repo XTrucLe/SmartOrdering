@@ -1,99 +1,61 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
-import OrdersList from "@/components/orders/OrdersList";
 import { mockOrders } from "@/data/mock-order";
-import OrderDetail from "@/components/orders/OrderDetail";
-import { ORDER_STATUS } from "@/types";
-import { SegmentControl } from "@/components/common/SegmentControl";
+import OrderBoard from "@/features/order/components/OrderBoard";
+import { OrderToolBar } from "@/features/order/components/OrderToolBar";
+import { filterOrders } from "@/features/order/domain/orderFilter";
+import { useMemo, useState } from "react";
 
-const ORDER_FILTER_STATES = {
-  ALL: "all",
-  PENDING: "pending",
-  COMPLETE: "complete",
-} as const;
+function OrderPage() {
+  const [filter, setFilter] = useState<{
+    status: string[];
+    time: string;
+  }>({
+    status: [],
+    time: "ALL",
+  });
+  const [listOrders, setListOrders] = useState(mockOrders);
+  const [query, setQuery] = useState("");
 
-type OrderFilterState =
-  (typeof ORDER_FILTER_STATES)[keyof typeof ORDER_FILTER_STATES];
+  const filteredData = useMemo(() => {
+    let result = listOrders.filter(
+      (order) => !["COMPLETED", "CANCELLED"].includes(order.status),
+    );
 
-const filterOptions: { value: OrderFilterState; label: string }[] = [
-  {
-    value: ORDER_FILTER_STATES.ALL,
-    label: "Tất cả",
-  },
-  {
-    value: ORDER_FILTER_STATES.PENDING,
-    label: "Đang xử lý",
-  },
-  {
-    value: ORDER_FILTER_STATES.COMPLETE,
-    label: "Hoàn thành",
-  },
-];
-
-function OrdersPage() {
-  const orders = mockOrders;
-
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<OrderFilterState>(
-    ORDER_FILTER_STATES.ALL,
-  );
-
-  const selectedOrder = useMemo(() => {
-    if (!selectedOrderId) {
-      return null;
-    }
-    return orders.find((order) => order.id === selectedOrderId) ?? null;
-  }, [orders, selectedOrderId]);
-
-  const filteredOrders = useMemo(() => {
-    if (filter === ORDER_FILTER_STATES.ALL) {
-      return orders;
-    }
-
-    return orders.filter((order) => {
-      switch (filter) {
-        case ORDER_FILTER_STATES.PENDING:
-          return [ORDER_STATUS.PENDING, ORDER_STATUS.CONFIRMED].includes(
-            order.status,
-          );
-        case ORDER_FILTER_STATES.COMPLETE:
-          return [ORDER_STATUS.COMPLETED, ORDER_STATUS.CANCELLED].includes(
-            order.status,
-          );
-        default:
-          return true;
-      }
-    });
-  }, [orders, filter]);
-
-  const handleFilterChange = useCallback((newValue: string) => {
-    if (
-      Object.values(ORDER_FILTER_STATES).includes(newValue as OrderFilterState)
-    ) {
-      setFilter(newValue as OrderFilterState);
-    }
-  }, []);
-
-  const handleSelectOrder = useCallback((orderId: string) => {
-    setSelectedOrderId(orderId);
-  }, []);
+    return filterOrders(result, filter, query);
+  }, [filter, query]);
 
   return (
-    <div className="flex h-full w-full flex-row">
-      <div className="flex min-w-120 flex-1 flex-col">
-        <SegmentControl
-          options={filterOptions}
-          onChange={handleFilterChange}
-          className="mt-2"
-        />
-        <OrdersList orderData={filteredOrders} onClick={handleSelectOrder} />
-      </div>
-      <div className="w-140">
-        <OrderDetail order={selectedOrder} />
-      </div>
+    <div className="flex flex-col h-full overflow-hidden">
+      <OrderToolBar
+        filter={filter}
+        onFilterChange={setFilter}
+        query={query}
+        onQueryChange={setQuery}
+        leftChildren={
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-semibold">Orders</h2>
+
+            <div className="flex items-center gap-2 text-sm">
+              <span className="px-2 py-1 rounded-md border bg-background shadow-sm">
+                Total:{" "}
+                <span className="font-semibold">{listOrders.length}</span>
+              </span>
+
+              <span className="px-2 py-1 rounded-md border border-warning bg-warning text-warning-foreground shadow-sm gap-1">
+                New:{" "}
+                <span className="font-semibold">
+                  {listOrders.filter((o) => o.status === "PENDING").length}
+                </span>
+              </span>
+            </div>
+          </div>
+        }
+      />
+
+      <OrderBoard orders={filteredData} />
     </div>
   );
 }
 
-export default OrdersPage;
+export default OrderPage;

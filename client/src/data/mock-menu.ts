@@ -1,4 +1,4 @@
-import { Menu } from "@/types";
+import { Menu } from "@/features/menu/types";
 
 export const MOCK_MENU: Menu = {
   id: "menu_01",

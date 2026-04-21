@@ -11,3 +11,11 @@ export type Menu = {
 
 
 export type MenuType = "MAIN" | "SPECIALS" | "SEASONAL";
+
+export type MenuForm = {
+  name: string;
+  type: MenuType;
+  description?: string;
+  displayOrder: number;
+  sections?: Section[];
+};

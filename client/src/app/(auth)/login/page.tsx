@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import {
   loginSchema,
   type LoginFormData,
-} from "../../../lib/validations/login.schema";
+} from "../../../features/auth/validations/login.schema";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

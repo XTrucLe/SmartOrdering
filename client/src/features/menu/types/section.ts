@@ -7,3 +7,9 @@ export type Section = {
   displayOrder: number;
   items: Item[];
 };
+
+export type SectionForm = {
+  name: string;
+  description?: string;
+  items?: Item[];
+};

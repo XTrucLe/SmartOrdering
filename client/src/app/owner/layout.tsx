@@ -7,9 +7,12 @@ import {
   Gauge,
   Hamburger,
   Layers,
+  Layout,
   LayoutDashboard,
   ListChecks,
+  MapPin,
   Store,
+  Table,
   User,
   UtensilsCrossed,
 } from "lucide-react";
@@ -37,15 +40,16 @@ const sidebarItems = [
   },
 
   {
+    value: "areas",
+    label: "Khu vực",
+    icon: <MapPin size={20} />,
+  },
+
+  {
     value: "catalog",
-    label: "Danh mục hàng hóa",
+    label: "Danh mục",
     icon: <UtensilsCrossed size={20} />,
     children: [
-      {
-        value: "categories",
-        label: "Danh mục",
-        icon: <Layers size={20} />,
-      },
       {
         value: "products",
         label: "Sản phẩm",

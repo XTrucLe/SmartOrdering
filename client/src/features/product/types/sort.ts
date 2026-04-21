@@ -1,0 +1,1 @@
+export type ProductSortOption = "name" | "price" | "createdAt";

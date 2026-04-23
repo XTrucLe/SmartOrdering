@@ -16,10 +16,10 @@ import { UpdateMenuDto } from '../dtos/menus/update-menu.dto';
 import { MenuResponseDto } from '../dtos/menus/menu.response.dto';
 import { MenuMapper } from '../mappers/menu.mapper';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
-import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
-import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
-import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
-import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
+import { StoreRoleGuard } from '@/modules/stores/common/guards/store-role.guard';
+import { StoreManager } from '@/modules/stores/common/decorators/store-role-group.decorator';
+import { CurrentStore } from '@/modules/stores/common/decorators/current-store.decorator';
+import { StoreContextDto } from '@/modules/stores/store/dtos/store-context.dto';
 
 @Controller('menus')
 @UseGuards(JwtGuard, StoreRoleGuard)
@@ -29,7 +29,7 @@ export class MenuController {
   @Post()
   @StoreManager()
   async create(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Body() createMenuDto: CreateMenuDto,
   ): Promise<MenuResponseDto> {
     const menu = await this.menuService.create(store.id, createMenuDto);
@@ -37,14 +37,14 @@ export class MenuController {
   }
 
   @Get()
-  async findAll(@CurrentStore() store: StoreInfo): Promise<MenuResponseDto[]> {
+  async findAll(@CurrentStore() store: StoreContextDto): Promise<MenuResponseDto[]> {
     const menus = await this.menuService.findAll(store.id);
     return MenuMapper.toResponseDtoList(menus);
   }
 
   @Get(':menuId')
   async findOne(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('menuId') menuId: string,
   ): Promise<MenuResponseDto> {
     const menu = await this.menuService.findOne(store.id, menuId);
@@ -54,7 +54,7 @@ export class MenuController {
   @Patch(':menuId')
   @StoreManager()
   async update(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('menuId') menuId: string,
     @Body() updateMenuDto: UpdateMenuDto,
   ): Promise<MenuResponseDto> {
@@ -65,7 +65,7 @@ export class MenuController {
   @Patch(':menuId/activate')
   @StoreManager()
   async activateMenu(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('menuId') menuId: string,
   ): Promise<MenuResponseDto> {
     const menu = await this.menuService.activate(store.id, menuId);
@@ -75,7 +75,7 @@ export class MenuController {
   @Patch(':menuId/deactivate')
   @StoreManager()
   async deactivateMenu(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('menuId') menuId: string,
   ): Promise<MenuResponseDto> {
     const menu = await this.menuService.deactivate(store.id, menuId);
@@ -85,7 +85,10 @@ export class MenuController {
   @Delete(':menuId')
   @StoreManager()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@CurrentStore() store: StoreInfo, @Param('menuId') menuId: string): Promise<void> {
+  async remove(
+    @CurrentStore() store: StoreContextDto,
+    @Param('menuId') menuId: string,
+  ): Promise<void> {
     await this.menuService.remove(store.id, menuId);
   }
 }

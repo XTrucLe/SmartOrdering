@@ -1,8 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsString, IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
-import { TableStatus } from '../../constants/table.constant';
+import { TableStatus } from '../../common/constants/table.constant';
 import { Exclude, Expose } from 'class-transformer';
-import { ZoneResponseDto } from '../zones/zone.dto';
+import { ZoneResponseDto } from '../../zone/dtos/zone.dto';
 
 export class CreateTableDto {
   @IsString()

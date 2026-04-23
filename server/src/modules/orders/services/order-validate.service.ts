@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { StoresService } from '@/modules/stores/services/stores.service';
+import { StoresService } from '@/modules/stores/store/stores.service';
 import { MenuItemService } from '@/modules/menus/services/menu-item.service';
 import { MenuItem } from '@/modules/menus/entities/menu-item.entity';
 
@@ -8,7 +8,7 @@ export class OrderValidateService {
   constructor(
     private readonly menuItemService: MenuItemService,
     private readonly storesService: StoresService,
-  ) { }
+  ) {}
 
   async validateStore(storeId: string): Promise<void> {
     const store = await this.storesService.getStoreById(storeId);

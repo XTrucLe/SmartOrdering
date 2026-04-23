@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateProfileDto } from './profile.dto';
-import { CreateStoreDto } from '@/modules/stores/dtos/stores/create-store.dto';
+import { CreateStoreDto } from '@/modules/stores/store/dtos/create-store.dto';
 
 export class CreateAccountDto {
   @IsEmail()

@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, MinLength } from 'class-validator';
 import { Role } from '../constants/role.constant';
-import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
+import { StoreContextDto } from '@/modules/stores/store/dtos/store-context.dto';
 
 export class LoginDto {
   @IsEmail()
@@ -70,13 +70,13 @@ export class JwtPayload {
   sub: string;
   username: string;
   globalRole: Role;
-  store?: StoreInfo;
+  store?: StoreContextDto;
 }
 
 export class AuthResponseDto {
   accessToken: string;
   globalRole: Role;
   user?: AuthUser;
-  store?: StoreInfo[];
-  activeStore?: StoreInfo;
+  store?: StoreContextDto[];
+  activeStore?: StoreContextDto;
 }

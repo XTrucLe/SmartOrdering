@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
-import { ZonesService } from '../services/zone.service';
-import { CreateZoneDto, UpdateZoneDto } from '../dtos/zones/zone.dto';
-import { Zone } from '../entities/zone.entity';
+import { ZonesService } from '../zone/zone.service';
+import { CreateZoneDto, UpdateZoneDto } from './dtos/zone.dto';
+import { Zone } from './zone.entity';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
-import { StoreRoleGuard } from '../guards/store-role.guard';
-import { StoreManager } from '../decorators/store-role-group.decorator';
-import { CurrentStore } from '../decorators/current-store.decorator';
-import { StoreInfo } from '../dtos/stores/store-info.dto';
+import { StoreRoleGuard } from '../common/guards/store-role.guard';
+import { StoreManager } from '../common/decorators/store-role-group.decorator';
+import { CurrentStore } from '../common/decorators/current-store.decorator';
+import { StoreContextDto } from '../store/dtos/store-context.dto';
 
 @Controller('/zones')
 @UseGuards(JwtGuard, StoreRoleGuard)
@@ -15,18 +15,21 @@ export class ZoneController {
 
   @Post()
   @StoreManager()
-  async createZone(@CurrentStore() store: StoreInfo, @Body() dto: CreateZoneDto): Promise<Zone> {
+  async createZone(
+    @CurrentStore() store: StoreContextDto,
+    @Body() dto: CreateZoneDto,
+  ): Promise<Zone> {
     return this.zonesService.createZone(store.id, dto);
   }
 
   @Get()
-  async getZonesInStore(@CurrentStore() store: StoreInfo): Promise<Zone[]> {
+  async getZonesInStore(@CurrentStore() store: StoreContextDto): Promise<Zone[]> {
     return this.zonesService.getZonesInStore(store.id);
   }
 
   @Get(':zoneId')
   async getZoneById(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('zoneId') zoneId: string,
   ): Promise<Zone> {
     return this.zonesService.getZoneById(store.id, zoneId);
@@ -35,7 +38,7 @@ export class ZoneController {
   @Patch(':zoneId')
   @StoreManager()
   async updateZone(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('zoneId') zoneId: string,
     @Body() dto: UpdateZoneDto,
   ): Promise<Zone> {
@@ -45,7 +48,7 @@ export class ZoneController {
   @Put('reorder')
   @StoreManager()
   async reorderZones(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Body('orderedIds') orderedIds: string[],
   ): Promise<Zone[]> {
     return this.zonesService.reorderZones(store.id, orderedIds);
@@ -54,7 +57,7 @@ export class ZoneController {
   @Delete(':zoneId')
   @StoreManager()
   async deleteZone(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('zoneId') zoneId: string,
   ): Promise<void> {
     return this.zonesService.deleteZone(store.id, zoneId);

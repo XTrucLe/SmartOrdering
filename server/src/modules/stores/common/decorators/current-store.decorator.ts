@@ -1,10 +1,10 @@
 import { createParamDecorator, ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { StoreInfo } from '../dtos/stores/store-info.dto';
+import { StoreContextDto } from '../../store/dtos/store-context.dto';
 import { Request } from 'express';
 import { JwtPayload } from '@/modules/identity/dtos/auth.dto';
 
 export const CurrentStore = createParamDecorator(
-  (data: keyof StoreInfo | undefined, ctx: ExecutionContext) => {
+  (data: keyof StoreContextDto | undefined, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest<Request>();
     const user = request.user as JwtPayload;
 

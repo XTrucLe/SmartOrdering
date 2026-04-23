@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Table } from '../entities/table.entity';
-import { CreateTableDto, UpdateTableDto } from '../dtos/tables/table.dto';
-import { ZonesService } from './zone.service';
+import { Table } from './table.entity';
+import { CreateTableDto, UpdateTableDto } from './dtos/table.dto';
+import { ZonesService } from '../zone/zone.service';
 import { randomInt } from 'crypto';
-import { TableStatus, ValidTableStatusTransitions } from '../constants/table.constant';
+import { TableStatus, ValidTableStatusTransitions } from '../common/constants/table.constant';
 
 @Injectable()
 export class TableService {

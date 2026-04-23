@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Zone } from '../entities/zone.entity';
+import { Zone } from './zone.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateZoneDto, UpdateZoneDto } from '../dtos/zones/zone.dto';
+import { CreateZoneDto, UpdateZoneDto } from './dtos/zone.dto';
 
 @Injectable()
 export class ZonesService {

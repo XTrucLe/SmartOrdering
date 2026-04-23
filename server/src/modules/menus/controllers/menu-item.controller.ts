@@ -15,11 +15,11 @@ import { CreateMenuItemDto } from '../dtos/menu-items/create-menu-item.dto';
 import { UpdateMenuItemDto, UpdateMenuItemOrderDto } from '../dtos/menu-items/update-menu-item.dto';
 import { MenuItemResponseDto } from '../dtos/menu-items/menu-item.response.dto';
 import { MenuItemMapper } from '../mappers/menu-item.mapper';
-import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
+import { StoreRoleGuard } from '@/modules/stores/common/guards/store-role.guard';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
-import { StoreManager } from '@/modules/stores/decorators/store-role-group.decorator';
-import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
-import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
+import { StoreManager } from '@/modules/stores/common/decorators/store-role-group.decorator';
+import { CurrentStore } from '@/modules/stores/common/decorators/current-store.decorator';
+import { StoreContextDto } from '@/modules/stores/store/dtos/store-context.dto';
 
 @UseGuards(JwtGuard, StoreRoleGuard)
 @Controller()
@@ -29,7 +29,7 @@ export class MenuItemController {
   @Post('menu-sections/:sectionId/menu-items')
   @StoreManager()
   async create(
-    @CurrentStore() { id: storeId }: StoreInfo,
+    @CurrentStore() { id: storeId }: StoreContextDto,
     @Param('sectionId') sectionId: string,
     @Body() dto: CreateMenuItemDto,
   ): Promise<MenuItemResponseDto> {
@@ -39,7 +39,7 @@ export class MenuItemController {
 
   @Get('menu-sections/:sectionId/menu-items')
   async findAll(
-    @CurrentStore() { id: storeId }: StoreInfo,
+    @CurrentStore() { id: storeId }: StoreContextDto,
     @Param('sectionId') sectionId: string,
   ): Promise<MenuItemResponseDto[]> {
     const items = await this.service.findAllBySection(storeId, sectionId);
@@ -50,7 +50,7 @@ export class MenuItemController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @StoreManager()
   async reorder(
-    @CurrentStore() { id: storeId }: StoreInfo,
+    @CurrentStore() { id: storeId }: StoreContextDto,
     @Param('sectionId') sectionId: string,
     @Body() dto: UpdateMenuItemOrderDto,
   ): Promise<void> {
@@ -59,7 +59,7 @@ export class MenuItemController {
 
   @Get('menu-items/:itemId')
   async findOne(
-    @CurrentStore() { id: storeId }: StoreInfo,
+    @CurrentStore() { id: storeId }: StoreContextDto,
     @Param('itemId') itemId: string,
   ): Promise<MenuItemResponseDto> {
     const item = await this.service.findOne(storeId, itemId);
@@ -69,7 +69,7 @@ export class MenuItemController {
   @Patch('menu-items/:itemId')
   @StoreManager()
   async update(
-    @CurrentStore() { id: storeId }: StoreInfo,
+    @CurrentStore() { id: storeId }: StoreContextDto,
     @Param('itemId') itemId: string,
     @Body() dto: UpdateMenuItemDto,
   ): Promise<MenuItemResponseDto> {
@@ -81,7 +81,7 @@ export class MenuItemController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @StoreManager()
   async remove(
-    @CurrentStore() { id: storeId }: StoreInfo,
+    @CurrentStore() { id: storeId }: StoreContextDto,
     @Param('itemId') itemId: string,
   ): Promise<void> {
     await this.service.remove(storeId, itemId);

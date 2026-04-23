@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
-import { Table } from '../entities/table.entity';
-import { TableGroupByZoneDto, TableResponseDto } from '../dtos/tables/table.dto';
+import { Table } from './table.entity';
+import { TableGroupByZoneDto, TableResponseDto } from './dtos/table.dto';
 
 export const toTableDto = (table: Table): TableResponseDto => {
   return plainToInstance(TableResponseDto, table, {

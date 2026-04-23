@@ -17,9 +17,9 @@ import { MenuSectionMapper } from '../mappers/menu-section.mapper';
 import { MenuSectionResponseDto } from '../dtos/menu-sections/menu-section.response.dto';
 import { UpdateMenuSectionOrderDto } from '../dtos/menu-sections/update-menu-section-order.dto';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
-import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
-import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
-import { StoreInfo } from '@/modules/stores/dtos/stores/store-info.dto';
+import { StoreRoleGuard } from '@/modules/stores/common/guards/store-role.guard';
+import { CurrentStore } from '@/modules/stores/common/decorators/current-store.decorator';
+import { StoreContextDto } from '@/modules/stores/store/dtos/store-context.dto';
 
 @Controller()
 @UseGuards(JwtGuard, StoreRoleGuard)
@@ -28,7 +28,7 @@ export class MenuSectionController {
 
   @Post('menus/:menuId/menu-sections')
   async create(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('menuId') menuId: string,
     @Body() dto: CreateMenuSectionDto,
   ): Promise<MenuSectionResponseDto> {
@@ -38,7 +38,7 @@ export class MenuSectionController {
 
   @Get('menus/:menuId/menu-sections')
   async findAll(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('menuId') menuId: string,
   ): Promise<MenuSectionResponseDto[]> {
     const sections = await this.service.findAllByMenu(store.id, menuId);
@@ -48,7 +48,7 @@ export class MenuSectionController {
   @Patch('menus/:menuId/menu-sections/reorder')
   @HttpCode(HttpStatus.NO_CONTENT)
   async reorder(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('menuId') menuId: string,
     @Body() dto: UpdateMenuSectionOrderDto,
   ): Promise<void> {
@@ -57,7 +57,7 @@ export class MenuSectionController {
 
   @Get('menu-sections/:sectionId')
   async findOne(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('sectionId') sectionId: string,
   ): Promise<MenuSectionResponseDto> {
     const section = await this.service.findOne(store.id, sectionId);
@@ -66,7 +66,7 @@ export class MenuSectionController {
 
   @Patch('menu-sections/:sectionId')
   async update(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('sectionId') sectionId: string,
     @Body() dto: UpdateMenuSectionDto,
   ): Promise<MenuSectionResponseDto> {
@@ -77,7 +77,7 @@ export class MenuSectionController {
   @Delete('menu-sections/:sectionId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('sectionId') sectionId: string,
   ): Promise<void> {
     await this.service.remove(store.id, sectionId);

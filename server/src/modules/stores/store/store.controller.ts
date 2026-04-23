@@ -1,18 +1,18 @@
 import { Body, Controller, Param, Post, Put, Delete, Get, UseGuards } from '@nestjs/common';
-import { StoresService } from '../services/stores.service';
-import { CreateStoreDto } from '../dtos/stores/create-store.dto';
-import { UpdateStoreDto } from '../dtos/stores/update-store.dto';
+import { StoresService } from './stores.service';
+import { CreateStoreDto } from './dtos/create-store.dto';
+import { UpdateStoreDto } from './dtos/update-store.dto';
 import { isUUID } from 'class-validator';
-import { StoreResponseDto } from '../dtos/stores/store.response.dto';
-import { mapToStoreDto, mapToStoreDtos } from '../mappers/store.mapper';
+import { StoreResponseDto } from './dtos/store.response.dto';
+import { mapToStoreDto, mapToStoreDtos } from './store.mapper';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { JwtPayload } from '@/modules/identity/dtos/auth.dto';
 import { Pages } from '@/common/interfaces/page.interface';
-import { StoreRoleGuard } from '../guards/store-role.guard';
+import { StoreRoleGuard } from '../common/guards/store-role.guard';
 import { JwtGuard } from '../../identity/guards/jwt.guard';
-import { CurrentStore } from '../decorators/current-store.decorator';
-import { StoreInfo } from '../dtos/stores/store-info.dto';
-import { StoreManager, StoreOwner } from '../decorators/store-role-group.decorator';
+import { CurrentStore } from '../common/decorators/current-store.decorator';
+import { StoreContextDto } from './dtos/store-context.dto';
+import { StoreManager, StoreOwner } from '../common/decorators/store-role-group.decorator';
 
 @Controller('stores')
 export class StoresController {
@@ -53,17 +53,17 @@ export class StoresController {
   @UseGuards(JwtGuard, StoreRoleGuard)
   @StoreManager()
   async updateStore(
-    @CurrentStore() storeInfo: StoreInfo,
+    @CurrentStore() StoreContextDto: StoreContextDto,
     @Body() dto: UpdateStoreDto,
   ): Promise<StoreResponseDto> {
-    const store = await this.storesService.updateStore(storeInfo.id, dto);
+    const store = await this.storesService.updateStore(StoreContextDto.id, dto);
     return mapToStoreDto(store);
   }
 
   @Delete(':id')
   @UseGuards(JwtGuard, StoreRoleGuard)
   @StoreOwner()
-  async deleteStore(@CurrentStore() storeInfo: StoreInfo): Promise<void> {
-    await this.storesService.deleteStore(storeInfo.id);
+  async deleteStore(@CurrentStore() StoreContextDto: StoreContextDto): Promise<void> {
+    await this.storesService.deleteStore(StoreContextDto.id);
   }
 }

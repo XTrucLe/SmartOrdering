@@ -7,9 +7,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { DataSource } from 'typeorm';
 import { AuthResponseDto, JwtPayload, LoginDto } from '../dtos/auth.dto';
-import { StoresService } from '../../stores/services/stores.service';
-import { StoreMemberService } from '../../stores/services/store-member.service';
-import { StoreInfo } from '../../stores/dtos/stores/store-info.dto';
+import { StoresService } from '../../stores/store/stores.service';
+import { StoreMemberService } from '../../stores/member/member.service';
+import { StoreContextDto } from '../../stores/store/dtos/store-context.dto';
 import { AccountService } from './account.service';
 import { Account } from '../entities/account.entity';
 import { ChangePasswordDto, OwnerRegisterDto } from '../dtos/account.dto';
@@ -24,7 +24,7 @@ export class AuthService {
     private readonly storeMemberService: StoreMemberService,
     private readonly jwtService: JwtService,
     readonly passwordService: PasswordService,
-  ) { }
+  ) {}
 
   async login(dto: LoginDto): Promise<AuthResponseDto> {
     const account = await this.accountService.findByEmail(dto.email);
@@ -138,8 +138,8 @@ export class AuthService {
 
   private generateAuthResponse(
     account: Account,
-    store?: StoreInfo[],
-    activeStore?: StoreInfo,
+    store?: StoreContextDto[],
+    activeStore?: StoreContextDto,
   ): AuthResponseDto {
     const username = account.email ?? account.phoneNumber ?? `user_${account.id.substring(0, 8)}`;
 

@@ -10,16 +10,16 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { TableService } from '../services/table.service';
-import { CreateTableDto, TableGroupByZoneDto, UpdateTableDto } from '../dtos/tables/table.dto';
-import { Table } from '../entities/table.entity';
+import { TableService } from './table.service';
+import { CreateTableDto, TableGroupByZoneDto, UpdateTableDto } from './dtos/table.dto';
+import { Table } from './table.entity';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
-import { StoreRoleGuard } from '../guards/store-role.guard';
-import { CurrentStore } from '../decorators/current-store.decorator';
-import { StoreInfo } from '../dtos/stores/store-info.dto';
-import { StoreManager } from '../decorators/store-role-group.decorator';
-import { TableStatus } from '../constants/table.constant';
-import { mapToTableGroupByZones } from '../mappers/table.mapper';
+import { StoreRoleGuard } from '../common/guards/store-role.guard';
+import { CurrentStore } from '../common/decorators/current-store.decorator';
+import { StoreContextDto } from '../store/dtos/store-context.dto';
+import { StoreManager } from '../common/decorators/store-role-group.decorator';
+import { TableStatus } from '../common/constants/table.constant';
+import { mapToTableGroupByZones } from './table.mapper';
 
 @Controller('tables')
 @UseGuards(JwtGuard, StoreRoleGuard)
@@ -28,13 +28,16 @@ export class TableController {
 
   @Post()
   @StoreManager()
-  async createTable(@CurrentStore() store: StoreInfo, @Body() dto: CreateTableDto): Promise<Table> {
+  async createTable(
+    @CurrentStore() store: StoreContextDto,
+    @Body() dto: CreateTableDto,
+  ): Promise<Table> {
     return this.tableService.createTable(store.id, dto);
   }
 
   @Get()
   async getListTables(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Query('zoneId') zoneId?: string,
   ): Promise<TableGroupByZoneDto[]> {
     const tables = zoneId
@@ -44,19 +47,22 @@ export class TableController {
   }
 
   @Get('grouped')
-  async getTablesGroupByZone(@CurrentStore() store: StoreInfo) {
+  async getTablesGroupByZone(@CurrentStore() store: StoreContextDto) {
     return this.tableService.getTablesInStore(store.id);
   }
 
   @Get(':id')
-  async getTableById(@CurrentStore() store: StoreInfo, @Param('id') id: string): Promise<Table> {
+  async getTableById(
+    @CurrentStore() store: StoreContextDto,
+    @Param('id') id: string,
+  ): Promise<Table> {
     return this.tableService.getTableById(store.id, id);
   }
 
   @Patch(':id')
   @StoreManager()
   async updateTable(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('id') id: string,
     @Body() dto: UpdateTableDto,
   ): Promise<Table> {
@@ -65,13 +71,16 @@ export class TableController {
 
   @Delete(':id')
   @StoreManager()
-  async deleteTable(@CurrentStore() store: StoreInfo, @Param('id') id: string): Promise<void> {
+  async deleteTable(
+    @CurrentStore() store: StoreContextDto,
+    @Param('id') id: string,
+  ): Promise<void> {
     return this.tableService.deleteTable(store.id, id);
   }
 
   @Patch(':id/status')
   async changeTableStatus(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Param('id') id: string,
     @Query('status') status: TableStatus,
   ): Promise<Table> {
@@ -81,7 +90,7 @@ export class TableController {
   @Put('reorder')
   @StoreManager()
   async reorderTables(
-    @CurrentStore() store: StoreInfo,
+    @CurrentStore() store: StoreContextDto,
     @Body() dto: { zoneId: string; orderedIds: string[] },
   ): Promise<Table[]> {
     const { zoneId, orderedIds } = dto;

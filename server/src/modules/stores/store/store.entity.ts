@@ -8,8 +8,10 @@ import {
   ManyToOne,
   JoinColumn,
   DeleteDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { Account } from '@/modules/identity/entities/account.entity';
+import { StoreConfig } from '../config/config.entity';
 
 @Entity('stores')
 export class Store {
@@ -53,6 +55,9 @@ export class Store {
 
   @Column({ type: 'decimal', precision: 11, scale: 8, nullable: true })
   latitude?: number;
+
+  @OneToOne(() => StoreConfig, (config) => config.store)
+  config: StoreConfig;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

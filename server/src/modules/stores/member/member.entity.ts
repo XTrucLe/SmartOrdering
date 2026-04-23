@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
-import { Store } from './store.entity';
+import { Store } from '../store/store.entity';
 import { Account } from '@/modules/identity/entities/account.entity';
-import { StoreRole } from '../constants/store-role.constant';
+import { StoreRole } from '../common/constants/store-role.constant';
 
 @Entity('store_members')
 @Index(['storeId', 'role'], { unique: true, where: `"role" = 'owner'` })

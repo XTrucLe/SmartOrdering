@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { StoreMember } from '../entities/store-member.entity';
-import { StoresService } from './stores.service';
-import { RoleHierarchy, StoreRole } from '../constants/store-role.constant';
-import { StoreMaxMembers } from '../constants/store-limit.constant';
+import { StoreMember } from './member.entity';
+import { StoresService } from '../store/stores.service';
+import { RoleHierarchy, StoreRole } from '../common/constants/store-role.constant';
+import { StoreMaxMembers } from '../common/constants/store-limit.constant';
 import { CreateAccountDto } from '@/modules/identity/dtos/account.dto';
 import { AccountService } from '@/modules/identity/services/account.service';
 import { BaseService } from '@/common/services/base.service';

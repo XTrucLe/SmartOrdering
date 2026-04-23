@@ -4,9 +4,12 @@ import { CreateOrderDto, OrderFilterDto, OrderResponseDto } from '../dtos/order.
 import { mapToOrderDto, mapToOrderDtos } from '../mappers/order.mapper';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { Pages } from '@/common/interfaces/page.interface';
-import { StoreRoleGuard } from '@/modules/stores/guards/store-role.guard';
-import { CurrentStore } from '@/modules/stores/decorators/current-store.decorator';
-import { StoreManager, StoreStaff } from '@/modules/stores/decorators/store-role-group.decorator';
+import { StoreRoleGuard } from '@/modules/stores/common/guards/store-role.guard';
+import { CurrentStore } from '@/modules/stores/common/decorators/current-store.decorator';
+import {
+  StoreManager,
+  StoreStaff,
+} from '@/modules/stores/common/decorators/store-role-group.decorator';
 
 @Controller('orders')
 @UseGuards(JwtGuard, StoreRoleGuard)

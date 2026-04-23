@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
-import { Store } from '../entities/store.entity';
-import { StoreResponseDto } from '../dtos/stores/store.response.dto';
+import { Store } from './store.entity';
+import { StoreResponseDto } from './dtos/store.response.dto';
 import { Pages } from '@/common/interfaces/page.interface';
 
 export function mapToStoreDto(store: Store): StoreResponseDto {

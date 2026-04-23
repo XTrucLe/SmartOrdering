@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
   Unique,
 } from 'typeorm';
-import { Zone } from './zone.entity';
-import { TableStatus } from '../constants/table.constant';
+import { Zone } from '../zone/zone.entity';
+import { TableStatus } from '../common/constants/table.constant';
 
 @Entity('tables')
 @Unique(['storeId', 'code'])

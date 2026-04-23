@@ -10,7 +10,7 @@ import {
   Index,
 } from 'typeorm';
 import { MenuType } from '../constants/menus.constant';
-import { Store } from '../../stores/entities/store.entity';
+import { Store } from '../../stores/store/store.entity';
 import { MenuSection } from './menu-section.entity';
 
 @Entity('menus')

@@ -8,7 +8,7 @@ import {
   Unique,
   OneToMany,
 } from 'typeorm';
-import { Store } from '../../stores/entities/store.entity';
+import { Store } from '@/modules/stores/store/store.entity';
 import { Product } from './product.entity';
 
 @Entity('categories')

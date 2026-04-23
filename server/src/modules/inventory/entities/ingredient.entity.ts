@@ -1,4 +1,4 @@
-import { Store } from '@/modules/stores/entities/store.entity';
+import { Store } from '@/modules/stores/store/store.entity';
 import {
   BeforeInsert,
   Column,

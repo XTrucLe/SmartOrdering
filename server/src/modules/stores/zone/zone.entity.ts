@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Store } from './store.entity';
-import { Table } from './table.entity';
+import { Store } from '../store/store.entity';
+import { Table } from '../table/table.entity';
 
 @Entity('zones')
 export class Zone {

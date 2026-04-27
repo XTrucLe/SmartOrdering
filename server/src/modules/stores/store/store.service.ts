@@ -2,14 +2,16 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { Store } from './store.entity';
-import { CreateStoreDto } from '../store/dtos/create-store.dto';
-import { UpdateStoreDto } from '../store/dtos/update-store.dto';
+import { CreateStoreDto } from './dtos/create-store.dto';
+import { UpdateStoreDto } from './dtos/update-store.dto';
 import { Pages } from '@/common/interfaces/page.interface';
 import { Account } from '@/modules/identity/entities/account.entity';
 import { BaseService } from '@/common/services/base.service';
+import { StatusNextAction, StoreStatus } from '../common/constants/store-status.constant';
+import { StoreShortResponseDto } from './dtos/store.response.dto';
 
 @Injectable()
-export class StoresService extends BaseService<Store> {
+export class StoreService extends BaseService<Store> {
   constructor(
     @InjectRepository(Store)
     repository: Repository<Store>,
@@ -26,6 +28,19 @@ export class StoresService extends BaseService<Store> {
       ? await this.validateCustomSlug(dto.slug, this.getRepo(manager))
       : await this.generateUniqueSlug(dto.name, this.getRepo(manager));
 
+    const existsPendingStore = await this.getRepo(manager).exists({
+      where: {
+        account: { id: accountId },
+        status: StoreStatus.PENDING,
+      },
+    });
+
+    if (existsPendingStore) {
+      throw new ConflictException(
+        'You already have a pending store application. Please wait for it to be reviewed before creating a new one.',
+      );
+    }
+
     const store = this.getRepo(manager).create({
       ...dto,
       slug,
@@ -38,7 +53,6 @@ export class StoresService extends BaseService<Store> {
   async getStoreById(id: string, manager?: EntityManager): Promise<Store> {
     const store = await this.getRepo(manager).findOneBy({
       id,
-      isActive: true,
     });
 
     if (!store) throw new NotFoundException('Store not found.');
@@ -48,19 +62,30 @@ export class StoresService extends BaseService<Store> {
   async getStoreBySlug(slug: string, manager?: EntityManager): Promise<Store> {
     const store = await this.getRepo(manager).findOneBy({
       slug,
-      isActive: true,
     });
 
     if (!store) throw new NotFoundException('Store not found.');
     return store;
   }
 
+  async getListShortStores(accountId: string): Promise<Store[]> {
+    const stores = await this.getRepo().find({
+      where: { account: { id: accountId } },
+      select: ['id', 'name', 'slug'],
+    });
+
+    if (stores.length === 0) {
+      throw new NotFoundException('Account not found or has no stores.');
+    }
+    return stores;
+  }
+
   async getAllStores(page = 1, limit = 10): Promise<Pages<Store>> {
-    return this.paginate({ isActive: true }, page, limit);
+    return this.paginate({}, page, limit);
   }
 
   async getMyStores(accountId: string, page = 1, limit = 10): Promise<Pages<Store>> {
-    return this.paginate({ account: { id: accountId } as Account, isActive: true }, page, limit);
+    return this.paginate({ account: { id: accountId } as Account }, page, limit);
   }
 
   async updateStore(id: string, dto: UpdateStoreDto): Promise<Store> {
@@ -78,6 +103,53 @@ export class StoresService extends BaseService<Store> {
   async deleteStore(id: string): Promise<void> {
     await this.getStoreById(id);
     await this.getRepo().softDelete(id);
+  }
+
+  async createWithOwner(
+    dto: CreateStoreDto,
+    account: Account,
+    manager: EntityManager,
+  ): Promise<Store> {
+    const slug = dto.slug
+      ? await this.validateCustomSlug(dto.slug, this.getRepo(manager))
+      : await this.generateUniqueSlug(dto.name, this.getRepo(manager));
+    const store = this.getRepo(manager).create({
+      ...dto,
+      slug,
+      account: { id: account.id },
+    });
+
+    return this.saveOrThrowConflict(store, this.getRepo(manager));
+  }
+
+  async activeStore(storeId: string, manager?: EntityManager): Promise<Store> {
+    const store = await this.getStoreById(storeId, manager);
+    return this.changeStoreStatus(store, StoreStatus.ACTIVE, manager);
+  }
+
+  async rejectStore(storeId: string, manager?: EntityManager): Promise<Store> {
+    const store = await this.getStoreById(storeId, manager);
+    return this.changeStoreStatus(store, StoreStatus.REJECTED, manager);
+  }
+
+  async suspendStore(storeId: string, manager?: EntityManager): Promise<Store> {
+    const store = await this.getStoreById(storeId, manager);
+    return this.changeStoreStatus(store, StoreStatus.SUSPENDED, manager);
+  }
+
+  private async changeStoreStatus(
+    store: Store,
+    status: StoreStatus,
+    manager?: EntityManager,
+  ): Promise<Store> {
+    if (store.status === status) {
+      throw new ConflictException(`Store is already ${status}.`);
+    }
+    if (!StatusNextAction[store.status]?.includes(status)) {
+      throw new ConflictException(`Invalid status transition from ${store.status} to ${status}.`);
+    }
+    store.status = status;
+    return this.getRepo(manager).save(store);
   }
 
   private async saveOrThrowConflict(store: Store, repo: Repository<Store>): Promise<Store> {

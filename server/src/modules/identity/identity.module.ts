@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account } from './entities/account.entity';
 import { Profile } from './entities/profile.entity';
@@ -8,7 +8,6 @@ import { ProfileController } from './controllers/profile.controller';
 import { AuthService } from './services/auth.service';
 import { AccountService } from './services/account.service';
 import { ProfileService } from './services/profile.service';
-import { StoresModule } from '../stores/store.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
@@ -17,7 +16,6 @@ import { PasswordService } from './services/password.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Account, Profile]),
-    forwardRef(() => StoresModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -31,4 +29,4 @@ import { PasswordService } from './services/password.service';
   providers: [AuthService, AccountService, ProfileService, PasswordService, JwtStrategy],
   exports: [AuthService, AccountService, ProfileService, JwtStrategy],
 })
-export class IdentityModule { }
+export class IdentityModule {}

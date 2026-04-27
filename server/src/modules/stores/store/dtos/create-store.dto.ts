@@ -1,4 +1,14 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Matches } from 'class-validator';
+import { CreateAccountDto } from '@/modules/identity/dtos/account.dto';
+import { Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export class CreateStoreDto {
   @IsOptional()
@@ -38,10 +48,16 @@ export class CreateStoreDto {
   province: string;
 
   @IsOptional()
-  @IsString()
+  @IsNumber()
   longitude?: number;
 
   @IsOptional()
-  @IsString()
+  @IsNumber()
   latitude?: number;
+}
+
+export class RegisNewOwnerDto extends CreateAccountDto {
+  @IsNotEmpty()
+  @Type(() => CreateStoreDto)
+  store: CreateStoreDto;
 }

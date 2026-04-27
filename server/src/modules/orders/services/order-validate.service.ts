@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { StoresService } from '@/modules/stores/store/stores.service';
+import { StoreService } from '@/modules/stores/store/store.service';
 import { MenuItemService } from '@/modules/menus/services/menu-item.service';
 import { MenuItem } from '@/modules/menus/entities/menu-item.entity';
+import { StoreStatus } from '@/modules/stores/common/constants/store-status.constant';
 
 @Injectable()
 export class OrderValidateService {
   constructor(
     private readonly menuItemService: MenuItemService,
-    private readonly storesService: StoresService,
+    private readonly storeService: StoreService,
   ) {}
 
   async validateStore(storeId: string): Promise<void> {
-    const store = await this.storesService.getStoreById(storeId);
+    const store = await this.storeService.getStoreById(storeId);
     if (!store) {
       throw new Error(`Store with ID ${storeId} not found`);
     }
-    if (!store.isActive) {
+    if (store.status !== StoreStatus.ACTIVE) {
       throw new Error(`Store with ID ${storeId} is not active`);
     }
   }

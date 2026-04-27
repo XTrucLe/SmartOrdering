@@ -12,11 +12,15 @@ import {
 } from 'typeorm';
 import { Account } from '@/modules/identity/entities/account.entity';
 import { StoreConfig } from '../config/config.entity';
+import { StoreStatus } from '../common/constants/store-status.constant';
 
 @Entity('stores')
 export class Store {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
+  accountId: string;
 
   @ManyToOne(() => Account, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })
@@ -38,8 +42,8 @@ export class Store {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column({ type: 'enum', enum: StoreStatus, default: StoreStatus.PENDING })
+  status: StoreStatus;
 
   @Column({ length: 500 })
   streetAddress: string;

@@ -9,7 +9,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateProfileDto } from './profile.dto';
-import { CreateStoreDto } from '@/modules/stores/store/dtos/create-store.dto';
 
 export class CreateAccountDto {
   @IsEmail()
@@ -39,13 +38,6 @@ export class CreateCustomerDto {
   @ValidateNested()
   @Type(() => CreateProfileDto)
   profile: CreateProfileDto;
-}
-
-export class OwnerRegisterDto extends CreateAccountDto {
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => CreateStoreDto)
-  store: CreateStoreDto;
 }
 
 export class ChangePasswordDto {

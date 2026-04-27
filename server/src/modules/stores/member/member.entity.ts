@@ -5,6 +5,8 @@ import { StoreRole } from '../common/constants/store-role.constant';
 
 @Entity('store_members')
 @Index(['storeId', 'role'], { unique: true, where: `"role" = 'owner'` })
+@Index(['accountId'], { unique: true, where: `"role" != 'owner'` })
+@Index(['storeId', 'accountId'], { unique: true })
 export class StoreMember {
   @PrimaryGeneratedColumn('uuid')
   id: string;

@@ -4,6 +4,7 @@ import { STORE_ROLE_KEY } from '../decorators/store-role.decorator';
 import { StoreRole } from '../constants/store-role.constant';
 import { StoreContextDto } from '../../store/dtos/store-context.dto';
 import { StoreMemberService } from '../../member/member.service';
+import { IS_PUBLIC_KEY } from '@/common/decorators/public.decorator';
 
 @Injectable()
 export class StoreRoleGuard implements CanActivate {
@@ -16,6 +17,15 @@ export class StoreRoleGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const { user, headers } = req;
     const storeId = headers['x-store-id'];
+
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      req.storeContext = { id: storeId };
+      return true;
+    }
 
     const requiredRoles = this.reflector.getAllAndOverride<StoreRole[]>(STORE_ROLE_KEY, [
       context.getHandler(),

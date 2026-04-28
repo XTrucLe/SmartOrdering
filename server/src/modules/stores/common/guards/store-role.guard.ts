@@ -1,11 +1,9 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { STORE_ROLE_KEY } from '../decorators/store-role.decorator';
 import { StoreRole } from '../constants/store-role.constant';
-import { StoreMemberService } from '../../member/member.service';
-import { JwtPayload } from '@/modules/identity/dtos/auth.dto';
 import { StoreContextDto } from '../../store/dtos/store-context.dto';
+import { StoreMemberService } from '../../member/member.service';
 
 @Injectable()
 export class StoreRoleGuard implements CanActivate {
@@ -15,50 +13,31 @@ export class StoreRoleGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context
-      .switchToHttp()
-      .getRequest<
-        Request & { _contextRoles?: Record<string, StoreContextDto>; contextRole?: StoreRole }
-      >();
+    const req = context.switchToHttp().getRequest();
+    const { user, headers } = req;
+    const storeId = headers['x-store-id'];
+
     const requiredRoles = this.reflector.getAllAndOverride<StoreRole[]>(STORE_ROLE_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (!requiredRoles) {
-      return true;
+
+    if (storeId && user?.sub) {
+      req.storeContext = await this.memberService.getStoreContext(user.sub, storeId);
     }
 
-    const user = request.user as JwtPayload;
-    const contextId = request.headers['x-store-id'] as string;
+    if (!requiredRoles?.length) return true;
 
-    if (!contextId || !user?.sub) {
-      throw new ForbiddenException(
-        'You must be authenticated and have an active store context to access this resource.',
-      );
-    }
-
-    const cacheKey = `ctx-role_${contextId}`;
-
-    request._contextRoles = request._contextRoles || {};
-
-    const contextInfo = !request._contextRoles[cacheKey]
-      ? await this.memberService.getStoreContext(user?.sub, contextId)
-      : request._contextRoles[cacheKey];
-
-    console.log(contextInfo);
-
+    const contextInfo = req.storeContext;
     if (!contextInfo) {
-      throw new ForbiddenException('No active store context found for the user.');
+      throw new ForbiddenException('Store context is required to access this resource.');
     }
-
-    request._contextRoles[cacheKey] = contextInfo;
 
     if (!requiredRoles.includes(contextInfo.role)) {
-      throw new ForbiddenException('You do not have the required role to access this resource.');
+      throw new ForbiddenException('You do not have permission for this store resource.');
     }
 
-    request.contextRole = contextInfo.role;
-
+    req.contextRole = contextInfo.role;
     return true;
   }
 }

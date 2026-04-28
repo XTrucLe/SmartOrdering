@@ -8,7 +8,6 @@ import { Pages } from '@/common/interfaces/page.interface';
 import { Account } from '@/modules/identity/entities/account.entity';
 import { BaseService } from '@/common/services/base.service';
 import { StatusNextAction, StoreStatus } from '../common/constants/store-status.constant';
-import { StoreShortResponseDto } from './dtos/store.response.dto';
 
 @Injectable()
 export class StoreService extends BaseService<Store> {

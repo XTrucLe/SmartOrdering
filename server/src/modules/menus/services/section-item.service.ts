@@ -45,6 +45,7 @@ export class SectionItemService {
       name: item.name,
       description: item.description,
       imageUrl: item.imageUrl,
+      unit: item.unit,
       isAvailable: item.isAvailable,
       displayOrder: item.displayOrder ?? 1,
       price: dto.price ?? item.basePrice,
@@ -115,6 +116,10 @@ export class SectionItemService {
     const item = await this.itemService.getItemById(storeId, sectionItem.itemId);
     sectionItem.name = item.name;
     sectionItem.description = item.description;
+    sectionItem.imageUrl = item.imageUrl;
+    sectionItem.isAvailable = item.isAvailable;
+    sectionItem.displayOrder = item.displayOrder ?? 1;
+    sectionItem.unit = item.unit;
     sectionItem.options = item.optionGroup.map((opt) => ({
       name: opt.name,
       choice: opt.options.map((c) => ({

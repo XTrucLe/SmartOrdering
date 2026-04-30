@@ -53,6 +53,9 @@ export class SectionItem {
   })
   price: number;
 
+  @Column({ type: 'text', default: 'sản phẩm' })
+  unit: string;
+
   @Column({ default: true })
   isAvailable: boolean;
 

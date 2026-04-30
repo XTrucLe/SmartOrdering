@@ -48,6 +48,9 @@ export class Item {
   })
   basePrice: number;
 
+  @Column({ type: 'text', default: 'sản phẩm' })
+  unit: string;
+
   @OneToMany(() => OptionGroup, (group) => group.item, { cascade: true })
   optionGroup: OptionGroup[];
 

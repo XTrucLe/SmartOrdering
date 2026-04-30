@@ -21,6 +21,10 @@ export class CreateItemDto {
   @Min(0)
   basePrice: number;
 
+  @IsNotEmpty()
+  @IsString()
+  unit: string;
+
   @IsNumber()
   @IsOptional()
   displayOrder?: number;
@@ -37,6 +41,7 @@ export class ItemDto {
   @Expose() isAvailable: boolean;
   @Expose() displayOrder: number;
   @Expose() basePrice: number;
+  @Expose() unit: string;
   @Expose() createdAt: Date;
   @Expose()
   @Type(() => OptionGroupDto)

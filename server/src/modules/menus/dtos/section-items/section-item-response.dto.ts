@@ -27,6 +27,9 @@ export class SectionItemDto {
   displayOrder: number;
 
   @Expose()
+  unit: string;
+
+  @Expose()
   options: Record<string, any>;
 
   @Expose()

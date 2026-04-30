@@ -143,6 +143,31 @@ export class AccountService extends BaseService<Account> {
     return this.updateActiveStatus(id, false, manager);
   }
 
+  async setRefreshTokenHash(
+    id: string,
+    refreshTokenHash: string,
+    manager?: EntityManager,
+  ): Promise<void> {
+    const repo = this.getRepo(manager);
+    const account = await this.getById(id, manager);
+    account.refreshTokenHash = refreshTokenHash;
+    await repo.save(account);
+  }
+
+  async findByRefreshToken(
+    refreshTokenHash: string,
+    manager?: EntityManager,
+  ): Promise<Account | null> {
+    return this.getRepo(manager).findOne({
+      where: { refreshTokenHash },
+    });
+  }
+
+  async clearRefreshToken(id: string, manager?: EntityManager): Promise<void> {
+    const repo = this.getRepo(manager);
+    await repo.update(id, { refreshTokenHash: '' });
+  }
+
   private async updateActiveStatus(
     id: string,
     isActive: boolean,

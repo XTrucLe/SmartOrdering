@@ -73,6 +73,7 @@ export class JwtPayload {
 
 export class AuthResponseDto {
   accessToken: string;
+  refreshToken?: string;
   globalRole: Role;
   user?: AuthUser;
 }

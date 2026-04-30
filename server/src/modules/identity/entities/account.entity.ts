@@ -39,6 +39,9 @@ export class Account {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ nullable: true })
+  refreshTokenHash?: string;
+
   @OneToOne(() => Profile, (profile) => profile.account)
   profile: Profile;
 

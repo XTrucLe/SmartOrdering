@@ -25,7 +25,10 @@ export class AuthService {
       throw new BadRequestException('Invalid email or password');
     }
 
-    return this.generateAuthResponse(account);
+    return {
+      ...this.generateAuthResponse(account),
+      refreshToken: await this.generateRefreshToken(account.id),
+    };
   }
 
   async changePassword(id: string, dto: ChangePasswordDto): Promise<void> {
@@ -50,6 +53,58 @@ export class AuthService {
     }
 
     await this.accountService.updatePassword(account.id, newPassword);
+  }
+
+  async refreshToken(oldRefreshToken: string): Promise<AuthResponseDto> {
+    const payload = this.jwtService.decode(oldRefreshToken);
+    if (!payload || typeof payload !== 'object' || !('sub' in payload)) {
+      throw new BadRequestException('Invalid refresh token');
+    }
+    const account = await this.accountService.findById(payload.sub);
+    this.ensureAccountExists(account);
+    return this.validateRefreshToken(account.id, oldRefreshToken);
+  }
+
+  async generateRefreshToken(accountId: string): Promise<string> {
+    const account = await this.accountService.findById(accountId);
+    this.ensureAccountExists(account);
+    this.ensurePasswordLogin(account);
+    const payload: JwtPayload = {
+      sub: account.id,
+      username: account.email ?? account.phoneNumber ?? `user_${account.id.substring(0, 8)}`,
+      globalRole: account.role,
+    };
+
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    await this.accountService.setRefreshTokenHash(
+      account.id,
+      await this.passwordService.hashPassword(refreshToken),
+    );
+    return refreshToken;
+  }
+
+  async validateRefreshToken(accountId: string, refreshToken: string): Promise<AuthResponseDto> {
+    const account = await this.accountService.findById(accountId);
+    this.ensureAccountExists(account);
+    this.ensurePasswordLogin(account);
+    const isMatch = await this.passwordService.comparePassword(
+      refreshToken,
+      account.refreshTokenHash!,
+    );
+    if (!isMatch) {
+      throw new BadRequestException('Invalid refresh token');
+    }
+    return this.generateAuthResponse(account);
+  }
+
+  async logoutByRefreshToken(refreshToken: string): Promise<void> {
+    const payload = this.jwtService.decode(refreshToken);
+
+    if (payload && typeof payload === 'object' && 'sub' in payload) {
+      await this.accountService.clearRefreshToken(payload.sub);
+    } else {
+      throw new BadRequestException('Invalid refresh token');
+    }
   }
 
   private ensureAccountExists(account: Account | null): asserts account is Account {

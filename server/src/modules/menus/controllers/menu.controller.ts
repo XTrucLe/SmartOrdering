@@ -20,6 +20,7 @@ import { StoreRoleGuard } from '@/modules/stores/common/guards/store-role.guard'
 import { StoreManager } from '@/modules/stores/common/decorators/store-role-group.decorator';
 import { CurrentStore } from '@/modules/stores/common/decorators/current-store.decorator';
 import { StoreContextDto } from '@/modules/stores/store/dtos/store-context.dto';
+import { Public } from '@/common/decorators/public.decorator';
 
 @Controller('menus')
 @UseGuards(JwtGuard, StoreRoleGuard)
@@ -37,6 +38,7 @@ export class MenuController {
   }
 
   @Get()
+  @Public()
   async findAll(@CurrentStore() store: StoreContextDto): Promise<MenuResponseDto[]> {
     const menus = await this.menuService.findAll(store.id);
     return MenuMapper.toResponseDtoList(menus);
@@ -48,6 +50,16 @@ export class MenuController {
     @Param('menuId') menuId: string,
   ): Promise<MenuResponseDto> {
     const menu = await this.menuService.findOne(store.id, menuId);
+    return MenuMapper.toResponseDto(menu);
+  }
+
+  @Get(':menuId/full')
+  @Public()
+  async findOneWithItems(
+    @CurrentStore() store: StoreContextDto,
+    @Param('menuId') menuId: string,
+  ): Promise<MenuResponseDto> {
+    const menu = await this.menuService.getFullMenu(store.id, menuId);
     return MenuMapper.toResponseDto(menu);
   }
 

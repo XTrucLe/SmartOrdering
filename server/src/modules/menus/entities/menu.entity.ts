@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { MenuType } from '../constants/menus.constant';
 import { Store } from '../../stores/store/store.entity';
-import { MenuSection } from './menu-section.entity';
+import { Section } from './section.entity';
 
 @Entity('menus')
 export class Menu {
@@ -42,10 +42,10 @@ export class Menu {
   })
   type: MenuType;
 
-  @OneToMany(() => MenuSection, (menuSection) => menuSection.menu, {
+  @OneToMany(() => Section, (section) => section.menu, {
     cascade: true,
   })
-  menuSections: MenuSection[];
+  sections: Section[];
 
   @Column({ default: true })
   isActive: boolean;

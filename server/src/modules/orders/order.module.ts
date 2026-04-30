@@ -5,18 +5,13 @@ import { OrderItem } from './entities/order-item.entity';
 import { Order } from './entities/order.entity';
 import { OrderService } from './services/order.service';
 import { StoresModule } from '../stores/store.module';
-import { MenusModule } from '../menus/menus.module';
+import { MenuModule } from '../menus/menus.module';
 import { IdentityModule } from '../identity/identity.module';
 import { OrderValidateService } from './services/order-validate.service';
 import { OrderPricingService } from './services/order-pricing.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Order, OrderItem]),
-    StoresModule,
-    MenusModule,
-    IdentityModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Order, OrderItem]), StoresModule, MenuModule, IdentityModule],
   controllers: [OrderController],
   providers: [OrderService, OrderValidateService, OrderPricingService],
   exports: [OrderService],

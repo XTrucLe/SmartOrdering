@@ -40,7 +40,7 @@ export class OrderService extends BaseService<Order> {
       }
 
       const item = new OrderItem();
-      item.menuItem = menuItem;
+      item.sectionItem = menuItem;
       item.itemName = menuItem.name;
       item.quantity = itemDto.quantity;
       item.unitPrice = menuItem.price;

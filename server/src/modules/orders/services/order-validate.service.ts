@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { StoreService } from '@/modules/stores/store/store.service';
-import { MenuItemService } from '@/modules/menus/services/menu-item.service';
-import { MenuItem } from '@/modules/menus/entities/menu-item.entity';
+import { SectionItemService } from '@/modules/menus/services/section-item.service';
+import { SectionItem } from '@/modules/menus/entities/section-item.entity';
 import { StoreStatus } from '@/modules/stores/common/constants/store-status.constant';
 
 @Injectable()
 export class OrderValidateService {
   constructor(
-    private readonly menuItemService: MenuItemService,
+    private readonly sectionItemService: SectionItemService,
     private readonly storeService: StoreService,
   ) {}
 
@@ -24,22 +24,22 @@ export class OrderValidateService {
   async validateMenuItems(
     storeId: string,
     items: { itemId: string; quantity: number }[],
-  ): Promise<MenuItem[]> {
-    const validatedMenuItems: MenuItem[] = [];
+  ): Promise<SectionItem[]> {
+    const validatedMenuItems: SectionItem[] = [];
     for (const { itemId, quantity } of items) {
       if (quantity < 0) {
         throw new Error(`Quantity for item ID ${itemId} must be greater or equal to 0`);
       }
 
-      const menuItem = await this.menuItemService.findOne(storeId, itemId);
+      const sectionItem = await this.sectionItemService.findOne(storeId, itemId);
 
-      if (!menuItem) {
-        throw new Error(`Menu item with ID ${itemId} not found`);
+      if (!sectionItem) {
+        throw new Error(`Section item with ID ${itemId} not found`);
       }
-      if (!menuItem.isAvailable) {
-        throw new Error(`Menu item with ID ${itemId} is not available`);
+      if (!sectionItem.isAvailable) {
+        throw new Error(`Section item with ID ${itemId} is not available`);
       }
-      validatedMenuItems.push(menuItem);
+      validatedMenuItems.push(sectionItem);
     }
 
     return validatedMenuItems;

@@ -1,5 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { MenuSectionResponseDto } from '../menu-sections/menu-section.response.dto';
+import { SectionResponseDto } from '../sections/section.response.dto';
 
 @Exclude()
 export class MenuResponseDto {
@@ -10,6 +10,6 @@ export class MenuResponseDto {
   @Expose() imageUrl?: string;
 
   @Expose()
-  @Type(() => MenuSectionResponseDto)
-  menuSections: MenuSectionResponseDto[];
+  @Type(() => SectionResponseDto)
+  sections: SectionResponseDto[];
 }

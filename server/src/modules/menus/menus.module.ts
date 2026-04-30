@@ -1,21 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Menu } from './entities/menu.entity';
-import { CatalogModule } from '../catalog/catalog.module';
-import { MenuSection } from './entities/menu-section.entity';
-import { MenuItem } from './entities/menu-item.entity';
+import { Section } from './entities/section.entity';
+import { SectionItem } from './entities/section-item.entity';
 import { MenuController } from './controllers/menu.controller';
-import { MenuSectionController } from './controllers/menu-section.controller';
-import { MenuItemController } from './controllers/menu-item.controller';
+import { SectionController } from './controllers/section.controller';
+import { SectionItemController } from './controllers/section-item.controller';
 import { MenuService } from './services/menu.service';
-import { MenuSectionService } from './services/menu-section.service';
-import { MenuItemService } from './services/menu-item.service';
+import { SectionService } from './services/section.service';
+import { SectionItemService } from './services/section-item.service';
 import { StoresModule } from '../stores/store.module';
+import { ItemModule } from '../items/item.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Menu, MenuSection, MenuItem]), CatalogModule, StoresModule],
-  controllers: [MenuController, MenuSectionController, MenuItemController],
-  providers: [MenuService, MenuSectionService, MenuItemService],
-  exports: [MenuService, MenuSectionService, MenuItemService],
+  imports: [TypeOrmModule.forFeature([Menu, Section, SectionItem]), StoresModule, ItemModule],
+  controllers: [MenuController, SectionController, SectionItemController],
+  providers: [MenuService, SectionService, SectionItemService],
+  exports: [MenuService, SectionService, SectionItemService],
 })
-export class MenusModule {}
+export class MenuModule {}

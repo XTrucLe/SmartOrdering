@@ -5,13 +5,13 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatalogModule } from './modules/catalog/catalog.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { StoresModule } from './modules/stores/store.module';
-import { MenusModule } from './modules/menus/menus.module';
+import { MenuModule } from './modules/menus/menus.module';
 import { IdentityModule } from './modules/identity/identity.module';
 import { OrdersModule } from './modules/orders/order.module';
+import { ItemModule } from './modules/items/item.module';
 
 @Module({
   imports: [
@@ -41,10 +41,10 @@ import { OrdersModule } from './modules/orders/order.module';
             : false,
       }),
     }),
-    CatalogModule,
     IdentityModule,
     InventoryModule,
-    MenusModule,
+    ItemModule,
+    MenuModule,
     NotificationModule,
     OrdersModule,
     StoresModule,

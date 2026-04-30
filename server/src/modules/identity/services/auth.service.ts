@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { DataSource } from 'typeorm';
 import { AuthResponseDto, JwtPayload, LoginDto } from '../dtos/auth.dto';
 import { AccountService } from './account.service';
 import { Account } from '../entities/account.entity';

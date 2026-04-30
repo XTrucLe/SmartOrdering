@@ -9,7 +9,7 @@ import {
   Index,
 } from 'typeorm';
 import { Order } from './order.entity';
-import { MenuItem } from '../../menus/entities/menu-item.entity';
+import { SectionItem } from '../../menus/entities/section-item.entity';
 import { decimalTransformer } from '@/common/utils/decimal.transformer';
 
 @Entity('order_items')
@@ -28,11 +28,11 @@ export class OrderItem {
   order: Order;
 
   @Column({ nullable: true })
-  menuItemId?: string;
+  sectionItemId?: string;
 
-  @ManyToOne(() => MenuItem, { nullable: true })
-  @JoinColumn({ name: 'menu_item_id' })
-  menuItem?: MenuItem;
+  @ManyToOne(() => SectionItem, { nullable: true })
+  @JoinColumn({ name: 'section_item_id' })
+  sectionItem?: SectionItem;
 
   @Column({ name: 'item_name' })
   itemName: string;

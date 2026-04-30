@@ -7,7 +7,7 @@ import { Role } from '../constants/role.constant';
 @Controller('accounts')
 @UseGuards(JwtGuard)
 export class AccountController {
-  constructor(private readonly accountService: AccountService) { }
+  constructor(private readonly accountService: AccountService) {}
 
   @Patch(':id/activate')
   @Roles(Role.ADMIN)

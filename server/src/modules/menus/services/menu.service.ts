@@ -41,6 +41,19 @@ export class MenuService {
     return menu;
   }
 
+  async getFullMenu(storeId: string, menuId: string): Promise<Menu> {
+    const menu = await this.repo.findOne({
+      where: { id: menuId, store: { id: storeId } },
+      relations: ['sections', 'sections.sectionItems'],
+    });
+
+    if (!menu) {
+      throw new NotFoundException(`Menu "${menuId}" not found`);
+    }
+
+    return menu;
+  }
+
   async update(storeId: string, menuId: string, dto: UpdateMenuDto): Promise<Menu> {
     const menu = await this.findOne(storeId, menuId);
 

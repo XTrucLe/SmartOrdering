@@ -1,18 +1,21 @@
+import { StoreRole } from "./member";
+
 export type Store = {
-    id: string;
-    slug: string;
-    name: string;
-    phone: string;
-    email?: string;
-    description?: string;
-    isActive: boolean;
-    streetAddress: string;
-    ward: string;
-    province: string;
-    longitude?: number;
-    latitude?: number;
-    createdAt?: Date;
-}
+  id: string;
+  slug: string;
+  name: string;
+  phone: string;
+  email?: string;
+  description?: string;
+  isActive: boolean;
+  streetAddress: string;
+  ward: string;
+  province: string;
+  role?: StoreRole;
+  longitude?: number;
+  latitude?: number;
+  createdAt?: Date;
+};
 
 export type StoreCreate = Omit<Store, "id" | "createdAt">;
 

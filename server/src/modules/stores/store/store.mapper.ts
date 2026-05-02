@@ -9,7 +9,7 @@ export function mapToStoreDto(store: Store): StoreResponseDto {
   });
 }
 
-export function mapToStoreDtos(stores: Pages<Store>): Pages<StoreResponseDto> {
+export function mapToStoreListDtos(stores: Pages<Store>): Pages<StoreResponseDto> {
   return {
     ...stores,
     data: stores.data.map((store) =>
@@ -18,4 +18,12 @@ export function mapToStoreDtos(stores: Pages<Store>): Pages<StoreResponseDto> {
       }),
     ),
   };
+}
+
+export function mapToStoreDtos(stores: Store[]): StoreResponseDto[] {
+  return stores.map((store) =>
+    plainToInstance(StoreResponseDto, store, {
+      excludeExtraneousValues: true,
+    }),
+  );
 }

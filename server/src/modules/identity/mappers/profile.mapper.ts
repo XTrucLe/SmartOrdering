@@ -9,6 +9,7 @@ export function mapToProfileDto(profile: Profile): ProfileResponseDto {
       ...profile,
       email: profile.account?.email,
       phoneNumber: profile.account?.phoneNumber,
+      globalRole: profile.account?.role,
     },
     {
       excludeExtraneousValues: true,

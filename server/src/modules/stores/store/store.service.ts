@@ -29,7 +29,7 @@ export class StoreService extends BaseService<Store> {
 
     const existsPendingStore = await this.getRepo(manager).exists({
       where: {
-        account: { id: accountId },
+        owner: { id: accountId },
         status: StoreStatus.PENDING,
       },
     });
@@ -43,15 +43,15 @@ export class StoreService extends BaseService<Store> {
     const store = this.getRepo(manager).create({
       ...dto,
       slug,
-      account: { id: accountId },
+      owner: { id: accountId },
     });
 
     return this.saveOrThrowConflict(store, this.getRepo(manager));
   }
 
-  async getStoreById(id: string, manager?: EntityManager): Promise<Store> {
+  async getStoreById(storeId: string, manager?: EntityManager): Promise<Store> {
     const store = await this.getRepo(manager).findOneBy({
-      id,
+      id: storeId,
     });
 
     if (!store) throw new NotFoundException('Store not found.');
@@ -69,7 +69,7 @@ export class StoreService extends BaseService<Store> {
 
   async getListShortStores(accountId: string): Promise<Store[]> {
     const stores = await this.getRepo().find({
-      where: { account: { id: accountId } },
+      where: { owner: { id: accountId } },
       select: ['id', 'name', 'slug'],
     });
 
@@ -83,8 +83,15 @@ export class StoreService extends BaseService<Store> {
     return this.paginate({}, page, limit);
   }
 
-  async getMyStores(accountId: string, page = 1, limit = 10): Promise<Pages<Store>> {
-    return this.paginate({ account: { id: accountId } as Account }, page, limit);
+  async getMyStores(accountId: string): Promise<Store[]> {
+    const stores = await this.repository.find({
+      where: { members: { accountId } },
+      relations: ['members'],
+    });
+
+    if (!stores|| stores.length === 0) throw new NotFoundException('Store not found.');
+
+    return stores;
   }
 
   async updateStore(id: string, dto: UpdateStoreDto): Promise<Store> {
@@ -115,7 +122,7 @@ export class StoreService extends BaseService<Store> {
     const store = this.getRepo(manager).create({
       ...dto,
       slug,
-      account: { id: account.id },
+      owner: { id: account.id },
     });
 
     return this.saveOrThrowConflict(store, this.getRepo(manager));

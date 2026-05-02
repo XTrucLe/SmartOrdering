@@ -39,7 +39,7 @@ export class StoreController {
 
   @Get('my-stores')
   @UseGuards(JwtGuard)
-  async getMyStores(@CurrentUser() user: JwtPayload): Promise<Pages<StoreResponseDto>> {
+  async getMyStores(@CurrentUser() user: JwtPayload): Promise<StoreResponseDto[]> {
     const stores = await this.storeService.getMyStores(user.sub);
     return mapToStoreDtos(stores);
   }

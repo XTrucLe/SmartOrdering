@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 @Exclude()
 export class StoreResponseDto {
@@ -15,6 +15,10 @@ export class StoreResponseDto {
   @Expose() province: string;
   @Expose() longitude?: number;
   @Expose() latitude?: number;
+
+  @Expose()
+  @Transform(({ obj }) => obj.members?.find((m) => m.accountId === obj.ownerId)?.role || 'owner')
+  role: string;
   @Expose() createdAt: Date;
 }
 

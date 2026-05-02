@@ -62,9 +62,9 @@ export class StoreMemberService extends BaseService<StoreMember> {
   }
 
   async findMemberOrFail(storeId: string, userId: string): Promise<StoreMember> {
-    const member = await this.getRepo().findOneBy({
-      store: { id: storeId },
-      account: { id: userId },
+    const member = await this.getRepo().findOne({
+      where: { store: { id: storeId }, account: { id: userId } },
+      relations: ['account', 'account.profile'],
     });
 
     if (!member) throw new NotFoundException('Member not found.');

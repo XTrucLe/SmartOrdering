@@ -9,22 +9,24 @@ import {
   JoinColumn,
   DeleteDateColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { Account } from '@/modules/identity/entities/account.entity';
 import { StoreConfig } from '../config/config.entity';
 import { StoreStatus } from '../common/constants/store-status.constant';
+import { StoreMember } from '../member/member.entity';
 
 @Entity('stores')
 export class Store {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  accountId: string;
+  @Column({ nullable: true })
+  ownerId: string;
 
   @ManyToOne(() => Account, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'account_id' })
-  account: Account;
+  @JoinColumn({ name: 'owner_id' })
+  owner: Account;
 
   @Index({ unique: true })
   @Column({ length: 100 })
@@ -59,6 +61,9 @@ export class Store {
 
   @Column({ type: 'decimal', precision: 11, scale: 8, nullable: true })
   latitude?: number;
+
+  @OneToMany(() => StoreMember, (member) => member.store)
+  members: StoreMember[];
 
   @OneToOne(() => StoreConfig, (config) => config.store)
   config: StoreConfig;

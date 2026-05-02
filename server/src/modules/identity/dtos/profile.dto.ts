@@ -61,6 +61,7 @@ export class ProfileResponseDto {
   @Expose() streetAddress: string;
   @Expose() ward: string;
   @Expose() province: string;
+  @Expose() globalRole: string;
   @Expose() createdAt: Date;
 }
 

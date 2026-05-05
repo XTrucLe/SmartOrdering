@@ -13,16 +13,19 @@ export const useLogin = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const setSection = useAuthStore((state) => state.setSession);
+  const setStore = useAuthStore((state) => state.setStore);
 
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
     try {
-      const response = await authService.login(data);
+      await authService.login(data);
       const session = await sessionService.initSession();
 
       if (session) {
         const { user, store } = session;
         setSection(user, store);
+        if (store.length === 1) setStore(store[0]);
+
         router.push(resolveRedirect(user, store));
       }
       toast.success("Login successful");

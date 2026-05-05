@@ -7,7 +7,7 @@ export type Store = {
   phone: string;
   email?: string;
   description?: string;
-  isActive: boolean;
+  status: StoreStatus;
   streetAddress: string;
   ward: string;
   province: string;
@@ -16,6 +16,8 @@ export type Store = {
   latitude?: number;
   createdAt?: Date;
 };
+
+export type StoreStatus = "PENDING" | "ACTIVE" | "REJECTED" | "SUSPENDED";
 
 export type StoreCreate = Omit<Store, "id" | "createdAt">;
 

@@ -4,9 +4,7 @@ import { User } from "./type/user";
 export const resolveRedirect = (user: User, store: Store[]) => {
   if (user.globalRole === "admin") return `/admin/dashboard`;
 
-  if (!store || store.length === 0) return "/no-store";
-
-  if (store.length > 1) return "/select-store";
+  if (!store || store.length !== 1) return "/select-store";
 
   const currentStore = store[0];
 

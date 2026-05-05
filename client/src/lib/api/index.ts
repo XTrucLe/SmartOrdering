@@ -1,5 +1,6 @@
 import axios from "axios";
 import { endpoints } from "./endpoint";
+import { useAuthStore } from "@/features/auth/auth.store";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -10,16 +11,20 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
+apiClient.interceptors.request.use((config) => {
+  const storeId = useAuthStore.getState()?.store?.id;
+
+  if (storeId) {
+    config.headers["x-store-id"] = storeId;
+  }
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
     const status = error.response?.status;
-
-    const message =
-      error.response?.data?.message ||
-      fallbackMesssage[status] ||
-      "Đã có lỗi xảy ra";
 
     if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

@@ -1,5 +1,3 @@
-import { Item } from "@/features/menu/types";
+import { OrderItem } from "@/features/order/types";
 
-export type CartItem = Item & {
-    quantity: number;
-};
+export type CartItem = OrderItem;

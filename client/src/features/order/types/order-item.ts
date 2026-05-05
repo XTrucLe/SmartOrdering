@@ -1,9 +1,5 @@
-export type OrderItem = {
-  id: string;
-  orderId?: string;
-  itemId?: string;
-  itemName: string;
+import { Item } from "@/features/menu/types";
+
+export type OrderItem = Item & {
   quantity: number;
-  price: number;
-  totalPrice: number;
 };

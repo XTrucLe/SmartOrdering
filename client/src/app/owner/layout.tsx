@@ -6,13 +6,10 @@ import {
   ChartColumn,
   Gauge,
   Hamburger,
-  Layers,
-  Layout,
   LayoutDashboard,
   ListChecks,
   MapPin,
   Store,
-  Table,
   User,
   UtensilsCrossed,
 } from "lucide-react";

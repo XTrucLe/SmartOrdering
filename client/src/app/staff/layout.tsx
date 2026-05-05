@@ -8,8 +8,8 @@ import {
   UtensilsCrossed,
   Package,
   Settings,
-  Grid2X2,
   LogOut,
+  List,
 } from "lucide-react";
 import { site_config } from "@/configs/site";
 import { Sidebar } from "@/components/common/Sidebar";
@@ -21,17 +21,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import ShiftButton from "@/components/common/ShiftButton";
 
 const SIDEBAR_ITEMS = [
   {
-    value: "pos",
+    value: "orders",
     label: "Bán hàng",
-    icon: <Grid2X2 size={20} />,
+    icon: <List size={20} />,
     tooltip: "Bán hàng",
   },
   {
-    value: "orders",
+    value: "queue",
     label: "Đơn hàng",
     icon: <Package size={20} />,
     tooltip: "Tiến độ",
@@ -63,7 +62,6 @@ export default function StaffLayout({
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
-  const storeSlug = params.store_slug;
   const [modal, setModal] = useState(false);
 
   const activeMode = useMemo(() => {
@@ -76,11 +74,11 @@ export default function StaffLayout({
       setModal(true);
       return;
     }
-    router.replace(`/staff/${storeSlug}/${id}`);
+    router.replace(`/staff/${id}`);
   };
 
   const handleGoHome = () => {
-    router.replace(`/staff/${storeSlug}/p os`);
+    router.replace(`/staff/pos`);
   };
 
   return (
@@ -100,14 +98,13 @@ export default function StaffLayout({
                   POS System
                 </h1>
                 <p className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-wider">
-                  v{site_config.version} • {storeSlug}
+                  v{site_config.version} • {}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <ShiftButton />
             <button className="h-10 w-10 flex items-center justify-center text-muted-foreground hover:bg-muted rounded-xl transition-colors relative border">
               <Bell size={20} />
               <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-destructive border-2 border-background" />

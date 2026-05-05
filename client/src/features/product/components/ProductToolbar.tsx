@@ -1,6 +1,5 @@
 "use client";
 
-import { FilterPopover } from "@/components/common/FilterPopover";
 import { SearchBox } from "@/components/common/Search";
 import { Toolbar } from "@/components/common/Toolbar";
 import { ProductFilter } from "./ProductFilter";

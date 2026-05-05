@@ -15,7 +15,7 @@ export const resolveRedirect = (user: User, store: Store[]) => {
       case "manager":
         return `/manager/dashboard`;
       case "staff":
-        return `${currentStore.role}/${currentStore.slug}/`;
+        return `${currentStore.role}/orders`;
       default:
         return "/";
     }

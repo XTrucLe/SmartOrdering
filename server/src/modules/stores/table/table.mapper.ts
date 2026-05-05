@@ -16,7 +16,6 @@ export const mapToTableGroupByZones = (tables: Table[]): TableGroupByZoneDto[] =
       zoneMap[zoneId] = {
         id: table.zone.id,
         name: table.zone.name,
-        description: table.zone.description,
         createdAt: table.zone.createdAt,
         tables: [],
       };

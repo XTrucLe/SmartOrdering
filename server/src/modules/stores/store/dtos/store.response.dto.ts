@@ -16,9 +16,7 @@ export class StoreResponseDto {
   @Expose() longitude?: number;
   @Expose() latitude?: number;
 
-  @Expose()
-  @Transform(({ obj }) => obj.members?.find((m) => m.accountId === obj.ownerId)?.role || 'owner')
-  role: string;
+  @Expose() role: string;
   @Expose() createdAt: Date;
 }
 

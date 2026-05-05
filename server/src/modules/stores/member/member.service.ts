@@ -98,7 +98,7 @@ export class StoreMemberService extends BaseService<StoreMember> {
     try {
       const member = await this.getRepo().findOneOrFail({
         where: { account: { id: accountId }, store: { id: storeId } },
-        relations: ['store', 'store.account'],
+        relations: ['store', 'account'],
         select: {
           id: true,
           role: true,

@@ -26,6 +26,7 @@ export class ZonesService {
   async getZonesInStore(storeId: string): Promise<Zone[]> {
     return this.zoneRepository.find({
       where: { storeId },
+      relations: ['tables'],
       order: { sortOrder: 'ASC' },
     });
   }

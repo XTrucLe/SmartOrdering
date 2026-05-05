@@ -22,8 +22,15 @@ export function mapToStoreListDtos(stores: Pages<Store>): Pages<StoreResponseDto
 
 export function mapToStoreDtos(stores: Store[]): StoreResponseDto[] {
   return stores.map((store) =>
-    plainToInstance(StoreResponseDto, store, {
-      excludeExtraneousValues: true,
-    }),
+    plainToInstance(
+      StoreResponseDto,
+      {
+        ...store,
+        role: store.members?.find((m) => m.storeId === store.id)?.role || 'N/A',
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    ),
   );
 }

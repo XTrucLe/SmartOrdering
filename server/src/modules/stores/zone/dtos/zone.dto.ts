@@ -1,3 +1,4 @@
+import { Exclude, Expose, Type } from 'class-transformer';
 import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreateZoneDto {
@@ -12,9 +13,9 @@ export class CreateZoneDto {
 
 export class UpdateZoneDto extends CreateZoneDto {}
 
+@Exclude()
 export class ZoneResponseDto {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt?: Date;
+  @Expose() id: string;
+  @Expose() name: string;
+  @Expose() createdAt?: Date;
 }

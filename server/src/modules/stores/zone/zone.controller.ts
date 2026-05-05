@@ -1,12 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { ZonesService } from '../zone/zone.service';
-import { CreateZoneDto, UpdateZoneDto } from './dtos/zone.dto';
+import { CreateZoneDto, UpdateZoneDto, ZoneResponseDto } from './dtos/zone.dto';
 import { Zone } from './zone.entity';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '../common/guards/store-role.guard';
 import { StoreManager } from '../common/decorators/store-role-group.decorator';
 import { CurrentStore } from '../common/decorators/current-store.decorator';
 import { StoreContextDto } from '../store/dtos/store-context.dto';
+import { ZoneMapper } from './zone.mapper';
 
 @Controller('/zones')
 @UseGuards(JwtGuard, StoreRoleGuard)
@@ -18,48 +19,53 @@ export class ZoneController {
   async createZone(
     @CurrentStore() store: StoreContextDto,
     @Body() dto: CreateZoneDto,
-  ): Promise<Zone> {
-    return this.zonesService.createZone(store.id, dto);
+  ): Promise<ZoneResponseDto> {
+    const zone = await this.zonesService.createZone(store.id, dto);
+    return ZoneMapper.toDto(zone);
   }
 
   @Get()
-  async getZonesInStore(@CurrentStore() store: StoreContextDto): Promise<Zone[]> {
-    return this.zonesService.getZonesInStore(store.id);
+  async getZonesInStore(@CurrentStore('id') storeId: string): Promise<ZoneResponseDto[]> {
+    const zones = await this.zonesService.getZonesInStore(storeId);
+    return ZoneMapper.toDtos(zones);
   }
 
   @Get(':zoneId')
   async getZoneById(
-    @CurrentStore() store: StoreContextDto,
+    @CurrentStore('id') storeId: string,
     @Param('zoneId') zoneId: string,
-  ): Promise<Zone> {
-    return this.zonesService.getZoneById(store.id, zoneId);
+  ): Promise<ZoneResponseDto> {
+    const zone = await this.zonesService.getZoneById(storeId, zoneId);
+    return ZoneMapper.toDto(zone);
   }
 
   @Patch(':zoneId')
   @StoreManager()
   async updateZone(
-    @CurrentStore() store: StoreContextDto,
+    @CurrentStore('id') storeId: string,
     @Param('zoneId') zoneId: string,
     @Body() dto: UpdateZoneDto,
-  ): Promise<Zone> {
-    return this.zonesService.updateZone(store.id, zoneId, dto);
+  ): Promise<ZoneResponseDto> {
+    const zone = await this.zonesService.updateZone(storeId, zoneId, dto);
+    return ZoneMapper.toDto(zone);
   }
 
   @Put('reorder')
   @StoreManager()
   async reorderZones(
-    @CurrentStore() store: StoreContextDto,
+    @CurrentStore('id') storeId: string,
     @Body('orderedIds') orderedIds: string[],
-  ): Promise<Zone[]> {
-    return this.zonesService.reorderZones(store.id, orderedIds);
+  ): Promise<ZoneResponseDto[]> {
+    const zones = await this.zonesService.reorderZones(storeId, orderedIds);
+    return ZoneMapper.toDtos(zones);
   }
 
   @Delete(':zoneId')
   @StoreManager()
   async deleteZone(
-    @CurrentStore() store: StoreContextDto,
+    @CurrentStore('id') storeId: string,
     @Param('zoneId') zoneId: string,
   ): Promise<void> {
-    return this.zonesService.deleteZone(store.id, zoneId);
+    return this.zonesService.deleteZone(storeId, zoneId);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { StoreService } from '../store/store.service';
 import { AccountService } from '@/modules/identity/services/account.service';
-import { RegisNewOwnerDto } from '../store/dtos/create-store.dto';
+import { CreateStoreDto, RegisNewOwnerDto } from '../store/dtos/create-store.dto';
 import { DataSource } from 'typeorm';
 import { StoreMemberService } from '../member/member.service';
 
@@ -26,5 +26,11 @@ export class OnboardingService {
 
       return { name: account.profile.firstName, email: account.email, storeName: newStore.name };
     });
+  }
+
+  async createNewStore(accountId: string, dto: CreateStoreDto) {
+    const newStore = await this.storeService.createStore(accountId, dto);
+    await this.memberService.createOwner(newStore.id, accountId);
+    return newStore;
   }
 }

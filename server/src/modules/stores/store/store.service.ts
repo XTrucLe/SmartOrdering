@@ -89,7 +89,7 @@ export class StoreService extends BaseService<Store> {
       relations: ['members'],
     });
 
-    if (!stores|| stores.length === 0) throw new NotFoundException('Store not found.');
+    if (!stores || stores.length === 0) throw new NotFoundException('Store not found.');
 
     return stores;
   }

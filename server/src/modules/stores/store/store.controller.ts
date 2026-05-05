@@ -33,7 +33,7 @@ export class StoreController {
     @CurrentUser() user: JwtPayload,
     @Body() dto: CreateStoreDto,
   ): Promise<StoreResponseDto> {
-    const store = await this.storeService.createStore(user.sub, dto);
+    const store = await this.onboardingService.createNewStore(user.sub, dto);
     return mapToStoreDto(store);
   }
 

@@ -76,7 +76,6 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<{ message: string }> {
     const refreshToken = req.cookies['refresh-token'];
-    console.log('logout: ', refreshToken);
 
     await this.authService.logoutByRefreshToken(refreshToken);
 

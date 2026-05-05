@@ -35,8 +35,6 @@ export class SectionItemService {
   ): Promise<SectionItem> {
     const repo = manager ? manager.getRepository(SectionItem) : this.repo;
 
-    console.log('run');
-
     const item = await this.itemService.getItemById(storeId, dto.itemId);
 
     const sectionItem = repo.create({

@@ -1,23 +1,24 @@
 "use client";
 
 import { useMemo, useCallback } from "react";
-import { Item, Section } from "@/types";
+import { Section } from "../types";
 import ItemCard from "./ItemCard";
+import { OrderItemPayload } from "@/features/order/types";
 
-interface MenuViewProps {
+interface StaffOrderViewProps {
   sections: Section[];
-  onAdd: (item: Item) => void;
+  onAdd: (payload: OrderItemPayload) => void;
 }
 
-export function MenuView({ sections, onAdd }: MenuViewProps) {
+export function StaffOrderView({ sections, onAdd }: StaffOrderViewProps) {
   const visibleSections = useMemo(
     () => sections.filter((s) => s.items?.length),
     [sections],
   );
 
   const handleAdd = useCallback(
-    (item: Item) => {
-      onAdd(item);
+    (payload: OrderItemPayload) => {
+      onAdd(payload);
     },
     [onAdd],
   );
@@ -37,7 +38,7 @@ export function MenuView({ sections, onAdd }: MenuViewProps) {
             <div className="flex-1 border-b border-border" />
           </div>
 
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(156px,1fr))] gap-3 pl-2">
             {section.items.map((item) => (
               <ItemCard key={item.id} item={item} onAdd={handleAdd} />
             ))}

@@ -28,6 +28,9 @@ export const endpoints = {
     activate: (id: string) => `/menus/${id}/activate`,
     deactivate: (id: string) => `/menus/${id}/deactivate`,
   },
+  section: {
+    root: "/sections",
+  },
   menu_item: {
     detail: (id: string) => `/menu-items/${id}`,
     section: (section_id: string) => `/menu-sections/${section_id}/menu-items`,

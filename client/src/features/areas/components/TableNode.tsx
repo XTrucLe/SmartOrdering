@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { TABLE_STATUS_STYLE, TableStatusMap } from "../constants/table";
 import { Table } from "../types";
+import { Users } from "lucide-react";
 
 type TableNodeProps = {
   table: Table;
@@ -22,24 +23,31 @@ export default function TableNode({
       type="button"
       onClick={() => onClick(table)}
       className={cn(
-        "relative flex flex-col items-center w-full rounded-md border p-4 transition-all max-w-xs",
+        "relative flex flex-col items-center justify-center min-h-22.5 rounded-xl border transition-all",
         style.bg,
         style.text,
         style.border,
-        "hover:shadow-md",
-        selected && "ring-2 ring-primary",
+        selected
+          ? "ring-offset-1 ring-1 ring-primary border-transparent"
+          : "hover:border-primary/50",
       )}
     >
-      <span
-        className={cn(
-          "absolute top-3 right-3 h-3 w-3 rounded-full",
-          style.border.replace("border", "bg"),
-        )}
-      />
+      <div className="absolute top-3 right-3">
+        <span className={cn("block h-2.5 w-2.5 rounded-full", style.dotbg)} />
+      </div>
 
-      <h4 className="font-medium">{table.name}</h4>
+      <h4 className="font-medium uppercase">{table.name}</h4>
 
-      <p className="text-xs opacity-80">{TableStatusMap[table.status]}</p>
+      <div className="flex flex-col items-center mt-1">
+        <span className="text-[10px] font-semibold opacity-80 tracking-widest uppercase">
+          {TableStatusMap[table.status]}
+        </span>
+
+        <div className="absolute bottom-4 right-4 flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10">
+          <Users size={12} className="opacity-70" />
+          <span className="text-xs font-semibold">{table.capacity}</span>
+        </div>
+      </div>
     </button>
   );
 }

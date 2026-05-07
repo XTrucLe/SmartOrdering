@@ -61,12 +61,13 @@ export default function StaffLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const params = useParams();
   const [modal, setModal] = useState(false);
 
   const activeMode = useMemo(() => {
     const segments = pathname.split("/");
-    return segments[segments.length - 1] || "pos";
+    console.log(segments, segments[segments.length - 1]);
+
+    return segments[segments.length - 1] || "orders";
   }, [pathname]);
 
   const handleChangeMode = (id: string) => {
@@ -78,7 +79,7 @@ export default function StaffLayout({
   };
 
   const handleGoHome = () => {
-    router.replace(`/staff/pos`);
+    router.replace(`/staff/${SIDEBAR_ITEMS[0].value}`);
   };
 
   return (
@@ -98,7 +99,7 @@ export default function StaffLayout({
                   POS System
                 </h1>
                 <p className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-wider">
-                  v{site_config.version} • {}
+                  v{site_config.version} • {site_config.name}
                 </p>
               </div>
             </div>

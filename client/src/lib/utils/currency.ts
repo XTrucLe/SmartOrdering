@@ -1,6 +1,6 @@
-export const formatCurrency = (amount: number) => {
-    return amount.toLocaleString('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
-    });
+export const formatCurrency = (amount: number | string, currency: string) => {
+  return Number(amount).toLocaleString("vi-VN", {
+    style: "currency",
+    currency: currency ?? "VND",
+  });
 };

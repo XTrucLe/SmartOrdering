@@ -1,15 +1,15 @@
-import { Item } from "./items";
+import { SectionItem } from "./items";
 
 export type Section = {
   id: string;
   name: string;
   description?: string;
   displayOrder: number;
-  items: Item[];
+  items: SectionItem[];
 };
 
 export type SectionForm = {
   name: string;
   description?: string;
-  items?: Item[];
+  items?: SectionItem[];
 };

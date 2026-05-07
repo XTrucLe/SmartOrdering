@@ -21,6 +21,10 @@ export class CreateItemDto {
   @Min(0)
   basePrice: number;
 
+  @IsString()
+  @IsNotEmpty()
+  currency: string;
+
   @IsNotEmpty()
   @IsString()
   unit: string;
@@ -41,6 +45,7 @@ export class ItemDto {
   @Expose() isAvailable: boolean;
   @Expose() displayOrder: number;
   @Expose() basePrice: number;
+  @Expose() currency: string;
   @Expose() unit: string;
   @Expose() createdAt: Date;
   @Expose()

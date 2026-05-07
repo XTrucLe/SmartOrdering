@@ -48,6 +48,16 @@ export class SectionService {
     return this.repo.find({ where: { menuId }, order: { displayOrder: 'ASC' } });
   }
 
+  async getAllByStore(storeId: string): Promise<Section[]> {
+    return this.repo
+      .createQueryBuilder('section')
+      .leftJoinAndSelect('section.menu', 'menu')
+      .leftJoinAndSelect('section.sectionItems', 'sectionItems')
+      .where('menu.storeId = :storeId', { storeId })
+      .orderBy('section.displayOrder', 'ASC')
+      .getMany();
+  }
+
   async getSectionById(storeId: string, sectionId: string): Promise<Section> {
     const section = await this.repo.findOne({
       where: { id: sectionId },

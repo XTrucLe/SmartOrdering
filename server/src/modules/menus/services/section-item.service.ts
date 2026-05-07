@@ -9,6 +9,7 @@ import {
   UpdateSectionItemOrderDto,
 } from '../dtos/section-items/update-section-item.dto';
 import { Section } from '../entities/section.entity';
+import { Item } from '@/modules/items/entities/item.entity';
 
 @Injectable()
 export class SectionItemService {
@@ -47,13 +48,17 @@ export class SectionItemService {
       isAvailable: item.isAvailable,
       displayOrder: item.displayOrder ?? 1,
       price: dto.price ?? item.basePrice,
+      currency: item.currency,
     });
 
     sectionItem.options = item.optionGroup.map((opt) => ({
       name: opt.name,
-      choice: opt.options.map((c) => ({
+      require: opt.isRequired,
+      minSelection: opt.minSelection,
+      maxSelection: opt.maxSelection,
+      choices: opt.options.map((c) => ({
         name: c.name,
-        extra: c.extraPrice,
+        extraPrice: c.extraPrice,
       })),
     }));
 
@@ -117,12 +122,16 @@ export class SectionItemService {
     sectionItem.imageUrl = item.imageUrl;
     sectionItem.isAvailable = item.isAvailable;
     sectionItem.displayOrder = item.displayOrder ?? 1;
+    sectionItem.currency = item.currency;
     sectionItem.unit = item.unit;
     sectionItem.options = item.optionGroup.map((opt) => ({
       name: opt.name,
-      choice: opt.options.map((c) => ({
+      require: opt.isRequired,
+      minSelection: opt.minSelection,
+      maxSelection: opt.maxSelection,
+      choices: opt.options.map((c) => ({
         name: c.name,
-        extra: c.extraPrice,
+        extraPrice: c.extraPrice,
       })),
     }));
     return this.repo.save(sectionItem);

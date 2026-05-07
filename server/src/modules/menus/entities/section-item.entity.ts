@@ -53,6 +53,9 @@ export class SectionItem {
   })
   price: number;
 
+  @Column({ default: 'VND' })
+  currency: string;
+
   @Column({ type: 'text', default: 'sản phẩm' })
   unit: string;
 

@@ -48,6 +48,9 @@ export class Item {
   })
   basePrice: number;
 
+  @Column({ default: 'VND' })
+  currency: string;
+
   @Column({ type: 'text', default: 'sản phẩm' })
   unit: string;
 

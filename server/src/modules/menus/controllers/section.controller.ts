@@ -21,7 +21,10 @@ import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { StoreRoleGuard } from '@/modules/stores/common/guards/store-role.guard';
 import { CurrentStore } from '@/modules/stores/common/decorators/current-store.decorator';
 import { StoreContextDto } from '@/modules/stores/store/dtos/store-context.dto';
-import { StoreOwner } from '@/modules/stores/common/decorators/store-role-group.decorator';
+import {
+  StoreOwner,
+  StoreStaff,
+} from '@/modules/stores/common/decorators/store-role-group.decorator';
 
 @UseGuards(JwtGuard, StoreRoleGuard)
 @Controller()
@@ -45,6 +48,15 @@ export class SectionController {
     @Param('menuId') menuId: string,
   ): Promise<SectionResponseDto[]> {
     const sections = await this.service.getAllByMenu(storeId, menuId);
+    return SectionMapper.toResponseDtoList(sections);
+  }
+
+  @Get('sections')
+  @StoreStaff()
+  async findAllByStore(
+    @CurrentStore() { id: storeId }: StoreContextDto,
+  ): Promise<SectionResponseDto[]> {
+    const sections = await this.service.getAllByStore(storeId);
     return SectionMapper.toResponseDtoList(sections);
   }
 

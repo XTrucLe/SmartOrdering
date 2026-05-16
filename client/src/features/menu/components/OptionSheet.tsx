@@ -25,13 +25,9 @@ type OptionSheetProps = {
 
 export const OptionSheet = ({
   title = "Lựa chọn",
-
   open,
-
   options,
-
   onConfirm,
-
   onClose,
 }: OptionSheetProps) => {
   const [selected, setSelected] = useState<Record<string, string>>({});

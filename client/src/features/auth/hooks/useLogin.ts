@@ -26,7 +26,7 @@ export const useLogin = () => {
         setSection(user, store);
         if (store.length === 1) setStore(store[0]);
 
-        router.push(resolveRedirect(user, store));
+        router.replace(resolveRedirect(user, store));
       }
       toast.success("Login successful");
     } catch (error) {

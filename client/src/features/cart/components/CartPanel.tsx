@@ -3,29 +3,21 @@
 import Image from "next/image";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CartItem } from "../types";
 import { formatCurrency } from "@/lib/utils/index";
+import { useCartStore } from "../cart.store";
 
-interface Props {
-  items: CartItem[];
-  total: number;
-  disabled: boolean;
+type CartPanelProps = {
+  handleCheckout: () => void;
+  handleDelayedCheckout: () => void;
+};
 
-  onIncrease: (id: string) => void;
-  onDecrease: (id: string) => void;
-  onRemove: (id: string) => void;
-  onConfirm: () => void;
-}
+export function CartPanel({
+  handleCheckout,
+  handleDelayedCheckout,
+}: CartPanelProps) {
+  const { items, changeQuantity, getTotalAmount, removeItem } = useCartStore();
+  const total = getTotalAmount();
 
-export function OrderPanel({
-  items,
-  total,
-  disabled,
-  onIncrease,
-  onDecrease,
-  onRemove,
-  onConfirm,
-}: Props) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto px-4 py-2">
@@ -36,9 +28,9 @@ export function OrderPanel({
             {items.map((item) => (
               <div
                 key={item.signature + item.itemId}
-                className="flex gap-4 border-b pb-4"
+                className="flex gap-4 border-b pb-2"
               >
-                <div className="relative h-16 w-16 rounded-md overflow-hidden border">
+                <div className="relative h-18 w-18 rounded-md overflow-hidden border">
                   {item.imageUrl && (
                     <Image
                       src={item.imageUrl}
@@ -62,7 +54,7 @@ export function OrderPanel({
                     {item?.options?.length ? (
                       <span className="text-xs text-muted-foreground">
                         {item.options
-                          .map((option) => option.choiceName)
+                          .map((option) => option.optionName)
                           .filter(Boolean)
                           .join(", ")}
                       </span>
@@ -71,18 +63,22 @@ export function OrderPanel({
 
                   <div className="flex justify-between mt-2 ">
                     <div className="flex border rounded px-2">
-                      <button onClick={() => onDecrease(item.signature)}>
+                      <button
+                        onClick={() => changeQuantity(item.signature, -1)}
+                      >
                         <Minus size={14} />
                       </button>
                       <span className="px-3 border-r border-l mx-2">
                         {item.quantity}
                       </span>
-                      <button onClick={() => onIncrease(item.signature)}>
+                      <button onClick={() => changeQuantity(item.signature, 1)}>
                         <Plus size={14} />
                       </button>
                     </div>
 
-                    <button onClick={() => onRemove(item.signature)}>
+                    <button
+                      onClick={() => removeItem(item.itemId, item.signature)}
+                    >
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -96,12 +92,25 @@ export function OrderPanel({
       <div className="border-t p-4">
         <div className="flex justify-between font-bold">
           <span>Tổng</span>
-          <span>{total.toLocaleString()} ₫</span>
+          <span>{formatCurrency(total, "VND")}</span>
         </div>
 
-        <Button className="w-full mt-3" disabled={disabled} onClick={onConfirm}>
-          Xác nhận
-        </Button>
+        <div className="group flex flex-row flex-wrap items-center gap-2 mt-4">
+          <Button
+            variant="outline"
+            disabled={!items.length}
+            onClick={handleDelayedCheckout}
+          >
+            Xác nhận đơn
+          </Button>
+          <Button
+            disabled={!items.length}
+            onClick={handleCheckout}
+            className="flex-1"
+          >
+            Thanh toán ngay
+          </Button>
+        </div>
       </div>
     </div>
   );

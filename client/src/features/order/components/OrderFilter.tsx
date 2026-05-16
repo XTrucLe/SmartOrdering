@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ORDER_STATUS_LABEL } from "../types";
+import { ORDER_STATUS_LABEL } from "../constants/order.constant";
 
 export type FilterValue = {
   status: string[];

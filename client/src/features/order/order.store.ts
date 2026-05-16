@@ -1,60 +1,36 @@
 import { create } from "zustand";
+import { Order } from "./types";
+import { toast } from "sonner";
+import { getOrders } from "./services/order";
 
-import { devtools } from "zustand/middleware";
+interface OrderState {
+  orders: Order[];
+  selectedOrder: Order | null;
 
-import {
-  addItemLogic,
-  changeQuantityLogic,
-  removeItemLogic,
-  getTotalPrice,
-} from "./order.logic";
-
-import { OrderItemPayload, DeliveryMethod, OrderItem } from "./types";
-
-import { Table } from "../areas/types";
-
-interface OrderStore {
-  items: OrderItem[];
-  table: Table | null;
-  method: DeliveryMethod;
-
-  addItem: (payload: OrderItemPayload) => void;
-  setTable: (table: Table) => void;
-  setMethod: (method: DeliveryMethod) => void;
-  changeQuantity: (signature: string, delta: number) => void;
-  removeItem: (signature: string) => void;
-  clear: () => void;
-  totalPrice: () => number;
+  setOrders: (orders: Order[]) => void;
+  setSelectedOrder: (order: Order) => void;
+  fetchOrders: () => Promise<void>;
+  removeOrder: (orderId: string) => void;
 }
 
-export const useOrderStore = create<OrderStore>()(
-  devtools((set, get) => ({
-    items: [],
-    table: null,
-    method: "Dine-in",
+export const useOrderStore = create<OrderState>((set, get) => ({
+  orders: [],
+  selectedOrder: null,
 
-    addItem: (payload) =>
-      set((state) => ({
-        items: addItemLogic(state.items, payload),
-      })),
-    setTable: (table) => set({ table }),
-    setMethod: (method) => set({ method }),
-    changeQuantity: (signature, delta) =>
-      set((state) => ({
-        items: changeQuantityLogic(state.items, signature, delta),
-      })),
-
-    removeItem: (signature) =>
-      set((state) => ({
-        items: removeItemLogic(state.items, signature),
-      })),
-
-    clear: () =>
-      set({
-        items: [],
-        table: null,
-      }),
-
-    totalPrice: () => getTotalPrice(get().items),
-  })),
-);
+  setOrders: (orders) => set({ orders }),
+  setSelectedOrder: (order) => set({ selectedOrder: order }),
+  fetchOrders: async () => {
+    try {
+      const { data } = await getOrders();
+      get().setOrders(data);
+    } catch (error) {
+      toast.error("Có lỗi khi tải đơn hàng!");
+    }
+  },
+  removeOrder: (orderId) =>
+    set((state) => ({
+      orders: state.orders.filter((order) => order.id !== orderId),
+      selectedOrder:
+        state.selectedOrder?.id === orderId ? null : state.selectedOrder,
+    })),
+}));

@@ -12,7 +12,7 @@ export default async function RootLayout({
       <body className="min-h-screen bg-background">
         <AppProvider>
           <Toaster position="top-right" closeButton />
-          <main className="w-full flex-1">{children}</main>
+          <div className="flex-1">{children}</div>
         </AppProvider>
       </body>
     </html>

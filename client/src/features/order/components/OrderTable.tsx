@@ -84,7 +84,7 @@ const renderCell = (col: keyof Order, order: Order) => {
       return <StatusBadge status={order.status} />;
 
     case "totalPrice":
-      return formatCurrency(order.totalPrice);
+      return formatCurrency(order.totalPrice, "VND");
 
     default:
       return "" + order[col];

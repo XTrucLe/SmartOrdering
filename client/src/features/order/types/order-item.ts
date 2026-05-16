@@ -2,7 +2,7 @@ import { SectionItem } from "@/features/menu/types";
 
 export interface SelectedOption {
   groupName: string;
-  choiceName: string;
+  optionName: string;
   extraPrice: number;
 }
 
@@ -15,7 +15,7 @@ export interface OrderItemPayload {
 export type OrderItem = {
   itemId: string;
   name: string;
-  price: number;
+  unitPrice: number;
   description?: string;
   imageUrl?: string;
   currency: string;

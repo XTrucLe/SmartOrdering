@@ -1,25 +1,27 @@
-import { OrderItem } from "./order-item";
+import { OrderItem, SelectedOption } from "./order-item";
 import {
   CancelReason,
-  DeliveryMethod,
+  DeliveryType,
   OrderStatus,
   PaymentStatus,
 } from "../constants/order.constant";
+import { DeliveryInfo } from "../../cart/types/delivery";
 
 export type Order = {
   id: string;
+  orderCode?: string;
 
   storeId: string;
 
   orderItems: OrderItem[];
 
   customerName?: string;
-  customerContact?: string;
+  customerPhone?: string;
   customerAddress?: string;
 
   status: OrderStatus;
   paymentStatus: PaymentStatus;
-  deliveryMethod: DeliveryMethod;
+  deliveryMethod: DeliveryType;
 
   table?: string;
 
@@ -33,4 +35,27 @@ export type Order = {
 
   createdAt: string;
   updatedAt?: string;
+};
+
+export type CreateOrderRequest = {
+  items: {
+    itemId: string;
+    quantity: number;
+    options?: SelectedOption[];
+  }[];
+
+  deliveryMethod: DeliveryType;
+
+  customerName?: string;
+  customerPhone?: string;
+
+  tableId?: string;
+
+  deliveryFee?: number;
+  tip?: number;
+  discount?: number;
+
+  notes?: string;
+
+  delivery?: DeliveryInfo;
 };

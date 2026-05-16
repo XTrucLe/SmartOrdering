@@ -12,7 +12,7 @@ export const checkStore = async (slug: string) => {
 
 export const getMyStore = async () => {
   const response = await apiClient.get(endpoints.stores.mine);
-  console.log(response.data);
+
   const myStore = response.data;
   return myStore;
 };

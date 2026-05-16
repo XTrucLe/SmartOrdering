@@ -125,7 +125,7 @@ export default function ItemCard({
 
                 return {
                   groupName: group.name,
-                  choiceName: choice?.name ?? "",
+                  optionName: choice?.name ?? "",
                   extraPrice: Number(choice?.extraPrice ?? 0),
                 };
               }) ?? [];

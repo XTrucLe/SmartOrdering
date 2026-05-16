@@ -41,11 +41,11 @@ export function OrderDetailModal({
               <div className="space-y-2">
                 {order.orderItems.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.signature}
                     className="flex items-start justify-between text-sm"
                   >
                     <div className="flex flex-col">
-                      <span className="font-medium">{item.itemName}</span>
+                      <span className="font-medium">{item.name}</span>
                       <span className="text-xs text-muted-foreground">
                         x{item.quantity}
                       </span>

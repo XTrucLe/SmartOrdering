@@ -1,32 +1,43 @@
-import { DeliveryMethod } from "../order/types";
+import { DeliveryType } from "@/features/order/constants/order.constant";
 import { Table, TableStatus } from "./types";
 import { useRouter } from "next/navigation";
 
 type Ctx = {
   router: ReturnType<typeof useRouter>;
   setTable: (table: Table) => void;
-  setMethod?: (method: DeliveryMethod) => void;
+  setMethod?: (method: DeliveryType) => void;
 };
 
-const createOrder = (table: Table, { router, setTable, setMethod }: Ctx) => {
-  setTable(table);
-  setMethod?.("DINE_IN");
-  router.push(`/staff/orders/dine-in`);
-};
+type TableActionMap = Record<TableStatus, (table: Table, ctx: Ctx) => void>;
 
-const openOrder = (table: Table, ctx: Ctx) => {
-  ctx.router.push(`/staff/orders/${table}`);
-};
+const TABLE_ACTION_MAP: TableActionMap = {
+  available: (table, ctx) => {
+    ctx.setTable(table);
+    ctx.setMethod?.("DINE_IN");
+    ctx.router.push(`/staff/orders/new`);
+  },
 
-const TABLE_ACTION_MAP: Record<TableStatus, (table: Table, ctx: Ctx) => void> =
-  {
-    available: createOrder,
-    occupied: openOrder,
-    reserved: (t) => console.log("reservation", t),
-    maintenance: () => {},
-    cleaning: () => {},
-    disabled: () => {},
-  };
+  occupied: (table, ctx) => {
+    ctx.router.push(`/staff/orders/${table.id}`);
+  },
+
+  reserved: (table) => {
+    // future: check-in flow
+    console.log("reserved table", table);
+  },
+
+  cleaning: () => {
+    // block interaction
+  },
+
+  maintenance: () => {
+    // block interaction
+  },
+
+  disabled: () => {
+    // block interaction
+  },
+};
 
 export const handleTableAction = (table: Table, ctx: Ctx) => {
   return TABLE_ACTION_MAP[table.status]?.(table, ctx);

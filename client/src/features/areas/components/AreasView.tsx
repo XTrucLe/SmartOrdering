@@ -9,13 +9,13 @@ import { AreasHeader } from "./AreasHeader";
 import { Button } from "@/components/ui/button";
 import { handleTableAction } from "../table.action";
 import { useRouter } from "next/navigation";
-import { useOrderStore } from "@/features/order/order.store";
+import { useCartStore } from "@/features/cart/cart.store";
 
 export default function AreasView() {
   const router = useRouter();
   const [areas, setAreas] = useState<TableGrouped[]>([]);
   const [filter, setFilter] = useState<TableFilter>("All");
-  const { setTable, setMethod } = useOrderStore();
+  const { setTable, setMethod } = useCartStore();
 
   useEffect(() => {
     getAreas().then(setAreas);

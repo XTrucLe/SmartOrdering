@@ -2,17 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { usePathname, useRouter, useParams } from "next/navigation";
-import {
-  History,
-  Bell,
-  UtensilsCrossed,
-  Package,
-  Settings,
-  LogOut,
-  List,
-} from "lucide-react";
-import { site_config } from "@/configs/site";
-import { Sidebar } from "@/components/common/Sidebar";
+import { SIDEBAR_FOOTER, SIDEBAR_ITEMS } from "@/app/staff/_constant";
 import {
   Dialog,
   DialogContent,
@@ -21,40 +11,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Sidebar } from "@/components/common/Sidebar";
+import { Bell, UtensilsCrossed } from "lucide-react";
+import { site_config } from "@/configs/site";
+import { useAuthStore } from "@/features/auth/auth.store";
+import { AuthService } from "@/lib/api/auth";
 
-const SIDEBAR_ITEMS = [
-  {
-    value: "orders",
-    label: "Bán hàng",
-    icon: <List size={20} />,
-    tooltip: "Bán hàng",
-  },
-  {
-    value: "queue",
-    label: "Đơn hàng",
-    icon: <Package size={20} />,
-    tooltip: "Tiến độ",
-    badge: 5,
-  },
-  {
-    value: "history",
-    label: "Lịch sử",
-    icon: <History size={20} />,
-    tooltip: "Nhật ký",
-  },
-];
-
-const SIDEBAR_FOOTER = [
-  { value: "settings", label: "Cài đặt", icon: <Settings size={20} /> },
-  {
-    value: "logout",
-    label: "Đăng xuất",
-    icon: <LogOut size={20} color="var(--error)" />,
-    danger: true,
-  },
-];
-
-export default function StaffLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -62,10 +25,10 @@ export default function StaffLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [modal, setModal] = useState(false);
+  const { user } = useAuthStore();
 
   const activeMode = useMemo(() => {
     const segments = pathname.split("/");
-    console.log(segments, segments[segments.length - 1]);
 
     return segments[segments.length - 1] || "orders";
   }, [pathname]);
@@ -83,7 +46,7 @@ export default function StaffLayout({
   };
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
+    <div className="flex h-screen w-full flex-col">
       <header className="z-50 border-b bg-popover h-16 shrink-0 shadow-inner">
         <div className="flex h-full items-center justify-between px-6">
           <div className="flex items-center gap-6 ">
@@ -113,10 +76,10 @@ export default function StaffLayout({
 
             <div className="h-6 w-px bg-border mx-2" />
 
-            <div className="flex items-center gap-3 pl-2">
+            <div className="flex items-center gap-3 pl-2 max-w-max">
               <div className="flex-col items-end hidden sm:flex">
                 <p className="text-xs font-black uppercase tracking-tight">
-                  Nhân viên A
+                  {user?.lastName} {user?.firstName}
                 </p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
@@ -126,14 +89,14 @@ export default function StaffLayout({
                 </div>
               </div>
               <div className="h-10 w-10 rounded-xl bg-muted border-2 border-border flex items-center justify-center font-black text-sm text-foreground">
-                A
+                {user?.firstName[0]}
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-row w-full h-full overflow-hidden">
         <Sidebar
           items={SIDEBAR_ITEMS}
           activeId={activeMode}
@@ -142,11 +105,9 @@ export default function StaffLayout({
           footer={SIDEBAR_FOOTER}
           className="shadow-xl"
         />
-
-        <main className="flex-1 min-h-0 h-full overflow-hidden">
-          <div className="h-full w-full">{children}</div>
-        </main>
+        <main className="h-full w-full overflow-auto">{children}</main>
       </div>
+
       <Dialog open={modal} onOpenChange={setModal}>
         <DialogContent className="z-9999">
           <DialogHeader>
@@ -162,8 +123,9 @@ export default function StaffLayout({
 
             <Button
               variant="destructive"
-              onClick={() => {
+              onClick={async () => {
                 setModal(false);
+                await AuthService.logout();
                 router.replace("/login");
               }}
             >

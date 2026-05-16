@@ -9,13 +9,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LucideIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface SidebarItemData {
   value: string;
   label: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   tooltip?: string;
   badge?: number | string;
   danger?: boolean;
@@ -154,7 +154,11 @@ const SidebarItem = ({
       )}
 
       <div className="flex items-center justify-center shrink-0 w-5">
-        {icon}
+        {icon &&
+          React.createElement(icon, {
+            size: 22,
+            color: danger ? "var(--destructive)" : undefined,
+          })}
       </div>
 
       {!isCollapsed && (
@@ -202,7 +206,7 @@ const SidebarItem = ({
                     setShowPopover(false);
                   }}
                 >
-                  {child?.icon}
+                  {child?.icon && React.createElement(child.icon, { size: 22 })}
                   <span className="truncate">{child.label}</span>
                 </div>
               ))}

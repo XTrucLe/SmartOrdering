@@ -4,28 +4,35 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { StaffOrderView } from "@/features/menu/components/StaffOrderView";
 import { MenuNavigation } from "@/features/menu/components/MenuNavigation";
-import { OrderPanel } from "@/features/cart/components/CartPanel";
+import { CartPanel } from "@/features/cart/components/CartPanel";
 
 import { useScrollSpy } from "@/hooks/useScrollSpy";
-import { useOrderStore } from "@/features/order/order.store";
+import { useCartStore } from "@/features/cart/cart.store";
 import { SearchBox } from "@/components/common/Search";
 import { useQueryState } from "@/hooks/useQueryParam";
 
 import { Section } from "@/features/menu/types";
 import { getAllSections } from "@/features/menu/services/section.service";
 
-import { SplinePointer } from "lucide-react";
+import { PreviousButton } from "@/app/staff/_components/PreviousButton";
+import { DeliverySelection } from "./DeliverySelection";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { CustomerInfo } from "./CustomerInfo";
+import { OrderService } from "@/lib/api";
 
 const NAV_OFFSET = 80;
 
 export function POSScreen() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { items, changeQuantity, removeItem, addItem, totalPrice } =
-    useOrderStore();
+  const { orderId, orderCode, loadEntity, addItem, confirmOrder, syncOrder } =
+    useCartStore();
 
   const [query, setQuery] = useQueryState({
     key: "q",
@@ -58,6 +65,22 @@ export function POSScreen() {
     };
   }, []);
 
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const { data } = await OrderService.openBill();
+
+        if (data) {
+          await loadEntity(data);
+        }
+      } catch (error) {
+        console.error("Failed to confirm order:", error);
+      }
+    };
+
+    init();
+  }, []);
+
   const sectionIds = useMemo(
     () => sections.map((section) => section.id),
     [sections],
@@ -81,20 +104,30 @@ export function POSScreen() {
     });
   };
 
-  const total = totalPrice();
-
   if (loading) {
-    return (
-      <div className="flex items-center justify-center flex-1">
-        <SplinePointer className="animate-pulse" />
-      </div>
-    );
+    return <div className="flex items-center justify-center flex-1" />;
   }
+
+  const handleCheckout = async () => {
+    const currentPath = pathname || "";
+
+    const result = await syncOrder();
+    if (result) router.push(`/staff/payment/${orderId}`);
+  };
+
+  const handleDelayedCheckout = () => {
+    try {
+      confirmOrder();
+    } catch (error) {
+      toast.error("Đặt hàng thất bại. Vui lòng thử lại.");
+    }
+  };
 
   return (
     <div className="flex h-full flex-1 overflow-hidden">
       <div className="flex min-h-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-6 border-b px-6 py-2">
+          <PreviousButton className="-ml-4" />
           <div className="min-w-0 flex-1 overflow-hidden">
             <MenuNavigation
               sections={sections}
@@ -127,16 +160,18 @@ export function POSScreen() {
       <aside className="flex w-108 flex-col border-l">
         <div className="flex items-center justify-between border-b p-3">
           <h2 className="font-semibold">Đơn hàng hiện tại</h2>
-        </div>
 
-        <OrderPanel
-          items={items}
-          total={total}
-          disabled={!items.length}
-          onDecrease={(id) => changeQuantity(id, -1)}
-          onIncrease={(id) => changeQuantity(id, 1)}
-          onRemove={removeItem}
-          onConfirm={() => {}}
+          {orderCode && (
+            <span className="text-sm text-muted-foreground">
+              Mã: {orderCode}
+            </span>
+          )}
+        </div>
+        <CustomerInfo />
+        <DeliverySelection />
+        <CartPanel
+          handleCheckout={handleCheckout}
+          handleDelayedCheckout={handleDelayedCheckout}
         />
       </aside>
     </div>

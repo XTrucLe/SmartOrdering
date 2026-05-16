@@ -39,6 +39,7 @@ export const endpoints = {
   },
   order: {
     root: "/orders",
+    getByStaff: `/orders/today`,
     detail: (id: string) => `/orders/${id}`,
     cancel: (id: string) => `/orders/${id}/cancel`,
     complete: (id: string) => `/orders/${id}/complete`,

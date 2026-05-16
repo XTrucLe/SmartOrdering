@@ -8,7 +8,6 @@ import { StoreResponseDto, StoreShortResponseDto } from './dtos/store.response.d
 import { mapToStoreDto, mapToStoreDtos } from './store.mapper';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { JwtPayload } from '@/modules/identity/dtos/auth.dto';
-import { Pages } from '@/common/interfaces/page.interface';
 import { StoreRoleGuard } from '../common/guards/store-role.guard';
 import { JwtGuard } from '../../identity/guards/jwt.guard';
 import { StoreManager, StoreOwner } from '../common/decorators/store-role-group.decorator';

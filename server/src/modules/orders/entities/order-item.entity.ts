@@ -11,6 +11,7 @@ import {
 import { Order } from './order.entity';
 import { SectionItem } from '../../menus/entities/section-item.entity';
 import { decimalTransformer } from '@/common/utils/decimal.transformer';
+import { OrderOptionsDto } from '../dtos/order-item.dto';
 
 @Entity('order_items')
 @Index(['orderId'])
@@ -34,11 +35,23 @@ export class OrderItem {
   @JoinColumn({ name: 'section_item_id' })
   sectionItem?: SectionItem;
 
-  @Column({ name: 'item_name' })
-  itemName: string;
+  @Column()
+  itemId: string;
+
+  @Column({ name: 'name' })
+  name: string;
+
+  @Column({ type: 'text', nullable: true })
+  imageUrl?: string;
+
+  @Column({ type: 'jsonb', default: [] })
+  options?: OrderOptionsDto[];
 
   @Column('int')
   quantity: number;
+
+  @Column({ type: 'text', default: 'sản phẩm' })
+  unit: string;
 
   @Column('decimal', {
     precision: 12,
@@ -53,6 +66,9 @@ export class OrderItem {
     transformer: decimalTransformer,
   })
   totalPrice: number;
+
+  @Column({ default: 'VND' })
+  currency: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

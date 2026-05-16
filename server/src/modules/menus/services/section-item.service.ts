@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EntityManager, In, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SectionItem } from '../entities/section-item.entity';
 import { ItemService } from '@/modules/items/services/item.service';
@@ -9,7 +9,6 @@ import {
   UpdateSectionItemOrderDto,
 } from '../dtos/section-items/update-section-item.dto';
 import { Section } from '../entities/section.entity';
-import { Item } from '@/modules/items/entities/item.entity';
 
 @Injectable()
 export class SectionItemService {

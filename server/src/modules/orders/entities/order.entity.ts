@@ -12,10 +12,10 @@ import {
 } from 'typeorm';
 import { Store } from '../../stores/store/store.entity';
 import { OrderItem } from './order-item.entity';
-import { OrderStatus, PaymentStatus, DeliveryMethod } from '../constants/order.constant';
+import { OrderStatus, DeliveryMethod } from '../constants/order.constant';
 import { decimalTransformer } from '@/common/utils/decimal.transformer';
 import { Delivery } from './delivery.entity';
-import { Table } from '@/modules/stores/table/table.entity';
+import { PaymentMethod, PaymentStatus } from '../constants/payment.constant';
 
 @Entity('orders')
 @Index(['storeId', 'createdAt'])
@@ -37,7 +37,9 @@ export class Order {
   store: Store;
 
   @OneToMany(() => OrderItem, (item) => item.order, {
-    cascade: ['insert'],
+    cascade: true,
+    eager: true,
+    orphanedRowAction: 'delete',
   })
   orderItems: OrderItem[];
 
@@ -46,16 +48,6 @@ export class Order {
     nullable: true,
   })
   delivery?: Delivery;
-
-  @Column({ nullable: true })
-  tableId?: string;
-
-  @ManyToOne(() => Table, { nullable: true })
-  @JoinColumn({ name: 'table_id' })
-  table?: Table;
-
-  @Column({ nullable: true })
-  tableName?: string;
 
   @Column({ nullable: true })
   customerId?: string;
@@ -69,9 +61,12 @@ export class Order {
   @Column({
     type: 'enum',
     enum: OrderStatus,
-    default: OrderStatus.PENDING,
+    default: OrderStatus.DRAFT,
   })
   status: OrderStatus;
+
+  @Column({ type: 'enum', enum: PaymentMethod, default: PaymentMethod.CASH })
+  paymentMethod: PaymentMethod;
 
   @Column({
     type: 'enum',
@@ -91,14 +86,13 @@ export class Order {
     nullable: true,
   })
   cancelReason?: string;
-
   @Column('decimal', {
     precision: 12,
     scale: 2,
     default: 0,
     transformer: decimalTransformer,
   })
-  subtotal: number;
+  subTotal: number;
 
   @Column('decimal', {
     precision: 12,
@@ -126,6 +120,12 @@ export class Order {
 
   @Column('text', { nullable: true })
   note?: string;
+
+  @Column({ nullable: true })
+  createdBy?: string;
+
+  @Column({ nullable: true })
+  paidAt?: Date;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

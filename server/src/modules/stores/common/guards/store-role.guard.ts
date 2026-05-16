@@ -2,7 +2,6 @@ import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@
 import { Reflector } from '@nestjs/core';
 import { STORE_ROLE_KEY } from '../decorators/store-role.decorator';
 import { StoreRole } from '../constants/store-role.constant';
-import { StoreContextDto } from '../../store/dtos/store-context.dto';
 import { StoreMemberService } from '../../member/member.service';
 import { IS_PUBLIC_KEY } from '@/common/decorators/public.decorator';
 
@@ -16,7 +15,7 @@ export class StoreRoleGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     const { user, headers } = req;
-    const storeId = headers['x-store-id'];
+    const storeId = headers['x-store-id'] as string;
 
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
@@ -40,11 +39,17 @@ export class StoreRoleGuard implements CanActivate {
 
     const contextInfo = req.storeContext;
     if (!contextInfo) {
-      throw new ForbiddenException('Store context is required to access this resource.');
+      throw new ForbiddenException({
+        message: 'Store context is required to access this resource.',
+        code: 'STORE_CONTEXT_REQUIRED',
+      });
     }
 
     if (!requiredRoles.includes(contextInfo.role)) {
-      throw new ForbiddenException('You do not have permission for this store resource.');
+      throw new ForbiddenException({
+        message: 'You do not have permission for this store resource.',
+        code: 'STORE_PERMISSION_DENIED',
+      });
     }
 
     req.contextRole = contextInfo.role;

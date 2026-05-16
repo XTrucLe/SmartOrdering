@@ -1,6 +1,6 @@
-import { Controller, Post, Get, Patch, Param, Body, UseGuards, Query } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Param, Body, UseGuards, Query, Put } from '@nestjs/common';
 import { OrderService } from '../services/order.service';
-import { CreateOrderDto, OrderFilterDto, OrderResponseDto } from '../dtos/order.dto';
+import { OrderFilterDto, OrderResponseDto, UpdateOrderDto } from '../dtos/order.dto';
 import { mapToOrderDto, mapToOrderDtos } from '../mappers/order.mapper';
 import { JwtGuard } from '@/modules/identity/guards/jwt.guard';
 import { Pages } from '@/common/interfaces/page.interface';
@@ -10,18 +10,51 @@ import {
   StoreManager,
   StoreStaff,
 } from '@/modules/stores/common/decorators/store-role-group.decorator';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
 
 @Controller('orders')
 @UseGuards(JwtGuard, StoreRoleGuard)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post()
+  @Post('/draft')
   async create(
     @CurrentStore('id') storeId: string,
-    @Body() dto: CreateOrderDto,
+    @CurrentUser('sub') userId: string,
   ): Promise<OrderResponseDto> {
-    const order = await this.orderService.create(storeId, dto);
+    const order = await this.orderService.createDraft(storeId, userId);
+    return mapToOrderDto(order);
+  }
+
+  @Put('/draft/:orderId')
+  @StoreStaff()
+  async update(
+    @CurrentStore('id') storeId: string,
+    @Param('orderId') orderId: string,
+    @Body() dto: UpdateOrderDto,
+  ): Promise<OrderResponseDto> {
+    const order = await this.orderService.updateDraft(storeId, orderId, dto);
+    return mapToOrderDto(order);
+  }
+
+  @Get('/draft')
+  @StoreStaff()
+  async getCurrentDraft(
+    @CurrentStore('id') storeId: string,
+    @CurrentUser('sub') userId: string,
+  ): Promise<OrderResponseDto[]> {
+    const orders = await this.orderService.getDraftsByStore(storeId, userId);
+    return mapToOrderDtos(orders);
+  }
+
+  @Get('/draft/:orderId')
+  @StoreStaff()
+  async getDraft(
+    @CurrentStore('id') storeId: string,
+    @CurrentUser('sub') userId: string,
+    @Param('orderId') orderId: string,
+  ): Promise<OrderResponseDto> {
+    const order = await this.orderService.getDraftById(storeId, userId, orderId);
     return mapToOrderDto(order);
   }
 
@@ -35,6 +68,16 @@ export class OrderController {
     return { ...orders, data: mapToOrderDtos(orders.data) };
   }
 
+  @Get('today')
+  @StoreStaff()
+  async findTodayOrders(
+    @CurrentStore('id') storeId: string,
+    @CurrentUser('sub') userId: string,
+  ): Promise<OrderResponseDto[]> {
+    const orders = await this.orderService.findTodayOrders(storeId, userId);
+    return mapToOrderDtos(orders);
+  }
+
   @Get(':orderId')
   @StoreStaff()
   async findOne(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
@@ -45,28 +88,32 @@ export class OrderController {
   @Patch(':orderId/confirm')
   @StoreStaff()
   async confirm(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
-    const confirmedOrder = await this.orderService.confirm(orderId);
+    const confirmedOrder = await this.orderService.confirmOrder(orderId);
+
     return mapToOrderDto(confirmedOrder);
   }
 
-  @Patch(':orderId/prepare')
+  @Patch(':orderId/pay/cash')
   @StoreStaff()
-  async prepare(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
-    const preparedOrder = await this.orderService.prepare(orderId);
-    return mapToOrderDto(preparedOrder);
-  }
+  async payWithCash(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
+    const paidOrder = await this.orderService.payWithCash(orderId);
 
-  @Patch(':orderId/ready')
-  @StoreStaff()
-  async ready(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
-    const readyOrder = await this.orderService.ready(orderId);
-    return mapToOrderDto(readyOrder);
+    return mapToOrderDto(paidOrder);
   }
 
   @Patch(':orderId/complete')
   @StoreStaff()
-  async complete(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
-    const completedOrder = await this.orderService.complete(orderId);
+  async completeWithPayment(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
+    const completedOrder = await this.orderService.completeWithPayment(orderId);
+
+    return mapToOrderDto(completedOrder);
+  }
+
+  @Patch(':orderId/complete-and-pay')
+  @StoreStaff()
+  async completeAndCollectPayment(@Param('orderId') orderId: string): Promise<OrderResponseDto> {
+    const completedOrder = await this.orderService.completeAndCollectPayment(orderId);
+
     return mapToOrderDto(completedOrder);
   }
 
@@ -77,6 +124,7 @@ export class OrderController {
     @Body('reason') reason: string,
   ): Promise<OrderResponseDto> {
     const cancelledOrder = await this.orderService.cancel(orderId, reason);
+
     return mapToOrderDto(cancelledOrder);
   }
 }

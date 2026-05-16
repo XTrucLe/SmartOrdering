@@ -3,6 +3,7 @@ import { StoreService } from '@/modules/stores/store/store.service';
 import { SectionItemService } from '@/modules/menus/services/section-item.service';
 import { SectionItem } from '@/modules/menus/entities/section-item.entity';
 import { StoreStatus } from '@/modules/stores/common/constants/store-status.constant';
+import { CreateOrderItemDto } from '../dtos/order-item.dto';
 
 @Injectable()
 export class OrderValidateService {
@@ -21,11 +22,8 @@ export class OrderValidateService {
     }
   }
 
-  async validateMenuItems(
-    storeId: string,
-    items: { itemId: string; quantity: number }[],
-  ): Promise<SectionItem[]> {
-    const validatedMenuItems: SectionItem[] = [];
+  async validateSectionItems(storeId: string, items: CreateOrderItemDto[]): Promise<SectionItem[]> {
+    const validatedSectionItems: SectionItem[] = [];
     for (const { itemId, quantity } of items) {
       if (quantity < 0) {
         throw new Error(`Quantity for item ID ${itemId} must be greater or equal to 0`);
@@ -39,9 +37,9 @@ export class OrderValidateService {
       if (!sectionItem.isAvailable) {
         throw new Error(`Section item with ID ${itemId} is not available`);
       }
-      validatedMenuItems.push(sectionItem);
+      validatedSectionItems.push(sectionItem);
     }
 
-    return validatedMenuItems;
+    return validatedSectionItems;
   }
 }

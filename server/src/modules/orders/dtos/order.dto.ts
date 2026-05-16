@@ -1,9 +1,7 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import {
-  ArrayMinSize,
   IsArray,
   IsEnum,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPhoneNumber,
@@ -12,32 +10,28 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateOrderItemDto, OrderItemResponseDto } from './order-item.dto';
-import { DeliveryMethod, OrderStatus, PaymentStatus } from '../constants/order.constant';
+import { DeliveryMethod, OrderStatus } from '../constants/order.constant';
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateDeliveryDto } from './delivery.dto';
+import { PaymentMethod, PaymentStatus } from '../constants/payment.constant';
 
 export class CreateOrderDto {
   @IsArray()
   @ValidateNested({ each: true })
-  @ArrayMinSize(1)
   @Type(() => CreateOrderItemDto)
   items: CreateOrderItemDto[];
 
   @IsEnum(DeliveryMethod)
   @IsOptional()
-  deliveryMethod: DeliveryMethod;
+  deliveryMethod?: DeliveryMethod;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  customerName: string;
+  customerName?: string;
 
   @IsPhoneNumber('VN')
-  @IsNotEmpty()
-  customerPhone: string;
-
-  @IsString()
   @IsOptional()
-  tableId?: string;
+  customerPhone?: string;
 
   @IsNumber()
   @Min(0)
@@ -58,9 +52,14 @@ export class CreateOrderDto {
   @IsOptional()
   notes?: string;
 
+  @IsEnum(PaymentMethod)
+  @IsOptional()
+  paymentMethod?: PaymentMethod;
+
+  @IsOptional()
   @ValidateNested()
   @Type(() => CreateDeliveryDto)
-  delivery: CreateDeliveryDto;
+  delivery?: CreateDeliveryDto;
 }
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {}
@@ -105,6 +104,7 @@ export class OrderFilterDto {
 export class OrderResponseDto {
   @Expose() id: string;
   @Expose() storeId: string;
+  @Expose() orderCode: string;
   @Expose() customerName: string;
   @Expose() customerPhone: string;
   @Expose() customerAddress: string;
